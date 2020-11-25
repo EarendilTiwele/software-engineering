@@ -7,6 +7,7 @@ package dataaccesslayer;
 
 import businesslogiclayer.Activity;
 import java.sql.ResultSet;
+import java.util.List;
 
 /**
  *
@@ -17,9 +18,9 @@ public interface ActivityDAL {
     public boolean insert (Activity activity);
     public boolean update (Activity activity);
     public boolean delete (int id);
-    public ResultSet getAll();
-    public ResultSet get(int id);
-    public ResultSet getAllOfWeek(int week);
-    public ResultSet getAllPlannedOfWeek(int week);
+    public List<Activity> getAll();
+    public Activity get(int id);
+    public List<Activity> getAllOfWeek(int week);
+    public List<Activity> getAllPlannedOfWeek(int week);
     
 }
