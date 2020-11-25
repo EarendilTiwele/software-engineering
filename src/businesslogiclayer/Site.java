@@ -13,7 +13,7 @@ public class Site {
     private int id;
     private String factory;
     private String area;
-
+    
     public int getId() {
         return id;
     }
