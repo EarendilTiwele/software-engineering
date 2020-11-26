@@ -5,6 +5,8 @@
  */
 package businesslogiclayer;
 
+import java.util.Objects;
+
 /**
  * Site representing factory and area in the establishment.
  *
@@ -68,6 +70,34 @@ public class Site {
      */
     public String getArea() {
         return area;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Site other = (Site) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (!Objects.equals(this.factory, other.factory)) {
+            return false;
+        }
+        if (!Objects.equals(this.area, other.area)) {
+            return false;
+        }
+        return true;
     }
 
 }
