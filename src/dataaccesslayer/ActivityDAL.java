@@ -15,9 +15,9 @@ import java.util.List;
  */
 public interface ActivityDAL {
     
-    public boolean insert (Activity activity);
-    public boolean update (Activity activity);
-    public boolean delete (int id);
+    public Activity insert (Activity activity);
+    public Activity update (Activity activity);
+    public Activity delete (int id);
     public List<Activity> getAll();
     public Activity get(int id);
     public List<Activity> getAllOfWeek(int week);
