@@ -37,4 +37,8 @@ public class DatabaseConnection {
         return conn;
     }
     
+    public static boolean isClosed() {
+        return conn == null;
+    }
+    
 }

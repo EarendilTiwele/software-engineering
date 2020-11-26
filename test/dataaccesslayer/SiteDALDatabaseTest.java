@@ -9,6 +9,8 @@ import businesslogiclayer.Site;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -59,6 +61,7 @@ public class SiteDALDatabaseTest {
     public void testInsert () {
         Site localSite = new Site("test", "prova");
         Site dbSite = siteDAL.insert(localSite);
+        localSite.setId(dbSite.getId());
         assertEquals(localSite, dbSite);
     }
     
@@ -73,8 +76,9 @@ public class SiteDALDatabaseTest {
     public void testUpdate () {
         Site localSite = new Site("test", "prova");
         Site dbSite = siteDAL.insert(localSite);
+        localSite.setId(dbSite.getId());
         assertEquals(localSite, dbSite);
-        localSite = new Site("updated", "prova");
+        localSite = new Site(dbSite.getId(), "updated", "prova");
         dbSite = siteDAL.update(localSite);
         assertEquals(localSite, dbSite);
     }
@@ -90,6 +94,7 @@ public class SiteDALDatabaseTest {
     public void testDelete () {
         Site localSite = new Site("test", "prova");
         Site dbSite = siteDAL.insert(localSite);
+        localSite.setId(dbSite.getId());
         assertEquals(localSite, dbSite);
         dbSite = siteDAL.delete(dbSite.getId());
         assertEquals(localSite, dbSite);
@@ -105,6 +110,7 @@ public class SiteDALDatabaseTest {
     public void testGet () {
         Site localSite = new Site("test", "prova");
         Site dbSite = siteDAL.insert(localSite);
+        localSite.setId(dbSite.getId());
         assertEquals(localSite, dbSite);
         dbSite = siteDAL.get(dbSite.getId());
         assertEquals(localSite, dbSite);
@@ -119,16 +125,16 @@ public class SiteDALDatabaseTest {
     public void testGetAll () {
         List<Site> localSites = new ArrayList<>();
         Site site1 = new Site("factory1", "area1");
+        site1 = siteDAL.insert(site1);
         localSites.add(site1);
-        siteDAL.insert(site1);
         Site site2 = new Site("factory2", "area2");
+        site2 = siteDAL.insert(site2);
         localSites.add(site2);
-        siteDAL.insert(site2);
         Site site3 = new Site("factory3", "area3");
+        site3 = siteDAL.insert(site3);
         localSites.add(site3);
-        siteDAL.insert(site3);
         List<Site> dbSites = siteDAL.getAll();
-        assertTrue(localSites.equals(dbSites));
+        assertEquals(localSites,dbSites);
     }
     
 }
