@@ -40,7 +40,7 @@ public class SiteDALDatabaseTest {
     @Before
     public void setUp() throws SQLException {
         siteDAL = new SiteDALDatabase();
-        conn = siteDAL.getConnectionObj();
+        conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }
     
