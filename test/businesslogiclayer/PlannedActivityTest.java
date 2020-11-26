@@ -24,7 +24,7 @@ public class PlannedActivityTest {
     public void setUp(){
         planned=new PlannedActivity(0, 
                 new Site("Factory","Area"), new Typology("Typology"),
-                "description", 0, true, 0, new Procedure("name","smp"));
+                "description", 0, true, 1, new Procedure("name","smp"));
        
         
     }
@@ -36,7 +36,7 @@ public class PlannedActivityTest {
     public void testConstructorWorkspaceNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"), new Typology("typology"),
-                "desctiption", 0, true, 0, new Procedure("name", "smp"),null);
+                "desctiption", 0, true, 1, new Procedure("name", "smp"),null);
         
     }
     
@@ -47,7 +47,7 @@ public class PlannedActivityTest {
     public void testConstructorProcedureNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"),new Typology("typology"),
-                "desctiption", 0, true, 0, null,"workspaceNotes");
+                "desctiption", 0, true, 1, null,"workspaceNotes");
         
     }
     
@@ -58,7 +58,7 @@ public class PlannedActivityTest {
     public void testConstructorDescriptionNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"), new Typology("typology"), 
-                null, 0, true, 0, new Procedure("name", "smp"),"workspaceNotes");
+                null, 0, true, 1, new Procedure("name", "smp"),"workspaceNotes");
         
     }
     
@@ -68,7 +68,7 @@ public class PlannedActivityTest {
     @Test (expected = NullPointerException.class)
     public void testConstructorSiteNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, null,
-                new Typology("typology"), "desctiption", 0, true, 0,
+                new Typology("typology"), "desctiption", 0, true, 1,
                 new Procedure("name", "smp"),"workspaceNotes");
         
     }
@@ -79,10 +79,33 @@ public class PlannedActivityTest {
     @Test (expected = NullPointerException.class)
     public void testConstructorTypologyNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
-                new Site("factory", "area"),null, "descriton", 0, true, 0, 
+                new Site("factory", "area"),null, "descriton", 0, true, 1, 
                 new Procedure("name", "smp"),"workspaceNotes");
         
     }
+    
+    /**
+     * Test of constructor with week equal to 0
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void testConstructorWeekEqualZero(){
+        int week=0;
+        PlannedActivity plannedActivity =new PlannedActivity(0, 
+                new Site("factory", "area"),new Typology("typology"), "descriton", 0, true, week, 
+                new Procedure("name", "smp"),"workspaceNotes");
+    }
+    
+    /**
+     * Test of constructor with week equal to 53
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void testConstructorWeekEqualFiftyThree(){
+        int week=53;
+        PlannedActivity plannedActivity =new PlannedActivity(0, 
+                new Site("factory", "area"),new Typology("typology"), "descriton", 0, true, week, 
+                new Procedure("name", "smp"),"workspaceNotes");
+    }
+    
     
     /**
      * Test addMaterial without insert material
@@ -124,4 +147,32 @@ public class PlannedActivityTest {
         }
         
     }
+    
+    /**
+    * Test the equality for equals method of Tyoplogy class.
+    */
+    @Test
+    public void testPlannedActivityEquals(){
+        PlannedActivity planned2= new PlannedActivity(planned.getId(),
+                planned.getSite(), planned.getTipology(), planned.getDescription(),
+                planned.getInterventionTime(), planned.isInterruptible(), 
+                planned.getWeek(), planned.getProcedure());
+        assertEquals(planned, planned2);
+    }
+    
+    /**
+    * Test the inequality for equals method of Tyoplogy class.
+    */
+    @Test
+    public void testPlannedActivityNotEquals(){
+        int different_week = planned.getWeek()+1;
+        PlannedActivity different_planned = new PlannedActivity(planned.getId(),
+                planned.getSite(), planned.getTipology(), planned.getDescription(),
+                planned.getInterventionTime(), planned.isInterruptible(), 
+                different_week, planned.getProcedure());
+        assertNotEquals(planned, different_week);
+        
+    }
+    
+    
 }
