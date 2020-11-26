@@ -6,10 +6,13 @@
 package dataaccesslayer;
 
 import businesslogiclayer.Activity;
+import businesslogiclayer.PlannedActivity;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -19,13 +22,12 @@ import java.util.logging.Logger;
  *
  * @author Francesco Avallone
  */
-public class ActivityDALDatabase implements ActivityDAL{
-    
-    private Connection c;
-    
-    public Connection getConnectionObj()
-    {
-        
+public class ActivityDALDatabase implements ActivityDAL {
+
+    private Connection conn;
+
+    public Connection getConnectionObj() {
+
         String url = "jdbc:postgresql://ec2-54-75-246-118.eu-west-1.compute.amazonaws.com/d4nuqe4269qu7k?sslmode=require";
         Properties props = new Properties();
         props.setProperty("user", "kbhyahfpxyqabj");
@@ -39,51 +41,199 @@ public class ActivityDALDatabase implements ActivityDAL{
         }
         return conn;
     }
-    
-    
+
     @Override
-    public boolean insert(Activity activity) {
+    public Activity insert(Activity activity) {
+
         try {
-        
-        c = getConnectionObj();
-        
-        c.close();
+
+            conn = getConnectionObj();
+            PreparedStatement prepareStatement = conn.prepareStatement("insert into Activity "
+                    + "(site, type, description, interventiontime, interruptible, week,"
+                    + "workspacenotes, procedure) "
+                    + "VALUES (?,?,?,?,?,?,?,?)   RETURNING *;");
+            prepareStatement.setInt(0, activity.getSite().getId());
+            prepareStatement.setInt(1, activity.getTipology().getId());
+            prepareStatement.setString(2, activity.getDescription());
+            prepareStatement.setInt(3, activity.getInterventionTime());
+            prepareStatement.setBoolean(4, activity.isInterruptible());
+            prepareStatement.setInt(5, activity.getWeek());
+            prepareStatement.setString(6, activity.getWorkspaceNotes());
+            prepareStatement.setInt(7, activity.getProcedure().getId());
+            ResultSet rs = prepareStatement.executeQuery();
+            while (rs.next()) {
+                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
+                inside the Activity obj*/
+                /*The same operations must be done with Typology and Procedure obj*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                /*----------------------------------------------------------------*/
+                activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
+                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
+                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());
+            }
+            conn.close();
+            return activity;
+
         } catch (SQLException ex) {
             Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        return null;
     }
 
     @Override
-    public boolean update(Activity activity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Activity update(Activity activity) {
+        conn = getConnectionObj();
+        PreparedStatement prepareStatement;
+        try {
+            prepareStatement = conn.prepareStatement("update Activity "
+                    + "SET site = ?, type = ?, description = ?, interventiontime = ?"
+                    + "interruptible = ?, week = ?, workspacenotes = ?, procedure = ?"
+                    + "WHERE id = ?  RETURNING *; ");
+
+            prepareStatement.setInt(0, activity.getSite().getId());
+            prepareStatement.setInt(1, activity.getTipology().getId());
+            prepareStatement.setString(2, activity.getDescription());
+            prepareStatement.setInt(3, activity.getInterventionTime());
+            prepareStatement.setBoolean(4, activity.isInterruptible());
+            prepareStatement.setInt(5, activity.getWeek());
+            prepareStatement.setString(6, activity.getWorkspaceNotes());
+            prepareStatement.setInt(7, activity.getProcedure().getId());
+            prepareStatement.setInt(8, activity.getId());
+            ResultSet rs = prepareStatement.executeQuery();
+            while (rs.next()) {
+                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
+                inside the Activity obj*/
+                /*The same operations must be done with Typology and Procedure obj*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                /*----------------------------------------------------------------*/
+                activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
+                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
+                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());
+            }
+            conn.close();
+            return activity;
+        } catch (SQLException ex) {
+            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 
     @Override
-    public boolean delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Activity delete(int id) {
+        try {
+            conn = getConnectionObj();
+            PreparedStatement prepareStatement = conn.prepareStatement("DELETE FROM activity WHERE id=?;"
+                    + "  RETURNING *; ");
+            prepareStatement.setInt(0, id);
+            ResultSet rs = prepareStatement.executeQuery();
+            while (rs.next()) {
+                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
+                inside the Activity obj*/
+                /*The same operations must be done with Typology and Procedure obj*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                /*----------------------------------------------------------------*/
+                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
+                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
+                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+            }
+            conn.close();
+            /*return activity*/
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public List<Activity> getAll() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            conn = getConnectionObj();
+            PreparedStatement prepareStatement = conn.prepareStatement("Select * from activity; ");
+            ResultSet rs = prepareStatement.executeQuery();
+            List<Activity> activityList = new ArrayList<>();
+            while (rs.next()) {
+                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
+                inside the Activity obj*/
+                /*The same operations must be done with Typology and Procedure obj*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                /*----------------------------------------------------------------*/
+                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
+                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
+                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+            }
+            conn.close();
+            return activityList;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public Activity get(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            conn = getConnectionObj();
+            PreparedStatement prepareStatement = conn.prepareStatement("Select from activity WHERE id = ? ;"
+                    + "  RETURNING *; ");
+            prepareStatement.setInt(0, id);
+            ResultSet rs = prepareStatement.executeQuery();
+            while (rs.next()) {
+                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
+                inside the Activity obj*/
+                /*The same operations must be done with Typology and Procedure obj*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                /*----------------------------------------------------------------*/
+                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
+                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
+                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+            }
+            conn.close();
+            /*return activity*/
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
-    
     @Override
     public List<Activity> getAllOfWeek(int week) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            conn = getConnectionObj();
+            PreparedStatement prepareStatement = conn.prepareStatement("Select * from activity where week = ?; ");
+            prepareStatement.setInt(0, week);
+            ResultSet rs = prepareStatement.executeQuery();
+            List<Activity> activityList = new ArrayList<>();
+            while (rs.next()) {
+                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
+                inside the Activity obj*/
+                /*The same operations must be done with Typology and Procedure obj*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                /*----------------------------------------------------------------*/
+                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
+                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
+                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+            }
+            conn.close();
+            return activityList;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public List<Activity> getAllPlannedOfWeek(int week) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getAllOfWeek(week);
     }
-    
-    
 }
