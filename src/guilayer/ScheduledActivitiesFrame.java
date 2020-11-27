@@ -12,6 +12,7 @@ import businesslogiclayer.Site;
 import businesslogiclayer.Typology;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
@@ -25,34 +26,65 @@ import javax.swing.table.TableModel;
  */
 public class ScheduledActivitiesFrame extends javax.swing.JFrame {
 
+    //list of scheduled activities
     private List<Activity> activities = null;
-    // The last element in tableColumnNames is used for button column
-    private final String[] tableColumnNames = new String[]{"ID", "AREA", "TYPE", "Estimated intervention time[min]", ""};
-    // First week that the User view in this form
+
+    // columns headers (the last element in tableColumnNames is used for button column)
+    private static final String ID_COLUMN_NAME = "ID";
+    private static final String AREA_COLUMN_NAME = "AREA";
+    private static final String TYPE_COLUMN_NAME = "TYPE";
+    private static final String TIME_COLUMN_NAME = "Estimated intervention time[min]";
+    private static final String BUTTON_COLUMN_NAME = "";
+
+    private final String[] tableColumnNames = new String[]{
+        ID_COLUMN_NAME,
+        AREA_COLUMN_NAME, TYPE_COLUMN_NAME,
+        TIME_COLUMN_NAME, BUTTON_COLUMN_NAME
+    };
+
+    //text of the buttons
+    private static final String BUTTON_TEXT = "Select";
+
+    // First week that the user view in this form
     private static final int FIRST_WEEK = 1;
+
+    //names of main components (for test purpose)
+    private static final String SCHEDULED_TABLE_NAME = "Activities table";
+    private static final String WEEK_COMBO_NAME = "Week combo box";
 
     /**
      * Creates new form ScheduledActivitiesFrame
      */
     public ScheduledActivitiesFrame() {
         initComponents();
-
+        setComponentsNames();
         this.setTitle("Scheduled activities");
         setUp();
 
     }
 
     /**
-     * Load all scheduled activities and update the table showing the activities 
-     * for the first week. Loading is performed in a new trhead without blocking
-     * the Event Dispatch Thread. 
-     * 
+     * Sets an appropriate name to the main components (for test purpose only).
+     */
+    private void setComponentsNames() {
+        scheduledActivitiesTable.setName(SCHEDULED_TABLE_NAME);
+        weekComboBox.setName(WEEK_COMBO_NAME);
+    }
+
+    /**
+     * Load all scheduled activities and update the table showing the activities
+     * for the first week. Loading is performed in a new thread without blocking
+     * the Event Dispatch Thread.
+     *
      */
     private void setUp() {
         Runnable loader = () -> {
-            activities = loadAllActivities(); // Load all the scheduled activities
-            //activities.sort((activity1, activity2) -> activity1.getWeek() - activity2.getWeek()); // sort by week in ascending order
-            
+            // Load all the scheduled activities
+            activities = loadAllActivities();
+            // sort by ID in ascending order
+            activities.sort((activity1, activity2)
+                    -> activity1.getId() - activity2.getId());
+
             SwingUtilities.invokeLater(() -> {
                 initializeWeekComboBox(FIRST_WEEK);
                 updateTable(FIRST_WEEK);
@@ -65,18 +97,17 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     /**
      * Initialize the weekComboBox to the specified week and set a Listener to
      * update the table.
-     * 
+     *
      * @param week the initial week of the combo box
      */
     private void initializeWeekComboBox(int week) {
         weekComboBox.setSelectedIndex(week - 1);
-        // Specify the Listener to update the content of the table when 
-        //different week is selected from the weekComboBox
+        // Specify the listener to update the content of the table when a
+        // different week is selected from the weekComboBox
         weekComboBox.addActionListener(
-                (e) -> 
-                updateTable(
+                event -> updateTable(
                         Integer.valueOf(
-                            (String) weekComboBox.getSelectedItem()
+                                (String) weekComboBox.getSelectedItem()
                         )));
     }
 
@@ -85,21 +116,27 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      *
      * @param activities list of activities to be converted
      * @param buttonText text displays on the button
-     * @return           the matrix of Object
+     * @return the matrix of Object
      */
     private Object[][] convertToObjectMatrix(List<Activity> activities, String buttonText) {
         int numRow = activities.size();
         int numCol = tableColumnNames.length;
-
+        List<String> columnsAsList = Arrays.asList(tableColumnNames);
         Object[][] matrix = new Object[numRow][numCol];
 
+        //create the matrix
         int i = 0;
         for (Activity activity : activities) {
-            matrix[i][0] = activity.getId();
-            matrix[i][1] = activity.getSite().toString();
-            matrix[i][2] = activity.getTipology().toString();
-            matrix[i][3] = activity.getInterventionTime();
-            matrix[i][4] = buttonText;
+            matrix[i][columnsAsList.indexOf(ID_COLUMN_NAME)]
+                    = activity.getId();
+            matrix[i][columnsAsList.indexOf(AREA_COLUMN_NAME)]
+                    = activity.getSite().toString();
+            matrix[i][columnsAsList.indexOf(TYPE_COLUMN_NAME)]
+                    = activity.getTipology().toString();
+            matrix[i][columnsAsList.indexOf(TIME_COLUMN_NAME)]
+                    = activity.getInterventionTime();
+            matrix[i][columnsAsList.indexOf(BUTTON_COLUMN_NAME)]
+                    = buttonText;
 
             i++;
         }
@@ -115,11 +152,11 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     private void updateTable(int week) {
         // List of the activities scheduled for the specifed week
         List<Activity> filteredActivities = activities.stream()
-                .filter(a -> a.getWeek() == week)
+                .filter(activity -> activity.getWeek() == week)
                 .collect(Collectors.toList());
 
-        // Convert the filterderActivities in a matrix suitable for the CustomTableModel
-        Object[][] data = convertToObjectMatrix(filteredActivities, "Select");
+        // Convert the filterderActivities to a matrix suitable for CustomTableModel
+        Object[][] data = convertToObjectMatrix(filteredActivities, BUTTON_TEXT);
 
         TableModel model = new CustomTableModel(tableColumnNames, data);
         scheduledActivitiesTable.setModel(model);
@@ -129,10 +166,11 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 .getColumn(model.getColumnCount() - 1)
                 .setCellRenderer(new ButtonRenderer());
 
-        // Simple ActionListener for test the button
+        // Simple ActionListener for testing the button
         ActionListener popupActionListener = e -> {
             String msg = "clicked";
-            JOptionPane.showMessageDialog(rootPane, msg, "title", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, msg,
+                    "title", JOptionPane.INFORMATION_MESSAGE);
         };
 
         // Set the button editor for the last column of the table to react to users click
