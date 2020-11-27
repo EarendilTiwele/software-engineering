@@ -83,7 +83,6 @@ public class ActivityDALDatabaseTest {
     /**
      * Test the connection with the database checking that the connection is
      * valid
-     *
      * @throws java.sql.SQLException
      */
     @Test
