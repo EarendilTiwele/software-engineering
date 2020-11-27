@@ -32,7 +32,7 @@ public class TypologyTest {
     /**
      * Test of first constructor, with null name.
     */
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testFirstConstructorNull() {
         Typology typology = new Typology(null);
     }
@@ -40,7 +40,7 @@ public class TypologyTest {
     /**
      * Test of second constructor, with null name.
      */
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSecondConstructorNull() {
         Typology typology = new Typology(1, null);
     }

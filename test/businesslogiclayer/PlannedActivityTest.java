@@ -25,14 +25,12 @@ public class PlannedActivityTest {
         planned=new PlannedActivity(0, 
                 new Site("Factory","Area"), new Typology("Typology"),
                 "description", 0, true, 1, new Procedure("name","smp"));
-       
-        
     }
 
     /**
      * Test of constructor, with workspaceNotes null
      */
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testConstructorWorkspaceNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"), new Typology("typology"),
@@ -43,7 +41,7 @@ public class PlannedActivityTest {
     /**
      * Test of constructor, with procedure null
      */
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testConstructorProcedureNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"),new Typology("typology"),
@@ -54,7 +52,7 @@ public class PlannedActivityTest {
     /**
      * Test of constructor, with description null
      */
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testConstructorDescriptionNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"), new Typology("typology"), 
@@ -65,7 +63,7 @@ public class PlannedActivityTest {
     /**
      * Test of constructor, with site null
      */
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testConstructorSiteNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, null,
                 new Typology("typology"), "desctiption", 0, true, 1,
@@ -76,7 +74,7 @@ public class PlannedActivityTest {
     /**
      * Test of constructor, with typology null
      */
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testConstructorTypologyNull(){
         PlannedActivity plannedActivity = new PlannedActivity(0, 
                 new Site("factory", "area"),null, "descriton", 0, true, 1, 
@@ -165,12 +163,12 @@ public class PlannedActivityTest {
     */
     @Test
     public void testPlannedActivityNotEquals(){
-        int different_week = planned.getWeek()+1;
-        PlannedActivity different_planned = new PlannedActivity(planned.getId(),
+        int different_id = planned.getId()+1;
+        PlannedActivity different_planned = new PlannedActivity(different_id,
                 planned.getSite(), planned.getTipology(), planned.getDescription(),
                 planned.getInterventionTime(), planned.isInterruptible(), 
-                different_week, planned.getProcedure());
-        assertNotEquals(planned, different_week);
+                planned.getWeek(), planned.getProcedure());
+        assertNotEquals(planned, different_planned);
         
     }
     

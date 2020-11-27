@@ -69,7 +69,7 @@ public abstract class Activity {
         }
         if(site == null || tipology == null || description == null || 
                 procedure == null || workspaceNotes == null){
-            throw new NullPointerException("The parameters must not be null");
+            throw new IllegalArgumentException("The parameters must not be null");
         }
         this.id = id;
         this.site = site;
