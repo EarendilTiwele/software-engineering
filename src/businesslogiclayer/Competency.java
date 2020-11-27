@@ -100,4 +100,15 @@ public class Competency {
     public String getDescription() {
         return description;
     }
+    
+    /**
+     * Returns a string representation of this competency. The string
+     * representation consists of the description.
+     *
+     * @return a string representation of this competency
+     */
+    @Override
+    public String toString() {
+        return getDescription().toString();
+    }
 }
