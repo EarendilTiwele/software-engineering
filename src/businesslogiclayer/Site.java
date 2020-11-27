@@ -128,6 +128,15 @@ public class Site {
     public String toString(){
         return getFactory() + " - " + getArea();
     }
+
+    /**
+     * Set the id of this site.
+     * 
+     * @param id the id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
     
 
 }

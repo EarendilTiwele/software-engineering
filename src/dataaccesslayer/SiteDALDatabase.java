@@ -7,10 +7,11 @@ package dataaccesslayer;
 
 import businesslogiclayer.Site;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,45 +21,136 @@ import java.util.logging.Logger;
  */
 public class SiteDALDatabase implements SiteDAL {
     
-    public Connection getConnectionObj() {
-        
-        String url = "jdbc:postgresql://ec2-54-75-246-118.eu-west-1.compute.amazonaws.com/d4nuqe4269qu7k?sslmode=require";
-        Properties props = new Properties();
-        props.setProperty("user", "kbhyahfpxyqabj");
-        props.setProperty("password", "7fe433219e2003f8119018667ac82205c6164d4d56b0ff5189cf25b1385a49eb");
-        props.setProperty("ssl", "true");
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url, props);
-        } catch (SQLException ex) {
-            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return conn;
-    }
+    private Connection conn;
 
     @Override
     public Site insert(Site site) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("insert into site "
+                    + "(factory, area)"
+                    + "values (?,?) returning *;");
+            prepareStatement.setString(1, site.getFactory());
+            prepareStatement.setString(2, site.getArea());
+            ResultSet rs = prepareStatement.executeQuery();
+            Site dbSite = null;
+            while (rs.next()) {
+                dbSite = new Site(rs.getInt("id"), rs.getString("factory"),
+                                  rs.getString("area"));
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return dbSite;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public Site update(Site site) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("update site "
+                    + "set factory = ?, area = ? "
+                    + "where id = ? returning *;");
+            prepareStatement.setString(1, site.getFactory());
+            prepareStatement.setString(2, site.getArea());
+            prepareStatement.setInt(3, site.getId());
+            ResultSet rs = prepareStatement.executeQuery();
+            Site dbSite = null;
+            while (rs.next()) {
+                dbSite = new Site(rs.getInt("id"), rs.getString("factory"),
+                                  rs.getString("area"));
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return dbSite;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public Site delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("delete from site "
+                    + "where id = ? returning *;");
+            prepareStatement.setInt(1, id);
+            ResultSet rs = prepareStatement.executeQuery();
+            Site dbSite = null;
+            while (rs.next()) {
+                dbSite = new Site(rs.getInt("id"), rs.getString("factory"),
+                                  rs.getString("area"));
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return dbSite;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public Site get(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("select * from site "
+                    + "where id = ?;");
+            prepareStatement.setInt(1, id);
+            ResultSet rs = prepareStatement.executeQuery();
+            Site dbSite = null;
+            while (rs.next()) {
+                dbSite = new Site(rs.getInt("id"), rs.getString("factory"),
+                                  rs.getString("area"));
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return dbSite;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
         
     @Override
     public List<Site> getAll() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        List<Site> sites = new ArrayList<>();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("select * from site;");
+            ResultSet rs = prepareStatement.executeQuery();
+            Site dbSite;
+            while (rs.next()) {
+                dbSite = new Site(rs.getInt("id"), rs.getString("factory"),
+                                  rs.getString("area"));
+                sites.add(dbSite);
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return sites;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
 }

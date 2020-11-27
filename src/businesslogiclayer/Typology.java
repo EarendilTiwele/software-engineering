@@ -5,6 +5,8 @@
  */
 package businesslogiclayer;
 
+import java.util.Objects;
+
 /**
  * Typology for maintenance activities. 
  * 
@@ -59,8 +61,58 @@ public class Typology {
     public String getName() {
         return name;
     }
+
+    /**
+     * Returns the hash code for this typology
+     * The hash code is computed based on the description only.
+     * 
+     * @return a hash code value for this typology
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 73 * hash + Objects.hashCode(this.name);
+        return hash;
+    }
+
+    /**
+     * Compares this typology to the specified object.
+     * The result is <code>true</code> if and only if the argument is not <code>null</code>
+     * and is a <code>Typology</code> object that represents a typology with
+     * the same name as this object.
+     * 
+     * @param obj the object to compare this <code>Typology</code> against
+     * @return <code>true</code> if the given object represents a <code>Typology</code>
+     *         equivalent to this typology, <code>false</code> otherwise 
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Typology other = (Typology) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns the string rappresentation of Typology object.
+     * @return a string rappresentation of the Typology.
+     */
+    @Override
+    public String toString() {
+        return "Typology:" + "name= " + name ;
+    }
     
-    
+     
     
    
     

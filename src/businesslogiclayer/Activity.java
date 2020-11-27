@@ -7,6 +7,7 @@ package businesslogiclayer;
 
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -43,8 +44,9 @@ public abstract class Activity {
     private String workspaceNotes;
     public enum ActivityCategory{PLANNED,EWO,EXTRA};
     
+    
     /**
-     * Constructs an activity with the specified id, site, typology, description,
+      * Constructs an activity with the specified id, site, typology, description,
      * interventionTime, interruptible, week, procedure, workspaceNotes.
      * 
      * @param id                the activity id
@@ -56,11 +58,15 @@ public abstract class Activity {
      * @param week              the week the activity is scheduled for
      * @param procedure         the associated procedure
      * @param workspaceNotes    the workspace notes 
+     * 
+     * 
      */
-    
     public Activity(int id, Site site, Typology tipology, String description, 
                     int interventionTime, boolean interruptible, int week, 
                     Procedure procedure, String workspaceNotes) {
+        if(week<=0 || week>52){
+            throw new IllegalArgumentException("week must be an integer between 1 and 52");
+        }
         if(site == null || tipology == null || description == null || 
                 procedure == null || workspaceNotes == null){
             throw new NullPointerException("The parameters must not be null");
@@ -199,6 +205,105 @@ public abstract class Activity {
         materials.add(material);
         
     }
+
+    /**
+     * Returns the hash code for this activity
+     * The hash code is computed based on the all attribute of the activity.
+     * 
+     * @return a hash code value for this activity
+     */
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 79 * hash + this.id;
+        hash = 79 * hash + Objects.hashCode(this.site);
+        hash = 79 * hash + Objects.hashCode(this.tipology);
+        hash = 79 * hash + Objects.hashCode(this.description);
+        hash = 79 * hash + this.interventionTime;
+        hash = 79 * hash + (this.interruptible ? 1 : 0);
+        hash = 79 * hash + Objects.hashCode(this.materials);
+        hash = 79 * hash + this.week;
+        hash = 79 * hash + Objects.hashCode(this.procedure);
+        hash = 79 * hash + Objects.hashCode(this.workspaceNotes);
+        return hash;
+    }
+
+    
+    /**
+     * Compares this activity to the specified object.
+     * The result is <code>true</code> if and only if the argument is not <code>null</code>
+     * and is a <code>Activity</code> object that represents a activity with
+     * the same name as this object.
+     * 
+     * @param obj the object to compare this <code>Activity</code> against
+     * @return <code>true</code> if the given object represents a <code>Activity</code>
+     *         equivalent to this activity, <code>false</code> otherwise 
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Activity other = (Activity) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.interventionTime != other.interventionTime) {
+            return false;
+        }
+        if (this.interruptible != other.interruptible) {
+            return false;
+        }
+        if (this.week != other.week) {
+            return false;
+        }
+        if (!Objects.equals(this.description, other.description)) {
+            return false;
+        }
+        if (!Objects.equals(this.workspaceNotes, other.workspaceNotes)) {
+            return false;
+        }
+        if (!Objects.equals(this.site, other.site)) {
+            return false;
+        }
+        if (!Objects.equals(this.tipology, other.tipology)) {
+            return false;
+        }
+        if (!Objects.equals(this.materials, other.materials)) {
+            return false;
+        }
+        if (!Objects.equals(this.procedure, other.procedure)) {
+            return false;
+        }
+        if(!Objects.equals(this.getCategory(), other.getCategory())){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns the string rappresentation of all attribute of Activity object.
+     * @return a string rappresentation of the activity.
+     */
+    @Override
+    public String toString() {
+        return "Activity:" +"Category= "+ this.getCategory()+ "id= " + id + 
+                ", site= " + site + ", tipology= " + tipology + ", description= " 
+                + description + ", interventionTime= " + interventionTime + 
+                ", interruptible= " + interruptible + ", materials =" + 
+                materials + ", week =" + week + ", procedure =" + procedure + 
+                ", workspaceNotes=" + workspaceNotes;
+    }
+
+    
+    
+    
     
     /**
      * Returns the category of this activity.
