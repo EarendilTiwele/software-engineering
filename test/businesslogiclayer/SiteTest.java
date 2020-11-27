@@ -5,6 +5,7 @@
  */
 package businesslogiclayer;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -46,5 +47,33 @@ public class SiteTest {
         Site site = new Site("factory", null);
     }
     
+    /**
+     * Test of equality for hashCode method, of class Site.
+     */
+    @Test
+    public void testHashCodeEquality(){
+        Site site1 = new Site("factory", "area");
+        Site site2 = new Site(1, "factory", "area");
+        assertEquals(site1.hashCode(), site2.hashCode());
+    }
     
+    /**
+     * Test of equality for equals method, of class Site.
+     */
+    @Test
+    public void testEqualsEquality(){
+        Site site1 = new Site("factory", "area");
+        Site site2 = new Site(1, "factory", "area");
+        assertEquals(site1, site2);
+    }
+    
+    /**
+     * Test of inequality for equals method, of class Site.
+     */
+    @Test
+    public void testEqualsInequality(){
+        Site site1 = new Site("factory1", "area1");
+        Site site2 = new Site(1, "factory2", "area2");
+        assertNotEquals(site1, site2);
+    }
 }

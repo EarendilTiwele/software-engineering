@@ -72,10 +72,30 @@ public class Site {
         return area;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    /**
+     * Returns the hash code for this site.
+     * The hash code is computed based on factory and area.
+     * 
+     * @return a hash code value for this object
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.factory);
+        hash = 37 * hash + Objects.hashCode(this.area);
+        return hash;
     }
 
+    /**
+     * Compares this site to the specified object.
+     * The result is <code>true</code> if and only if the argument is not <code>null</code>
+     * and is a <code>Site</code> object that represents a site with
+     * the same factory and area as this object.
+     * 
+     * @param obj  the object to compare this <code>Site</code> against
+     * @return     <code>true</code> if the given object represents a <code>Site</code>
+     *             equivalent to this site, <code>false</code> otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -88,9 +108,6 @@ public class Site {
             return false;
         }
         final Site other = (Site) obj;
-        if (this.id != other.id) {
-            return false;
-        }
         if (!Objects.equals(this.factory, other.factory)) {
             return false;
         }
@@ -99,5 +116,27 @@ public class Site {
         }
         return true;
     }
+    
+    /**
+     * Returns a string representation of this site.
+     * The string representation consists of factory and area
+     * separated by a dash.
+     * 
+     * @return a string representation of this site
+     */
+    @Override
+    public String toString(){
+        return getFactory() + " - " + getArea();
+    }
+
+    /**
+     * Set the id of this site.
+     * 
+     * @param id the id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+    
 
 }
