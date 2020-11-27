@@ -9,8 +9,6 @@ import businesslogiclayer.Site;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -102,6 +100,22 @@ public class SiteDALDatabaseTest {
     }
     
     /**
+     * Insert two sites in db
+     * Verify if the number of deleted sites is equals to the size of the table
+     * Verify if the size of the table is zero after the deletion
+     * Verify if the deletion on an empty table returns zero
+     */
+    @Test
+    public void testDeleteAll () {
+        siteDAL.insert(new Site("test", "prova"));
+        siteDAL.insert(new Site("test2", "prova2"));
+        int tableSize = siteDAL.getAll().size();
+        assertEquals(tableSize, siteDAL.deleteAll());
+        assertEquals(0, siteDAL.getAll().size());
+        assertEquals(0, siteDAL.deleteAll());
+    }
+    
+    /**
      * Create a local site
      * Insert it into db and retrieve the db version
      * Get the site from db and compare it with the local site
@@ -123,6 +137,7 @@ public class SiteDALDatabaseTest {
      */
     @Test
     public void testGetAll () {
+        siteDAL.deleteAll();
         List<Site> localSites = new ArrayList<>();
         Site site1 = new Site("factory1", "area1");
         site1 = siteDAL.insert(site1);

@@ -22,7 +22,12 @@ import java.util.logging.Logger;
 public class SiteDALDatabase implements SiteDAL {
     
     private Connection conn;
-
+    
+    /**
+     * Insert a site in a database
+     * @param site the site to insert
+     * @return the inserted site
+     */
     @Override
     public Site insert(Site site) {
         boolean connectionWasClosed = DatabaseConnection.isClosed();
@@ -49,7 +54,12 @@ public class SiteDALDatabase implements SiteDAL {
         }
         return null;
     }
-
+    
+    /**
+     * Update a site in a database
+     * @param site the site to update
+     * @return the updated site
+     */
     @Override
     public Site update(Site site) {
         boolean connectionWasClosed = DatabaseConnection.isClosed();
@@ -78,6 +88,11 @@ public class SiteDALDatabase implements SiteDAL {
         return null;
     }
 
+    /**
+     * Delete a site with given id from a database
+     * @param id the id which identifies the site
+     * @return the deleted site
+     */
     @Override
     public Site delete(int id) {
         boolean connectionWasClosed = DatabaseConnection.isClosed();
@@ -102,7 +117,35 @@ public class SiteDALDatabase implements SiteDAL {
         }
         return null;
     }
+    
+    /**
+     * Delete all sites from a database
+     * @return the number of deleted sites
+     */
+    @Override
+    public int deleteAll() {
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("delete from site "
+                    + "where true;");
+            int deletedRows = prepareStatement.executeUpdate();
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return deletedRows;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0;
+    }
 
+    /** 
+     * Retrieve a site with given id from a database
+     * @param id the id which identifies the site
+     * @return the site retrieved
+     */
     @Override
     public Site get(int id) {
         boolean connectionWasClosed = DatabaseConnection.isClosed();
@@ -127,7 +170,11 @@ public class SiteDALDatabase implements SiteDAL {
         }
         return null;
     }
-        
+    
+    /**
+     * Retrieve all the sites from a database
+     * @return the list of the sites retrieved
+     */
     @Override
     public List<Site> getAll() {
         boolean connectionWasClosed = DatabaseConnection.isClosed();

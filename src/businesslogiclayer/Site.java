@@ -74,13 +74,14 @@ public class Site {
 
     /**
      * Returns the hash code for this site.
-     * The hash code is computed based on factory and area.
+     * The hash code is computed based on id, factory and area.
      * 
      * @return a hash code value for this object
      */
     @Override
     public int hashCode() {
         int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.id);
         hash = 37 * hash + Objects.hashCode(this.factory);
         hash = 37 * hash + Objects.hashCode(this.area);
         return hash;
@@ -90,7 +91,7 @@ public class Site {
      * Compares this site to the specified object.
      * The result is <code>true</code> if and only if the argument is not <code>null</code>
      * and is a <code>Site</code> object that represents a site with
-     * the same factory and area as this object.
+     * the same id, factory and area as this object.
      * 
      * @param obj  the object to compare this <code>Site</code> against
      * @return     <code>true</code> if the given object represents a <code>Site</code>
@@ -108,6 +109,9 @@ public class Site {
             return false;
         }
         final Site other = (Site) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
         if (!Objects.equals(this.factory, other.factory)) {
             return false;
         }
