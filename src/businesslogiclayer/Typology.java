@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author Alfonso
  */
 public class Typology {
-    private final int id;
+    private int id;
     private final String name;
     private static final int DEFAULT_ID = -1;
 
@@ -25,7 +25,7 @@ public class Typology {
      */
     public Typology(int id, String name) {
         if (name == null){
-            throw new NullPointerException("name must not be null");
+            throw new IllegalArgumentException("name must not be null");
         }
         this.id = id;
         this.name = name;
@@ -64,13 +64,14 @@ public class Typology {
 
     /**
      * Returns the hash code for this typology
-     * The hash code is computed based on the description only.
+     * The hash code is computed based on the id and name.
      * 
      * @return a hash code value for this typology
      */
     @Override
     public int hashCode() {
         int hash = 7;
+        hash = 73 * hash + Objects.hashCode(this.id);
         hash = 73 * hash + Objects.hashCode(this.name);
         return hash;
     }
@@ -79,7 +80,7 @@ public class Typology {
      * Compares this typology to the specified object.
      * The result is <code>true</code> if and only if the argument is not <code>null</code>
      * and is a <code>Typology</code> object that represents a typology with
-     * the same name as this object.
+     * the same id and name as this object.
      * 
      * @param obj the object to compare this <code>Typology</code> against
      * @return <code>true</code> if the given object represents a <code>Typology</code>
@@ -97,6 +98,9 @@ public class Typology {
             return false;
         }
         final Typology other = (Typology) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
@@ -112,9 +116,13 @@ public class Typology {
         return "Typology:" + "name= " + name ;
     }
     
-     
-    
-   
-    
+    /**
+     * Set the id of this typology.
+     * 
+     * @param id the id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
     
 }
