@@ -6,6 +6,7 @@
 package businesslogiclayer;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -92,6 +93,36 @@ public class Procedure {
      */
     public void addCompetency(Competency competency) {
         competencies.add(competency);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Procedure other = (Procedure) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.smp, other.smp)) {
+            return false;
+        }
+        return true;
     }
 
 }
