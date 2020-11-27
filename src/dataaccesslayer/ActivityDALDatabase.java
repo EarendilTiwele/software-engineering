@@ -52,14 +52,14 @@ public class ActivityDALDatabase implements ActivityDAL {
                     + "(site, type, description, interventiontime, interruptible, week,"
                     + "workspacenotes, procedure) "
                     + "VALUES (?,?,?,?,?,?,?,?)   RETURNING *;");
-            prepareStatement.setInt(0, activity.getSite().getId());
-            prepareStatement.setInt(1, activity.getTipology().getId());
-            prepareStatement.setString(2, activity.getDescription());
-            prepareStatement.setInt(3, activity.getInterventionTime());
-            prepareStatement.setBoolean(4, activity.isInterruptible());
-            prepareStatement.setInt(5, activity.getWeek());
-            prepareStatement.setString(6, activity.getWorkspaceNotes());
-            prepareStatement.setInt(7, activity.getProcedure().getId());
+            prepareStatement.setInt(1, activity.getSite().getId());
+            prepareStatement.setInt(2, activity.getTipology().getId());
+            prepareStatement.setString(3, activity.getDescription());
+            prepareStatement.setInt(4, activity.getInterventionTime());
+            prepareStatement.setBoolean(5, activity.isInterruptible());
+            prepareStatement.setInt(6, activity.getWeek());
+            prepareStatement.setString(7, activity.getWorkspaceNotes());
+            prepareStatement.setInt(8, activity.getProcedure().getId());
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
                 /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
@@ -91,15 +91,15 @@ public class ActivityDALDatabase implements ActivityDAL {
                     + "interruptible = ?, week = ?, workspacenotes = ?, procedure = ?"
                     + "WHERE id = ?  RETURNING *; ");
 
-            prepareStatement.setInt(0, activity.getSite().getId());
-            prepareStatement.setInt(1, activity.getTipology().getId());
-            prepareStatement.setString(2, activity.getDescription());
-            prepareStatement.setInt(3, activity.getInterventionTime());
-            prepareStatement.setBoolean(4, activity.isInterruptible());
-            prepareStatement.setInt(5, activity.getWeek());
-            prepareStatement.setString(6, activity.getWorkspaceNotes());
-            prepareStatement.setInt(7, activity.getProcedure().getId());
-            prepareStatement.setInt(8, activity.getId());
+            prepareStatement.setInt(1, activity.getSite().getId());
+            prepareStatement.setInt(2, activity.getTipology().getId());
+            prepareStatement.setString(3, activity.getDescription());
+            prepareStatement.setInt(4, activity.getInterventionTime());
+            prepareStatement.setBoolean(5, activity.isInterruptible());
+            prepareStatement.setInt(6, activity.getWeek());
+            prepareStatement.setString(7, activity.getWorkspaceNotes());
+            prepareStatement.setInt(8, activity.getProcedure().getId());
+            prepareStatement.setInt(9, activity.getId());
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
                 /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
@@ -127,7 +127,7 @@ public class ActivityDALDatabase implements ActivityDAL {
             conn = getConnectionObj();
             PreparedStatement prepareStatement = conn.prepareStatement("DELETE FROM activity WHERE id=?;"
                     + "  RETURNING *; ");
-            prepareStatement.setInt(0, id);
+            prepareStatement.setInt(1, id);
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
                 /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
@@ -182,7 +182,7 @@ public class ActivityDALDatabase implements ActivityDAL {
             conn = getConnectionObj();
             PreparedStatement prepareStatement = conn.prepareStatement("Select from activity WHERE id = ? ;"
                     + "  RETURNING *; ");
-            prepareStatement.setInt(0, id);
+            prepareStatement.setInt(1, id);
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
                 /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
@@ -209,7 +209,7 @@ public class ActivityDALDatabase implements ActivityDAL {
         try {
             conn = getConnectionObj();
             PreparedStatement prepareStatement = conn.prepareStatement("Select * from activity where week = ?; ");
-            prepareStatement.setInt(0, week);
+            prepareStatement.setInt(1, week);
             ResultSet rs = prepareStatement.executeQuery();
             List<Activity> activityList = new ArrayList<>();
             while (rs.next()) {

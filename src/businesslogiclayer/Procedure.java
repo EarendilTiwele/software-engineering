@@ -97,13 +97,14 @@ public class Procedure {
 
     /**
      * Returns the hash code for this procedure. The hash code is computed based
-     * on name, SMP path, competencies.
+     * on id, name, SMP path, competencies.
      *
      * @return a hash code value for this object
      */
     @Override
     public int hashCode() {
         int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.id);
         hash = 67 * hash + Objects.hashCode(this.name);
         hash = 67 * hash + Objects.hashCode(this.smp);
         hash = 67 * hash + Objects.hashCode(this.competencies);
@@ -114,7 +115,7 @@ public class Procedure {
      * Compares this procedure to the specified object. The result is
      * <code>true</code> if and only if the argument is not <code>null</code>
      * and is a <code>Procedure</code> object that represents a procedure with
-     * the same name, SMP path and competencies as this object.
+     * the same id, name, SMP path and competencies as this object.
      *
      * @param obj the object to compare this <code>Procedure</code> against
      * @return <code>true</code> if the given object represents a
@@ -133,6 +134,10 @@ public class Procedure {
             return false;
         }
         final Procedure other = (Procedure) obj;
+        
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
