@@ -31,6 +31,7 @@ public class ProcedureDALDatabaseTest {
         procedureDALDatabase = new ProcedureDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
+        procedureDALDatabase.deleteAll();
     }
 
     @After
@@ -42,6 +43,7 @@ public class ProcedureDALDatabaseTest {
     /**
      * Test the connection with the database checking that the connection is
      * valid
+     *
      * @throws java.sql.SQLException
      */
     @Test
@@ -132,6 +134,21 @@ public class ProcedureDALDatabaseTest {
         assertNotNull(procedure);
         Procedure procedure2 = procedureDALDatabase.get(procedure.getId());
         assertEquals(procedure, procedure2);
+    }
+
+    /**
+     * Insert 2 procedures
+     * Check the table size before the deleteAll
+     * Check the table size after the deleAll that must be 0
+     */
+    @Test
+    public void testDeleteAll() {
+        List<Procedure> procedureList = new ArrayList<>();
+        procedureDALDatabase.insert(new Procedure("procedure1", "/procedure1.pdf"));
+        procedureDALDatabase.insert(new Procedure("procedure2", "/procedure2.pdf"));
+        int tableSize = procedureDALDatabase.getAll().size();
+        assertEquals(tableSize, procedureDALDatabase.deleteAll().size());
+        assertEquals(0, procedureDALDatabase.getAll().size());
     }
 
     // TODO add test methods here.

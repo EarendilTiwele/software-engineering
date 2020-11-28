@@ -19,4 +19,5 @@ public interface ProcedureDAL {
     public Procedure delete(int id);
     public List<Procedure> getAll();
     public Procedure get(int id);
+    public List<Procedure> deleteAll();
 }

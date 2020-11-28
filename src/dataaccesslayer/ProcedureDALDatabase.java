@@ -151,5 +151,31 @@ public class ProcedureDALDatabase implements ProcedureDAL {
         }
         return null;
     }
+    
+    @Override
+    public List<Procedure> deleteAll()
+    {
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
+        List<Procedure> procedureList = new ArrayList<>();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = 
+                    conn.prepareStatement("delete from procedure RETURNING *;");
+            ResultSet rs = prepareStatement.executeQuery();
+            Procedure dbProcedure;
+            while (rs.next()) {
+                dbProcedure = new Procedure(rs.getInt("id"), rs.getString("name"),
+                                  rs.getString("smp"));
+                procedureList.add(dbProcedure);
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return procedureList;
+        } catch (SQLException ex) {
+            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
 }
