@@ -59,8 +59,9 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         initComponents();
         setComponentsNames();
         this.setTitle("Scheduled activities");
-        setUp();
-
+        //setUp();
+        initializeWeekComboBox(FIRST_WEEK);
+        
     }
 
     /**
@@ -72,22 +73,23 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Load all scheduled activities and update the table showing the activities
-     * for the first week. Loading is performed in a new thread without blocking
-     * the Event Dispatch Thread.
-     *
+     * Load the whole scheduled activities of the week and update the table 
+     * showing the activities. Loading is performed in a new thread without 
+     * blocking the Event Dispatch Thread.
+     * 
+     * @param week the week of interest
      */
-    private void setUp() {
+    private void setUp(int week) {
         Runnable loader = () -> {
             // Load all the scheduled activities
-            activities = loadAllActivities();
+            activities = loadAllActivitiesOfWeek(week);
             // sort by ID in ascending order
-            activities.sort((activity1, activity2)
+            /*activities.sort((activity1, activity2)
                     -> activity1.getId() - activity2.getId());
-
+            */
             SwingUtilities.invokeLater(() -> {
-                initializeWeekComboBox(FIRST_WEEK);
-                updateTable(FIRST_WEEK);
+                //initializeWeekComboBox(week);
+                updateTable(week);
             });
         };
         new Thread(loader).start();
@@ -101,14 +103,24 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @param week the initial week of the combo box
      */
     private void initializeWeekComboBox(int week) {
-        weekComboBox.setSelectedIndex(week - 1);
+        
         // Specify the listener to update the content of the table when a
         // different week is selected from the weekComboBox
+        /*
         weekComboBox.addActionListener(
                 event -> updateTable(
                         Integer.valueOf(
                                 (String) weekComboBox.getSelectedItem()
                         )));
+        */
+        
+        weekComboBox.addActionListener(
+                                        (e) -> setUp(
+                                               Integer.valueOf(
+                                              (String)weekComboBox.getSelectedItem()
+                                               )));
+        weekComboBox.setSelectedIndex(week - 1);
+        
     }
 
     /**
@@ -151,9 +163,10 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      */
     private void updateTable(int week) {
         // List of the activities scheduled for the specifed week
-        List<Activity> filteredActivities = activities.stream()
+        /*List<Activity> filteredActivities = activities.stream()
                 .filter(activity -> activity.getWeek() == week)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        List<Activity> filteredActivities=activities;
 
         // Convert the filterderActivities to a matrix suitable for CustomTableModel
         Object[][] data = convertToObjectMatrix(filteredActivities, BUTTON_TEXT);
@@ -179,23 +192,32 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 .setCellEditor(new ButtonEditor(popupActionListener));
     }
 
-    //Load all the scheduled activities.
-    private List<Activity> loadAllActivities() {
+    //Load the whole list of activities scheduled for specificied week
+    private List<Activity> loadAllActivitiesOfWeek(int week) {
         List<Activity> activitiesList = new ArrayList<>();
+        PlannedActivity plannedActivity= null;
+        
+        switch(week){
+            case 1: plannedActivity = new PlannedActivity(1,
+                    new Site("factory1", "area1"),
+                    new Typology("typology1"), "description1",1001, false, 1,
+                    new Procedure("procedure1", "procedure1.pdf"));
+                    break;
+            case 2: plannedActivity = new PlannedActivity(2,
+                new Site("factory2", "area2"), new Typology("typology2"),
+                    "description2", 1002, false, 2, 
+                    new Procedure("procedure2", "procedure2.pdf")); 
+                    break;
+            case 3:plannedActivity = new PlannedActivity(3,
+                new Site("factory3", "area3"), new Typology("typology3"), 
+                    "description3", 1003, true, 3,
+                    new Procedure("procedure3", "procedure3.pdf"), "workspaceNote3");
+            break;
+        }
+        
+        if (plannedActivity!=null)
+            activitiesList.add(plannedActivity);
 
-        PlannedActivity plannedActivity1 = new PlannedActivity(1,
-                new Site("factory1", "area1"), new Typology("typology1"), "description1",
-                1001, false, 1, new Procedure("procedure1", "procedure1.pdf"));
-        PlannedActivity plannedActivity2 = new PlannedActivity(2,
-                new Site("factory2", "area2"), new Typology("typology2"), "description2",
-                1002, false, 1, new Procedure("procedure2", "procedure2.pdf"));
-        PlannedActivity plannedActivity3 = new PlannedActivity(3,
-                new Site("factory3", "area3"), new Typology("typology3"), "description3",
-                1003, true, 1, new Procedure("procedure3", "procedure3.pdf"), "workspaceNote3");
-
-        activitiesList.add(plannedActivity1);
-        activitiesList.add(plannedActivity2);
-        activitiesList.add(plannedActivity3);
 
         return activitiesList;
     }

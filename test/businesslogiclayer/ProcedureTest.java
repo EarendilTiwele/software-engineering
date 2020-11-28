@@ -141,7 +141,7 @@ public class ProcedureTest {
      */
     @Test
     public void testHashCodeEquality() {
-        Procedure procedure1 = new Procedure("procedure1", "smp1.pdf");
+        Procedure procedure1 = new Procedure(1,"procedure1", "smp1.pdf");
         Procedure procedure2 = new Procedure(1, "procedure1", "smp1.pdf");
         assertEquals(procedure1.hashCode(), procedure2.hashCode());
         addEqualCompetencies(procedure1, procedure2);
@@ -153,7 +153,7 @@ public class ProcedureTest {
      */
     @Test
     public void testEqualsEquality() {
-        Procedure procedure1 = new Procedure("procedure1", "smp1.pdf");
+        Procedure procedure1 = new Procedure(1,"procedure1", "smp1.pdf");
         Procedure procedure2 = new Procedure(1, "procedure1", "smp1.pdf");
         assertEquals(procedure1, procedure2);
         addEqualCompetencies(procedure1, procedure2);

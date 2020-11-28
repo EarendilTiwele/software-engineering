@@ -52,7 +52,7 @@ public class SiteTest {
      */
     @Test
     public void testHashCodeEquality(){
-        Site site1 = new Site("factory", "area");
+        Site site1 = new Site(1,"factory", "area");
         Site site2 = new Site(1, "factory", "area");
         assertEquals(site1.hashCode(), site2.hashCode());
     }
@@ -62,7 +62,7 @@ public class SiteTest {
      */
     @Test
     public void testEqualsEquality(){
-        Site site1 = new Site("factory", "area");
+        Site site1 = new Site(1,"factory", "area");
         Site site2 = new Site(1, "factory", "area");
         assertEquals(site1, site2);
     }
