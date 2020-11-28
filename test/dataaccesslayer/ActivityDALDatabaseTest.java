@@ -24,16 +24,25 @@ import static org.junit.Assert.*;
  */
 public class ActivityDALDatabaseTest {
 
-    private ActivityDALDatabase activityDALDatabase;
+    private ActivityDAL activityDALDatabase;
     private Connection conn;
 
     /*remember to use the other constructor for PlannedActivity*/
     public List<Activity> sampleListActivity() {
         List<Activity> activityList = new ArrayList<>();
 
-        Site site = new Site(0, "Ferrari", "Maranello");
+        Site site = new Site(189, "Ferrari", "Maranello");
+        SiteDAL siteDAL = new SiteDALDatabase();
+        site = siteDAL.insert(site);
+
         Typology typology = new Typology(3, "Hydraulic");
-        Procedure procedure = new Procedure(0, "hydraulicProcedure", "SMP1");
+        TypologyDAL typologyDAL = new TypologyDALDatabase();
+        typology = typologyDAL.insert(typology);
+
+        Procedure procedure = new Procedure(1, "hydraulicProcedure", "SMP1");
+        ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+        procedure = procedureDAL.insert(procedure);
+
         String description = "hydraulic maintenance activity";
         int intervationTime = 12;
         boolean interruptible = false;
@@ -42,9 +51,19 @@ public class ActivityDALDatabaseTest {
         activityList.add(new PlannedActivity(0, site, typology, description, intervationTime,
                 interruptible, week, procedure, workspaceNotes));
         /*------------------------------------------------------------------------------------*/
+
         site = new Site(0, "Lamborghini", "Sant'Agata bolognese");
+        siteDAL = new SiteDALDatabase();
+        site = siteDAL.insert(site);
+
         typology = new Typology(0, "Mechanical");
+        typologyDAL = new TypologyDALDatabase();
+        typology = typologyDAL.insert(typology);
+
         procedure = new Procedure(0, "mechanicalProcedure", "SMP2");
+        procedureDAL = new ProcedureDALDatabase();
+        procedure = procedureDAL.insert(procedure);
+
         description = "mechanical maintenance activity";
         intervationTime = 15;
         interruptible = true;
@@ -54,8 +73,17 @@ public class ActivityDALDatabaseTest {
                 interruptible, week, procedure, workspaceNotes));
         /*------------------------------------------------------------------------------------*/
         site = new Site(0, "Fiat", "Torino");
+        siteDAL = new SiteDALDatabase();
+        site = siteDAL.insert(site);
+
         typology = new Typology(2, "Eletrical");
+        typologyDAL = new TypologyDALDatabase();
+        typology = typologyDAL.insert(typology);
+
         procedure = new Procedure(3, "eletricalProcedure", "SMP3");
+        procedureDAL = new ProcedureDALDatabase();
+        procedure = procedureDAL.insert(procedure);
+        
         description = "eletrical maintenance activity";
         intervationTime = 19;
         interruptible = true;
@@ -70,8 +98,9 @@ public class ActivityDALDatabaseTest {
     @Before
     public void setUp() throws SQLException {
         activityDALDatabase = new ActivityDALDatabase();
-        conn = activityDALDatabase.getConnectionObj();
+        conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
+        activityDALDatabase.deleteAll();
     }
 
     @After
@@ -83,6 +112,7 @@ public class ActivityDALDatabaseTest {
     /**
      * Test the connection with the database checking that the connection is
      * valid
+     *
      * @throws java.sql.SQLException
      */
     @Test
@@ -113,22 +143,22 @@ public class ActivityDALDatabaseTest {
     @Test
     public void testuUpdate() {
 
-        Activity activity = sampleListActivity().get(0);
+        List<Activity> activityList = sampleListActivity();
+        Activity activity = activityList.get(0);
         activity = activityDALDatabase.insert(activity);
         assertNotNull(activity);
-
+        Site site2 = activityList.get(1).getSite();
         /* I didn't want to use the sampleListActivity because I need that
         the new activity must have the same id of the previous*/
-        Site site = new Site(0, "Lamborghini", "Sant'Agata bolognese");
-        Typology typology = new Typology(0, "Mechanical");
-        Procedure procedure = new Procedure(0, "mechanicalProcedure", "SMP2");
+        Typology typology2 = activityList.get(1).getTipology();
+        Procedure procedure2 = activityList.get(1).getProcedure();
         String description = "mechanical maintenance activity";
         int intervationTime = 15;
         boolean interruptible = true;
         int week = 3;
         String workspaceNotes = "Note to add lamborghini";
-        activity = new PlannedActivity(0, site, typology, description, intervationTime,
-                interruptible, week, procedure, workspaceNotes);
+        activity = new PlannedActivity(activity.getId(), site2, typology2, description, intervationTime,
+                interruptible, week, procedure2, workspaceNotes);
 
         /*--------------------------------------------------------------------------*/
         activity = activityDALDatabase.update(activity);
@@ -190,7 +220,8 @@ public class ActivityDALDatabaseTest {
      * Create a sample list of activities Insert each activity in the database
      * and retrieve all list Insert in the resulting list only the activity for
      * the specified week Select from the db the activities for the specified
-     * week Create a new list of activities Check that the both lists are equals
+     * week Create a new list of activities 
+     * Check that the both lists are equals
      */
     @Test
     public void testGetAllOfWeek() {
@@ -209,6 +240,14 @@ public class ActivityDALDatabaseTest {
         assertTrue(resultActivityList.equals(activityList2));
     }
 
+    /**
+     * Create a sample list of activities Insert each activity in the database
+     * and retrieve all list Insert in the resulting list only the activity for
+     * the specified week Select from the db the activities for the specified
+     * week Create a new list of planned activities 
+     * Check that the both lists are equals
+     */
+    @Test
     public void testGetAllPlannedOfWeek() {
         List<Activity> activityList = sampleListActivity();
         List<Activity> resultActivityList = new ArrayList<>();
@@ -223,6 +262,22 @@ public class ActivityDALDatabaseTest {
         }
         List<Activity> activityList2 = activityDALDatabase.getAllPlannedOfWeek(week);
         assertTrue(resultActivityList.equals(activityList2));
+    }
+    
+    /**
+     * Insert 2 activities
+     * Check the table size before the deleteAll
+     * Check the table size after the deleAll that must be 0
+     */
+    @Test
+    public void testDeleteAll()
+    {
+        List<Activity> activityList = sampleListActivity();
+        activityDALDatabase.insert(activityList.get(0));
+        activityDALDatabase.insert(activityList.get(1));
+        int tableSize = activityDALDatabase.getAll().size();
+        assertEquals(tableSize, activityDALDatabase.deleteAll().size());
+        assertEquals(0, activityDALDatabase.getAll().size());
     }
 
 }

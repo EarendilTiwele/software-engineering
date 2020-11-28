@@ -7,6 +7,9 @@ package dataaccesslayer;
 
 import businesslogiclayer.Activity;
 import businesslogiclayer.PlannedActivity;
+import businesslogiclayer.Procedure;
+import businesslogiclayer.Site;
+import businesslogiclayer.Typology;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,28 +29,17 @@ public class ActivityDALDatabase implements ActivityDAL {
 
     private Connection conn;
 
-    public Connection getConnectionObj() {
-
-        String url = "jdbc:postgresql://ec2-54-75-246-118.eu-west-1.compute.amazonaws.com/d4nuqe4269qu7k?sslmode=require";
-        Properties props = new Properties();
-        props.setProperty("user", "kbhyahfpxyqabj");
-        props.setProperty("password", "7fe433219e2003f8119018667ac82205c6164d4d56b0ff5189cf25b1385a49eb");
-        props.setProperty("ssl", "true");
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url, props);
-        } catch (SQLException ex) {
-            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return conn;
-    }
-
+    /**
+     * Insert an activity in the database
+     * @param activity
+     * @return the version of the activity presents in the database
+     * after the insert operation.
+     */
     @Override
     public Activity insert(Activity activity) {
-
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
         try {
-
-            conn = getConnectionObj();
+            conn = DatabaseConnection.getConnection();
             PreparedStatement prepareStatement = conn.prepareStatement("insert into Activity "
                     + "(site, type, description, interventiontime, interruptible, week,"
                     + "workspacenotes, procedure) "
@@ -62,32 +54,55 @@ public class ActivityDALDatabase implements ActivityDAL {
             prepareStatement.setInt(8, activity.getProcedure().getId());
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
-                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
-                inside the Activity obj*/
-                /*The same operations must be done with Typology and Procedure obj*/
+                /*-------------------------------------------------------*/
                 SiteDAL siteDAL = new SiteDALDatabase();
                 int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
                 /*----------------------------------------------------------------*/
-                activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
-                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
-                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week, procedure);
             }
-            conn.close();
+            if (connectionWasClosed) {
+                conn.close();
+            }
             return activity;
 
         } catch (SQLException ex) {
             Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.print(ex.toString());
         }
         return null;
     }
 
+     /**
+     * Update an activity in the database
+     * @param activity
+     * @return the version of the activity presents in the database
+     * after the update operation.
+     */
     @Override
     public Activity update(Activity activity) {
-        conn = getConnectionObj();
-        PreparedStatement prepareStatement;
+
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
         try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement;
             prepareStatement = conn.prepareStatement("update Activity "
-                    + "SET site = ?, type = ?, description = ?, interventiontime = ?"
+                    + "SET site = ?, type = ?, description = ?, interventiontime = ?,"
                     + "interruptible = ?, week = ?, workspacenotes = ?, procedure = ?"
                     + "WHERE id = ?  RETURNING *; ");
 
@@ -102,17 +117,31 @@ public class ActivityDALDatabase implements ActivityDAL {
             prepareStatement.setInt(9, activity.getId());
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
-                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
-                inside the Activity obj*/
-                /*The same operations must be done with Typology and Procedure obj*/
+                /*-------------------------------------------------------*/
                 SiteDAL siteDAL = new SiteDALDatabase();
                 int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
                 /*----------------------------------------------------------------*/
-                activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
-                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
-                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week, procedure);
             }
-            conn.close();
+            if (connectionWasClosed) {
+                conn.close();
+            }
             return activity;
         } catch (SQLException ex) {
             Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -121,27 +150,49 @@ public class ActivityDALDatabase implements ActivityDAL {
         return null;
     }
 
+     /**
+     * Delete an activity in the database
+     * @param id
+     * @return the version of the activity presents in the database
+     * before the delete operation.
+     */
     @Override
     public Activity delete(int id) {
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
         try {
-            conn = getConnectionObj();
-            PreparedStatement prepareStatement = conn.prepareStatement("DELETE FROM activity WHERE id=?;"
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = conn.prepareStatement("DELETE FROM activity WHERE id=? "
                     + "  RETURNING *; ");
             prepareStatement.setInt(1, id);
             ResultSet rs = prepareStatement.executeQuery();
+            Activity activity = null;
             while (rs.next()) {
-                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
-                inside the Activity obj*/
-                /*The same operations must be done with Typology and Procedure obj*/
+                /*-------------------------------------------------------*/
                 SiteDAL siteDAL = new SiteDALDatabase();
                 int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
                 /*----------------------------------------------------------------*/
-                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
-                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
-                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+                id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week, procedure);
             }
-            conn.close();
-            /*return activity*/
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return activity;
 
         } catch (SQLException ex) {
             Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,25 +200,46 @@ public class ActivityDALDatabase implements ActivityDAL {
         return null;
     }
 
+    /**
+     * Retrieve all activities present in the database
+     * @return the list of activities
+     */
     @Override
     public List<Activity> getAll() {
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
         try {
-            conn = getConnectionObj();
+            conn = DatabaseConnection.getConnection();
             PreparedStatement prepareStatement = conn.prepareStatement("Select * from activity; ");
             ResultSet rs = prepareStatement.executeQuery();
             List<Activity> activityList = new ArrayList<>();
+            Activity activity = null;
             while (rs.next()) {
-                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
-                inside the Activity obj*/
-                /*The same operations must be done with Typology and Procedure obj*/
+                /*-------------------------------------------------------*/
                 SiteDAL siteDAL = new SiteDALDatabase();
                 int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
                 /*----------------------------------------------------------------*/
-                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
-                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
-                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week, procedure);
+                activityList.add(activity);
             }
-            conn.close();
+            if (connectionWasClosed) {
+                conn.close();
+            }
             return activityList;
 
         } catch (SQLException ex) {
@@ -176,27 +248,47 @@ public class ActivityDALDatabase implements ActivityDAL {
         return null;
     }
 
+    /**
+     * Retrieve the activity with a specified id
+     * @param id
+     * @return the activity with the specified id
+     */
     @Override
     public Activity get(int id) {
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
         try {
-            conn = getConnectionObj();
-            PreparedStatement prepareStatement = conn.prepareStatement("Select from activity WHERE id = ? ;"
-                    + "  RETURNING *; ");
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = conn.prepareStatement("Select * from activity WHERE id = ? ;");
             prepareStatement.setInt(1, id);
             ResultSet rs = prepareStatement.executeQuery();
+            Activity activity = null;
             while (rs.next()) {
-                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
-                inside the Activity obj*/
-                /*The same operations must be done with Typology and Procedure obj*/
+                /*-------------------------------------------------------*/
                 SiteDAL siteDAL = new SiteDALDatabase();
                 int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
                 /*----------------------------------------------------------------*/
-                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
-                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
-                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+                id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week, procedure);
             }
-            conn.close();
-            /*return activity*/
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return activity;
 
         } catch (SQLException ex) {
             Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -204,26 +296,48 @@ public class ActivityDALDatabase implements ActivityDAL {
         return null;
     }
 
+    /**
+     * Retrieve the activities with a specified week
+     * @param week
+     * @return the activities with the specified week
+     */
     @Override
     public List<Activity> getAllOfWeek(int week) {
+        boolean connectionWasClosed = DatabaseConnection.isClosed();
         try {
-            conn = getConnectionObj();
+            conn = DatabaseConnection.getConnection();
             PreparedStatement prepareStatement = conn.prepareStatement("Select * from activity where week = ?; ");
             prepareStatement.setInt(1, week);
             ResultSet rs = prepareStatement.executeQuery();
             List<Activity> activityList = new ArrayList<>();
+            Activity activity = null;
             while (rs.next()) {
-                /* It's necessary to have the others DAL implementation to rebuild the object Site, Typology and Procedure
-                inside the Activity obj*/
-                /*The same operations must be done with Typology and Procedure obj*/
+                /*-------------------------------------------------------*/
                 SiteDAL siteDAL = new SiteDALDatabase();
                 int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
                 /*----------------------------------------------------------------*/
-                /*Activity activity = new PlannedActivity(rs.getInt("id"), siteDAL.get(siteId),
-                        activity.getTipology(), rs.getString("description"), rs.getInt("intervationtime"),
-                        rs.getBoolean("interruptible"), rs.getInt("week"), activity.getProcedure());*/
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week1 = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week1, procedure);
+                activityList.add(activity);
             }
-            conn.close();
+            if (connectionWasClosed) {
+                conn.close();
+            }
             return activityList;
 
         } catch (SQLException ex) {
@@ -232,8 +346,61 @@ public class ActivityDALDatabase implements ActivityDAL {
         return null;
     }
 
+    /**
+     * Retrieve the planned activities with a specified week
+     * @param week
+     * @return 
+     */
     @Override
     public List<Activity> getAllPlannedOfWeek(int week) {
         return getAllOfWeek(week);
+    }
+    
+    /**
+     * Delete all activities from the database
+     * @return the list of activities before the delete operation
+     */
+    @Override
+    public List<Activity> deleteAll(){
+     boolean connectionWasClosed = DatabaseConnection.isClosed();
+        try {
+            conn = DatabaseConnection.getConnection();
+            PreparedStatement prepareStatement = conn.prepareStatement("delete from activity RETURNING *; ");
+            ResultSet rs = prepareStatement.executeQuery();
+            List<Activity> activityList = new ArrayList<>();
+            Activity activity = null;
+            while (rs.next()) {
+                /*-------------------------------------------------------*/
+                SiteDAL siteDAL = new SiteDALDatabase();
+                int siteId = rs.getInt("site");
+                Site site = siteDAL.get(siteId);
+                /*-------------------------------------------------------*/
+                ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+                int procedureId = rs.getInt("procedure");
+                Procedure procedure = procedureDAL.get(procedureId);
+                /*-------------------------------------------------------*/
+                TypologyDAL typologyDAL = new TypologyDALDatabase();
+                int typologyId = rs.getInt("type");
+                Typology typology = typologyDAL.get(typologyId);
+                /*----------------------------------------------------------------*/
+                int id = rs.getInt("id");
+                String description = rs.getString("description");
+                int intervetiontime = rs.getInt("interventiontime");
+                boolean interruptible = rs.getBoolean("interruptible");
+                int week1 = rs.getInt("week");
+                activity = new PlannedActivity(id, site,
+                        typology, description, intervetiontime, interruptible,
+                        week1, procedure);
+                activityList.add(activity);
+            }
+            if (connectionWasClosed) {
+                conn.close();
+            }
+            return activityList;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ActivityDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }
