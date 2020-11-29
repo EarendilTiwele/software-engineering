@@ -107,6 +107,7 @@ public class TypologyDALDatabaseTest {
      */
     @Test
     public void testDeleteAll () {
+        new ActivityDALDatabase().deleteAll();
         typologyDAL.insert(new Typology("test"));
         typologyDAL.insert(new Typology("test2"));
         int tableSize = typologyDAL.getAll().size();

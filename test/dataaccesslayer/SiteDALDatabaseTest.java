@@ -107,6 +107,7 @@ public class SiteDALDatabaseTest {
      */
     @Test
     public void testDeleteAll () {
+        new ActivityDALDatabase().deleteAll();
         siteDAL.insert(new Site("test", "prova"));
         siteDAL.insert(new Site("test2", "prova2"));
         int tableSize = siteDAL.getAll().size();

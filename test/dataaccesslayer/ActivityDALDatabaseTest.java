@@ -100,7 +100,13 @@ public class ActivityDALDatabaseTest {
         activityDALDatabase = new ActivityDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
+        ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+        TypologyDAL typologyDAL = new TypologyDALDatabase();
+        SiteDAL siteDAL = new SiteDALDatabase();
         activityDALDatabase.deleteAll();
+        procedureDAL.deleteAll();
+        typologyDAL.deleteAll();
+        siteDAL.deleteAll();
     }
 
     @After
