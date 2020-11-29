@@ -83,7 +83,7 @@ public class ActivityDALDatabaseTest {
         procedure = new Procedure(3, "eletricalProcedure", "SMP3");
         procedureDAL = new ProcedureDALDatabase();
         procedure = procedureDAL.insert(procedure);
-        
+
         description = "eletrical maintenance activity";
         intervationTime = 19;
         interruptible = true;
@@ -98,9 +98,15 @@ public class ActivityDALDatabaseTest {
     @Before
     public void setUp() throws SQLException {
         activityDALDatabase = new ActivityDALDatabase();
+        TypologyDAL typology = new TypologyDALDatabase();
+        ProcedureDAL procedure = new ProcedureDALDatabase();
+        SiteDAL site = new SiteDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
         activityDALDatabase.deleteAll();
+        typology.deleteAll();
+        procedure.deleteAll();
+        site.deleteAll();
     }
 
     @After
@@ -220,8 +226,7 @@ public class ActivityDALDatabaseTest {
      * Create a sample list of activities Insert each activity in the database
      * and retrieve all list Insert in the resulting list only the activity for
      * the specified week Select from the db the activities for the specified
-     * week Create a new list of activities 
-     * Check that the both lists are equals
+     * week Create a new list of activities Check that the both lists are equals
      */
     @Test
     public void testGetAllOfWeek() {
@@ -244,8 +249,8 @@ public class ActivityDALDatabaseTest {
      * Create a sample list of activities Insert each activity in the database
      * and retrieve all list Insert in the resulting list only the activity for
      * the specified week Select from the db the activities for the specified
-     * week Create a new list of planned activities 
-     * Check that the both lists are equals
+     * week Create a new list of planned activities Check that the both lists
+     * are equals
      */
     @Test
     public void testGetAllPlannedOfWeek() {
@@ -263,15 +268,13 @@ public class ActivityDALDatabaseTest {
         List<Activity> activityList2 = activityDALDatabase.getAllPlannedOfWeek(week);
         assertTrue(resultActivityList.equals(activityList2));
     }
-    
+
     /**
-     * Insert 2 activities
-     * Check the table size before the deleteAll
-     * Check the table size after the deleAll that must be 0
+     * Insert 2 activities Check the table size before the deleteAll Check the
+     * table size after the deleAll that must be 0
      */
     @Test
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() {
         List<Activity> activityList = sampleListActivity();
         activityDALDatabase.insert(activityList.get(0));
         activityDALDatabase.insert(activityList.get(1));
