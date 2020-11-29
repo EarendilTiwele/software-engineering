@@ -31,6 +31,8 @@ public class ProcedureDALDatabaseTest {
         procedureDALDatabase = new ProcedureDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
+        ActivityDAL activityDAL = new ActivityDALDatabase();
+        activityDAL.deleteAll();
         procedureDALDatabase.deleteAll();
     }
 
