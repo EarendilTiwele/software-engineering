@@ -205,6 +205,15 @@ public abstract class Activity {
         materials.add(material);
         
     }
+    
+    /**
+     * Set the workspace notes for this activity.
+     * 
+     * @param workspaceNotes the workspace notes
+     */
+    public void setWorkspaceNotes(String workspaceNotes) {
+        this.workspaceNotes = workspaceNotes;
+    }
 
     /**
      * Returns the hash code for this activity

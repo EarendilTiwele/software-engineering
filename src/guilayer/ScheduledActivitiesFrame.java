@@ -56,6 +56,19 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         setComponentsNames();
         this.setTitle("Scheduled activities");
         initializeWeekComboBox(FIRST_WEEK);
+        scheduledActivitiesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+    @Override
+    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        int row = scheduledActivitiesTable.rowAtPoint(evt.getPoint());
+        int col = scheduledActivitiesTable.columnAtPoint(evt.getPoint());
+        int idCol = 0;
+        if (row >= 0 && col == idCol) {
+            Activity activity = activities.get(row);
+            new ActivityEditorFrame(activity).setVisible(true);
+            
+        }
+    }
+});
     }
 
     /**
@@ -205,6 +218,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         scheduledActivitiesTable = new javax.swing.JTable();
         weekComboBox = new javax.swing.JComboBox<>();
+        createButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -231,6 +245,13 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         }
         weekComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(weeks));
 
+        createButton.setText("+");
+        createButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -242,7 +263,8 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                         .addComponent(weekLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 249, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 208, Short.MAX_VALUE)
+                        .addComponent(createButton))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
@@ -254,14 +276,19 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(weekLabel)
-                    .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(createButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
                 .addGap(180, 180, 180))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
+        new ActivityEditorFrame(null).setVisible(true);
+    }//GEN-LAST:event_createButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -299,6 +326,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton createButton;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable scheduledActivitiesTable;
     private javax.swing.JComboBox<String> weekComboBox;
