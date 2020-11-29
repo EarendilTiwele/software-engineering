@@ -137,7 +137,6 @@ public class TypologyDALDatabaseTest {
      */
     @Test
     public void testGetAll () {
-        typologyDAL.deleteAll();
         List<Typology> localTypologies = new ArrayList<>();
         Typology typology1 = new Typology("typo1");
         typology1 = typologyDAL.insert(typology1);
@@ -149,6 +148,6 @@ public class TypologyDALDatabaseTest {
         typology3 = typologyDAL.insert(typology3);
         localTypologies.add(typology3);
         List<Typology> dbTypologies = typologyDAL.getAll();
-        assertEquals(localTypologies,dbTypologies);
+        assertTrue(dbTypologies.containsAll(localTypologies));
     }
 }

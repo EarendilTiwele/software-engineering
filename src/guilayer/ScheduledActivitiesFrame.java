@@ -6,15 +6,11 @@
 package guilayer;
 
 import businesslogiclayer.Activity;
-import businesslogiclayer.PlannedActivity;
-import businesslogiclayer.Procedure;
-import businesslogiclayer.Site;
-import businesslogiclayer.Typology;
+import businesslogiclayer.ActivityBLL;
+import java.awt.Cursor;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
@@ -59,9 +55,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         initComponents();
         setComponentsNames();
         this.setTitle("Scheduled activities");
-        //setUp();
         initializeWeekComboBox(FIRST_WEEK);
-        
     }
 
     /**
@@ -79,17 +73,17 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * 
      * @param week the week of interest
      */
-    private void setUp(int week) {
+    private void setUpTable(int week) {
+        // Cursor indicates to user the wait needed to load activities from 
+        // the database and to update the table.
+        this.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
         Runnable loader = () -> {
-            // Load all the scheduled activities
+            // Load all the scheduled activities for the week
             activities = loadAllActivitiesOfWeek(week);
-            // sort by ID in ascending order
-            /*activities.sort((activity1, activity2)
-                    -> activity1.getId() - activity2.getId());
-            */
+            
             SwingUtilities.invokeLater(() -> {
-                //initializeWeekComboBox(week);
-                updateTable(week);
+                updateTable();
+                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             });
         };
         new Thread(loader).start();
@@ -115,7 +109,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         */
         
         weekComboBox.addActionListener(
-                                        (e) -> setUp(
+                                        (e) -> setUpTable(
                                                Integer.valueOf(
                                               (String)weekComboBox.getSelectedItem()
                                                )));
@@ -161,15 +155,9 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      *
      * @param week the week selected by the user
      */
-    private void updateTable(int week) {
-        // List of the activities scheduled for the specifed week
-        /*List<Activity> filteredActivities = activities.stream()
-                .filter(activity -> activity.getWeek() == week)
-                .collect(Collectors.toList());*/
-        List<Activity> filteredActivities=activities;
-
+    private void updateTable() {
         // Convert the filterderActivities to a matrix suitable for CustomTableModel
-        Object[][] data = convertToObjectMatrix(filteredActivities, BUTTON_TEXT);
+        Object[][] data = convertToObjectMatrix(activities, BUTTON_TEXT);
 
         TableModel model = new CustomTableModel(tableColumnNames, data);
         scheduledActivitiesTable.setModel(model);
@@ -192,35 +180,17 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 .setCellEditor(new ButtonEditor(popupActionListener));
     }
 
-    //Load the whole list of activities scheduled for specificied week
-    private List<Activity> loadAllActivitiesOfWeek(int week) {
-        List<Activity> activitiesList = new ArrayList<>();
-        PlannedActivity plannedActivity= null;
+    /**
+     * Load the whole list of activities scheduled for specificied week.
+     * 
+     * @param week the week of the scheduled activities needed to load
+     * @return 
+     */
+    private List<Activity> loadAllActivitiesOfWeek(int week){
+        ActivityBLL activityBLL = new ActivityBLL();
+        return activityBLL.getAllOfWeek(week);
         
-        switch(week){
-            case 1: plannedActivity = new PlannedActivity(1,
-                    new Site("factory1", "area1"),
-                    new Typology("typology1"), "description1",1001, false, 1,
-                    new Procedure("procedure1", "procedure1.pdf"));
-                    break;
-            case 2: plannedActivity = new PlannedActivity(2,
-                new Site("factory2", "area2"), new Typology("typology2"),
-                    "description2", 1002, false, 2, 
-                    new Procedure("procedure2", "procedure2.pdf")); 
-                    break;
-            case 3:plannedActivity = new PlannedActivity(3,
-                new Site("factory3", "area3"), new Typology("typology3"), 
-                    "description3", 1003, true, 3,
-                    new Procedure("procedure3", "procedure3.pdf"), "workspaceNote3");
-            break;
-        }
-        
-        if (plannedActivity!=null)
-            activitiesList.add(plannedActivity);
-
-
-        return activitiesList;
-    }
+    }  
 
     /**
      * This method is called from within the constructor to initialize the form.

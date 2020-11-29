@@ -137,7 +137,6 @@ public class SiteDALDatabaseTest {
      */
     @Test
     public void testGetAll () {
-        siteDAL.deleteAll();
         List<Site> localSites = new ArrayList<>();
         Site site1 = new Site("factory1", "area1");
         site1 = siteDAL.insert(site1);
@@ -149,7 +148,7 @@ public class SiteDALDatabaseTest {
         site3 = siteDAL.insert(site3);
         localSites.add(site3);
         List<Site> dbSites = siteDAL.getAll();
-        assertEquals(localSites,dbSites);
+        assertTrue(dbSites.containsAll(localSites));
     }
     
 }

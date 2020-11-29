@@ -293,12 +293,12 @@ public abstract class Activity {
      */
     @Override
     public String toString() {
-        return "Activity:" +"Category= "+ this.getCategory()+ "id= " + id + 
-                ", site= " + site + ", tipology= " + tipology + ", description= " 
-                + description + ", interventionTime= " + interventionTime + 
-                ", interruptible= " + interruptible + ", materials =" + 
-                materials + ", week =" + week + ", procedure =" + procedure + 
-                ", workspaceNotes=" + workspaceNotes;
+        return this.getCategory()+ "id: " + id + 
+                ", site: " + site + ", tipology: " + tipology + ", description: " 
+                + description + ", interventionTime: " + interventionTime + 
+                ", interruptible: " + interruptible + ", materials:" + 
+                materials + ", week :" + week + ", procedure: " + procedure + 
+                ", workspaceNotes: " + workspaceNotes;
     }
 
     

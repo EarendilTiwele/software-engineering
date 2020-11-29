@@ -113,7 +113,7 @@ public class Typology {
      */
     @Override
     public String toString() {
-        return "Typology:" + "name= " + name ;
+        return getName() ;
     }
     
     /**
