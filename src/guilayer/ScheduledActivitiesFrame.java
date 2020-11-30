@@ -57,18 +57,18 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         this.setTitle("Scheduled activities");
         initializeWeekComboBox(FIRST_WEEK);
         scheduledActivitiesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-    @Override
-    public void mouseClicked(java.awt.event.MouseEvent evt) {
-        int row = scheduledActivitiesTable.rowAtPoint(evt.getPoint());
-        int col = scheduledActivitiesTable.columnAtPoint(evt.getPoint());
-        int idCol = 0;
-        if (row >= 0 && col == idCol) {
-            Activity activity = activities.get(row);
-            new ActivityEditorFrame(activity).setVisible(true);
-            
-        }
-    }
-});
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = scheduledActivitiesTable.rowAtPoint(evt.getPoint());
+                int col = scheduledActivitiesTable.columnAtPoint(evt.getPoint());
+                int idCol = 0;
+                if (row >= 0 && col == idCol) {
+                    Activity activity = activities.get(row);
+                    new ActivityEditorFrame(activity).setVisible(true);
+
+                }
+            }
+        });
     }
 
     /**
@@ -80,20 +80,20 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Load the whole scheduled activities of the week and update the table 
-     * showing the activities. Loading is performed in a new thread without 
+     * Load the whole scheduled activities of the week and update the table
+     * showing the activities. Loading is performed in a new thread without
      * blocking the Event Dispatch Thread.
-     * 
+     *
      * @param week the week of interest
      */
     private void setUpTable(int week) {
         // Cursor indicates to user the wait needed to load activities from 
         // the database and to update the table.
-        this.setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
+        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = () -> {
             // Load all the scheduled activities for the week
             activities = loadAllActivitiesOfWeek(week);
-            
+
             SwingUtilities.invokeLater(() -> {
                 updateTable();
                 this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -110,7 +110,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @param week the initial week of the combo box
      */
     private void initializeWeekComboBox(int week) {
-        
+
         // Specify the listener to update the content of the table when a
         // different week is selected from the weekComboBox
         /*
@@ -119,15 +119,14 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                         Integer.valueOf(
                                 (String) weekComboBox.getSelectedItem()
                         )));
-        */
-        
+         */
         weekComboBox.addActionListener(
-                                        (e) -> setUpTable(
-                                               Integer.valueOf(
-                                              (String)weekComboBox.getSelectedItem()
-                                               )));
+                (e) -> setUpTable(
+                        Integer.valueOf(
+                                (String) weekComboBox.getSelectedItem()
+                        )));
         weekComboBox.setSelectedIndex(week - 1);
-        
+
     }
 
     /**
@@ -195,15 +194,15 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
 
     /**
      * Load the whole list of activities scheduled for specificied week.
-     * 
+     *
      * @param week the week of the scheduled activities needed to load
-     * @return 
+     * @return
      */
-    private List<Activity> loadAllActivitiesOfWeek(int week){
+    private List<Activity> loadAllActivitiesOfWeek(int week) {
         ActivityBLL activityBLL = new ActivityBLL();
         return activityBLL.getAllOfWeek(week);
-        
-    }  
+
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
