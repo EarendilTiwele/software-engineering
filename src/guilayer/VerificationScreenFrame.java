@@ -17,6 +17,7 @@ import java.awt.Component;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.SwingUtilities;
@@ -24,12 +25,16 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 /**
+ * Verification screen Frame allows a planner to view maintainers'
+ * availabilities in the week.
  *
  * @author Alfonso
  */
 public class VerificationScreenFrame extends javax.swing.JFrame {
-
+    
     private Activity activity;
+
+    //table: column header
     private static final String MONDAY = "Mon";
     private static final String TUESDAY = "Tue";
     private static final String WEDNESDAY = "Wed";
@@ -39,7 +44,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     private static final String SUNDAY = "Sun";
     private static final String MAINTAINER_COLUMN = "Maintainer";
     private static final String SKILLS_COLUMN = "Skills";
-
+    
     private final String[] tableColumnNames = new String[]{
         MAINTAINER_COLUMN, SKILLS_COLUMN, MONDAY, TUESDAY, WEDNESDAY, THURSDAY,
         FRIDAY, SATURDAY, SUNDAY
@@ -48,91 +53,130 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     /**
      * Creates new form VerificationScreenFrame
      *
-     * @param activityToAssign
+     * @param activityToAssign the activity to assign
      */
     public VerificationScreenFrame(Activity activityToAssign) {
         initComponents();
         this.activity = activityToAssign;
+        setTitle("Verification screen - Activity id: " + activityToAssign.getId());
         initGUI();
     }
 
+    /**
+     * Initialize components according to the activity to assign.
+     */
     private void initGUI() {
         weekNumberLabel.setText(activity.getWeek() + "");
-        String activityString = activity.getId() + " - " + activity.getSite() + " - "
-                + activity.getTipology() + " - " + activity.getInterventionTime() + "'";
+        String activityString
+                = activity.getId() + " - "
+                + activity.getSite() + " - "
+                + activity.getTipology() + " - "
+                + activity.getInterventionTime() + "'";
+        
         activityLabel.setText(activityString);
-        String skillsString = "<ul>\n";
+        
+        String skillsString = "";
         for (Competency competency : activity.getProcedure().getCompetencies()) {
-            skillsString += "<li>" + competency + "</li>\n";
+            skillsString += String.valueOf("\u2022") + competency + "<br>";
         }
-        skillsString += "</ul>";
+        
         skillsNeededEditorPane.setText(skillsString);
+        
         initTable();
     }
 
+    /**
+     * Load the agenda in a new thread and complete the table.
+     */
     private void initTable() {
-
         Runnable loader = (() -> {
-            Map<Maintainer, String[]> agenda = getAgenda();
+            Map<Maintainer, Integer[]> agenda = getAgenda();
             Object[][] data = convertToObjectMatrix(agenda);
             SwingUtilities.invokeLater(() -> setTableData(tableColumnNames, data));
         });
-
         new Thread(loader).start();
     }
 
-    private Map<Maintainer, String[]> getAgenda() {
+    /**
+     * Returns the agenda of the maintainers. The agenda is represented as a
+     * Map. The key is a Maintainer and the value is an array of integer
+     * availabilities for each day of the week.
+     *
+     * @return the agenda of the maintainers
+     */
+    private Map<Maintainer, Integer[]> getAgenda() {
         Maintainer m1 = new Maintainer("pippo", "pass");
         Maintainer m2 = new Maintainer("Pluto", "pass");
-
+        
         m1.addCompetency(new Competency("competenza2"));
         m1.addCompetency(new Competency("competenza3"));
-
-        String[] d1 = new String[]{"80%", "100%", "20%", "100%", "50%", "20%", "100%"};
-        String[] d2 = new String[]{"20%", "50%", "80%", "50%", "100%", "50%", "80%"};
-
-        Map<Maintainer, String[]> agenda = new HashMap<>();
+        
+        Integer[] d1 = new Integer[]{80, 100, 20, 100, 50, 20, 100};
+        Integer[] d2 = new Integer[]{20, 50, 80, 50, 100, 50, 80};
+        
+        Map<Maintainer, Integer[]> agenda = new HashMap<>();
         agenda.put(m1, d1);
         agenda.put(m2, d2);
-
+        
         return agenda;
     }
 
-    private Object[][] convertToObjectMatrix(Map<Maintainer, String[]> agenda) {
+    /**
+     * Convert an agenda into a matrix suitable for the table model.
+     *
+     * @param agenda the agenda
+     * @return the matrix representing the agenda
+     */
+    private Object[][] convertToObjectMatrix(Map<Maintainer, Integer[]> agenda) {
         int numCol = tableColumnNames.length;
         int numRow = agenda.size();
-
         Object[][] data = new Object[numRow][numCol];
-
+        
         int i = 0;
-        int mondayIndex = Arrays.asList(tableColumnNames).indexOf(MONDAY);
-        int skillsIndex = Arrays.asList(tableColumnNames).indexOf(SKILLS_COLUMN);
-        int maintainerIndex = Arrays.asList(tableColumnNames).indexOf(MAINTAINER_COLUMN);
+        List<String> columnsAsList = Arrays.asList(tableColumnNames);
+        int mondayIndex = columnsAsList.indexOf(MONDAY);
+        int skillsIndex = columnsAsList.indexOf(SKILLS_COLUMN);
+        int maintainerIndex = columnsAsList.indexOf(MAINTAINER_COLUMN);
 
-        for (Map.Entry<Maintainer, String[]> entry : agenda.entrySet()) {
+        //fill the matrix
+        for (Map.Entry<Maintainer, Integer[]> entry : agenda.entrySet()) {
             Maintainer maintainer = entry.getKey();
-            String[] availabilities = entry.getValue();
-            int totalRequiredSkills = activity.getProcedure().getCompetencies().size();
-            Set<Competency> remainingCompetencies = new HashSet<>(activity.getProcedure().getCompetencies());
+            Integer[] availabilities = entry.getValue();
+            int totalRequiredSkills = activity
+                    .getProcedure()
+                    .getCompetencies()
+                    .size();
+            Set<Competency> remainingCompetencies
+                    = new HashSet<>(activity.getProcedure().getCompetencies());
+            //set difference
             remainingCompetencies.removeAll(maintainer.getCompetencies());
             int availableSkills = totalRequiredSkills - remainingCompetencies.size();
-
+            
             data[i][skillsIndex] = availableSkills + "/" + totalRequiredSkills;
             data[i][maintainerIndex] = maintainer.getUsername();
+
+            //insert availabilities
             for (int j = 0; j < availabilities.length; j++) {
-                data[i][j + mondayIndex] = availabilities[j];
+                data[i][j + mondayIndex] = availabilities[j] + "%";
             }
             i++;
         }
-
+        
         return data;
-
+        
     }
 
+    /**
+     * Fill the table and sets its cell as non-editable.
+     *
+     * @param tableColumnNames the column header
+     * @param data the matrix of data
+     */
     private void setTableData(String[] tableColumnNames, Object[][] data) {
         CustomTableModel model = new CustomTableModel(tableColumnNames, data) {
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
+                //this is a non-editable table
                 return false;
             }
         };
@@ -156,8 +200,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         maintainerAvailabilityLabel = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         agendaTable = new javax.swing.JTable(){
-            public Color getColor(double power){
-                double H = power * 0.4; // Hue (note 0.4 = Green, see huge chart below)
+            private Color getColor(double power){
+                double H = power * 0.4; // Hue (0.4 = Green)
                 double S = 0.9; // Saturation
                 double B = 0.9; // Brightness
                 return Color.getHSBColor((float)H, (float)S, (float)B);
@@ -174,6 +218,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
                     double percent = Double.valueOf(val)/100;
                     Color color=getColor(percent);
                     comp.setBackground(color);
+                }else{
+                    comp.setBackground(new Color(0.9f,0.9f,0.9f,1));
                 }
                 return comp;
             }
@@ -181,17 +227,25 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         skillsNeededEditorPane = new javax.swing.JEditorPane();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         weekLabel.setText("Week n°");
 
+        weekNumberLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        weekNumberLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
         activityToAssignLabel.setText("Activity to assign");
 
-        skillsNeededLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        activityLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        skillsNeededLabel.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        skillsNeededLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         skillsNeededLabel.setText("Skills needed ");
 
+        maintainerAvailabilityLabel.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         maintainerAvailabilityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        maintainerAvailabilityLabel.setText("Maintainer availability");
+        maintainerAvailabilityLabel.setText("Maintainer AVAILABILITY");
+        maintainerAvailabilityLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         agendaTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -221,7 +275,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
 
         skillsNeededEditorPane.setEditable(false);
         skillsNeededEditorPane.setContentType("text/html"); // NOI18N
-        skillsNeededEditorPane.setText("<html>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n      \r\n    </p>\r\n  </body>\r\n</html>\r\n");
         skillsNeededEditorPane.setAlignmentX(0.0F);
         skillsNeededEditorPane.setAlignmentY(0.2F);
         jScrollPane3.setViewportView(skillsNeededEditorPane);
@@ -233,45 +286,45 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(skillsNeededLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(skillsNeededLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3))
+                        .addGap(18, 18, 18))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(weekLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(weekNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(activityToAssignLabel))
-                    .addComponent(jScrollPane3))
+                        .addComponent(weekNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                        .addComponent(activityToAssignLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(maintainerAvailabilityLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 564, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(activityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
-                            .addComponent(maintainerAvailabilityLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 564, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addComponent(activityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(weekLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(weekNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(activityToAssignLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(activityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(weekLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(weekNumberLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(activityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(activityToAssignLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(skillsNeededLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(maintainerAvailabilityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))
-                .addContainerGap(139, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
+                .addGap(138, 138, 138))
         );
 
         pack();
@@ -291,21 +344,21 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-
+                    
                 }
             }
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(VerificationScreenFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+            
         } catch (InstantiationException ex) {
             java.util.logging.Logger.getLogger(VerificationScreenFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+            
         } catch (IllegalAccessException ex) {
             java.util.logging.Logger.getLogger(VerificationScreenFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
+            
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(VerificationScreenFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);

@@ -179,17 +179,17 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 .getColumn(model.getColumnCount() - 1)
                 .setCellRenderer(new ButtonRenderer());
 
-        // Simple ActionListener for testing the button
-        ActionListener popupActionListener = e -> {
-            String msg = "clicked";
-            JOptionPane.showMessageDialog(rootPane, msg,
-                    "title", JOptionPane.INFORMATION_MESSAGE);
+        // ActionListener for showing the verification screen
+        ActionListener showVerificationScreen = e -> {
+            int row = scheduledActivitiesTable.getSelectedRow();
+            Activity activityToAssign = activities.get(row);
+            new VerificationScreenFrame(activityToAssign).setVisible(true);
         };
 
         // Set the button editor for the last column of the table to react to users click
         scheduledActivitiesTable.getColumnModel()
                 .getColumn(model.getColumnCount() - 1)
-                .setCellEditor(new ButtonEditor(popupActionListener));
+                .setCellEditor(new ButtonEditor(showVerificationScreen));
     }
 
     /**
