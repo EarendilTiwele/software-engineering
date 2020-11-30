@@ -5,8 +5,10 @@
  */
 package dataaccesslayer;
 
+import businesslogiclayer.Competency;
 import businesslogiclayer.Procedure;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,10 @@ public class ProcedureDALDatabaseTest {
         conn.setAutoCommit(false);
         ActivityDAL activityDAL = new ActivityDALDatabase();
         activityDAL.deleteAll();
+        PreparedStatement prepareStatement = conn.prepareStatement("delete from  procedurehascompetencies");
+        prepareStatement.execute();
+        prepareStatement = conn.prepareStatement("delete from competency ");
+        prepareStatement.execute();
         procedureDALDatabase.deleteAll();
     }
 
@@ -127,11 +133,20 @@ public class ProcedureDALDatabaseTest {
 
     /**
      * Create a local procedure Insert it into db and retrieve the db version
+     * Create a new Competency and assign it to the procedure
+     * Insert the procedure in the database
      * Get the procedure from db and compare it with the local procedure
      */
     @Test
-    public void testGet() {
+    public void testGet() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
+        Competency competency = new Competency(1, "mechanical competence");
+        procedure.addCompetency(competency);
+        PreparedStatement prepareStatement = conn.prepareStatement("insert into competency VALUES (1, 'mechanical competence')");
+        prepareStatement.execute();
+        prepareStatement = conn.prepareStatement("insert into procedurehascompetencies VALUES(?,1)");
+        prepareStatement.setInt(1, procedure.getId());
+        prepareStatement.execute();
         procedure = procedureDALDatabase.insert(procedure);
         assertNotNull(procedure);
         Procedure procedure2 = procedureDALDatabase.get(procedure.getId());
@@ -139,9 +154,8 @@ public class ProcedureDALDatabaseTest {
     }
 
     /**
-     * Insert 2 procedures
-     * Check the table size before the deleteAll
-     * Check the table size after the deleAll that must be 0
+     * Insert 2 procedures Check the table size before the deleteAll Check the
+     * table size after the deleAll that must be 0
      */
     @Test
     public void testDeleteAll() {
