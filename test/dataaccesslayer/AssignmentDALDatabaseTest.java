@@ -38,21 +38,21 @@ public class AssignmentDALDatabaseTest {
 
     @Before
     public void setUp() throws SQLException {
-        AssignmentDAL assignmentDAL = new AssignmentDALDatabase();
+        assignmentDAL = new AssignmentDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
         PreparedStatement preparedStatement = conn.prepareStatement("delete from assignment");
         preparedStatement.execute();
-        ActivityDAL activityDAL = new ActivityDALDatabase();
-        ProcedureDAL procedureDAL = new ProcedureDALDatabase();
-        TypologyDAL typologyDAL = new TypologyDALDatabase();
-        SiteDAL siteDAL = new SiteDALDatabase();
-        activityDAL.deleteAll();
+        preparedStatement = conn.prepareStatement("delete from  activity");
+        preparedStatement.execute();
+        preparedStatement = conn.prepareStatement("delete from  procedure");
+        preparedStatement.execute();
+        preparedStatement = conn.prepareStatement("delete from  typology");
+        preparedStatement.execute();
+        preparedStatement = conn.prepareStatement("delete from  site");
+        preparedStatement.execute();
         preparedStatement = conn.prepareStatement("delete from  users");
         preparedStatement.execute();
-        procedureDAL.deleteAll();
-        typologyDAL.deleteAll();
-        siteDAL.deleteAll();
     }
 
     @After
@@ -61,12 +61,26 @@ public class AssignmentDALDatabaseTest {
         conn.close();
     }
 
+    /**
+     * Test the connection with the database checking that the connection is
+     * valid
+     *
+     * @throws java.sql.SQLException
+     */
     @Test
     public void testConnection() throws SQLException {
         assertNotNull(conn);
         assertTrue(conn.isValid(0));
     }
 
+    /**
+     * Create assignments samples
+     * Insert them in the database
+     * Get the assignments with a specific week
+     * Check that the local copy and the database version of the assignments
+     * are equal
+     * @throws SQLException 
+     */
     @Test
     public void testGetAllForWeek() throws SQLException {
         /*I have used an obj of ActivityDALDatabaseTest only to retrive
@@ -107,6 +121,7 @@ public class AssignmentDALDatabaseTest {
         String workspaceNotes = "Note to add";
         activityList.add(new PlannedActivity(0, site, typology, description, intervationTime,
                 interruptible, week, procedure, workspaceNotes));
+        
         /*------------------------------------------------------------------------------------*/
 
         site = new Site(0, "Lamborghini", "Sant'Agata bolognese");
@@ -129,7 +144,7 @@ public class AssignmentDALDatabaseTest {
         activityList.add(new PlannedActivity(1, site, typology, description, intervationTime,
                 interruptible, week, procedure, workspaceNotes));
         /*------------------------------------------------------------------------------------*/
-        site = new Site(0, "Fiat", "Torino");
+        site = new Site(50, "Fiat", "Torino");
         siteDAL = new SiteDALDatabase();
         site = siteDAL.insert(site);
 
@@ -155,25 +170,25 @@ public class AssignmentDALDatabaseTest {
     public Set<Assignment> sampleSetAssignment() throws SQLException {
         Set<Assignment> assignmentSet = new HashSet<>();
         List<Activity> activityList = sampleListActivity();
-        Activity activity = sampleListActivity().get(0);
+        Activity activity = activityList.get(0);
+        Activity activity2 = activityList.get(1);
         ActivityDAL activityDAL = new ActivityDALDatabase();
-        activity = activityDAL.insert(activity);
         /*Users DAL insert user*/
         PreparedStatement preparedStatement = conn.prepareStatement("insert into users values(1,'Alfioc',"
                 + "'Alfioc99', 'maintainer') returning *;");
         preparedStatement.executeQuery();
+        activity = activityDAL.insert(activity);
         Maintainer user = new Maintainer(1, "Alfioc", "Alfioc99");
         Assignment assignment = new Assignment(user, activity, "monday", 12);
         assignmentSet.add(assignment);
-
-        activity = sampleListActivity().get(1);
-        activity = activityDAL.insert(activity);
+        
         /*Users DAL insert user*/
         preparedStatement = conn.prepareStatement("insert into users values(2,'francescoCarbone',"
                 + "'francescoCarbone98', 'maintainer') returning *;");
         preparedStatement.executeQuery();
-        user = new Maintainer(2, "francescoCarbone", "francescoCarbone98");
-        assignment = new Assignment(user, activity, "monday", 12);
+        activity2 = activityDAL.insert(activity2);
+        Maintainer user2 = new Maintainer(2, "francescoCarbone", "francescoCarbone98");
+        assignment = new Assignment(user2, activity2, "monday", 12);
         assignmentSet.add(assignment);
         return assignmentSet;
     }
