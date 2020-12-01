@@ -41,17 +41,18 @@ public class ActivityDALDatabase implements ActivityDAL {
         try {
             conn = DatabaseConnection.getConnection();
             PreparedStatement prepareStatement = conn.prepareStatement("insert into Activity "
-                    + "(site, type, description, interventiontime, interruptible, week,"
+                    + "(id, site, type, description, interventiontime, interruptible, week,"
                     + "workspacenotes, procedure) "
-                    + "VALUES (?,?,?,?,?,?,?,?)   RETURNING *;");
-            prepareStatement.setInt(1, activity.getSite().getId());
-            prepareStatement.setInt(2, activity.getTipology().getId());
-            prepareStatement.setString(3, activity.getDescription());
-            prepareStatement.setInt(4, activity.getInterventionTime());
-            prepareStatement.setBoolean(5, activity.isInterruptible());
-            prepareStatement.setInt(6, activity.getWeek());
-            prepareStatement.setString(7, activity.getWorkspaceNotes());
-            prepareStatement.setInt(8, activity.getProcedure().getId());
+                    + "VALUES (?,?,?,?,?,?,?,?,?)   RETURNING *;");
+            prepareStatement.setInt(1, activity.getId());
+            prepareStatement.setInt(2, activity.getSite().getId());
+            prepareStatement.setInt(3, activity.getTipology().getId());
+            prepareStatement.setString(4, activity.getDescription());
+            prepareStatement.setInt(5, activity.getInterventionTime());
+            prepareStatement.setBoolean(6, activity.isInterruptible());
+            prepareStatement.setInt(7, activity.getWeek());
+            prepareStatement.setString(8, activity.getWorkspaceNotes());
+            prepareStatement.setInt(9, activity.getProcedure().getId());
             ResultSet rs = prepareStatement.executeQuery();
             while (rs.next()) {
                 /*-------------------------------------------------------*/
@@ -72,9 +73,10 @@ public class ActivityDALDatabase implements ActivityDAL {
                 int intervetiontime = rs.getInt("interventiontime");
                 boolean interruptible = rs.getBoolean("interruptible");
                 int week = rs.getInt("week");
+                String workspacenotes = rs.getString("workspacenotes");
                 activity = new PlannedActivity(id, site,
                         typology, description, intervetiontime, interruptible,
-                        week, procedure);
+                        week, procedure, workspacenotes);
             }
             if (connectionWasClosed) {
                 conn.close();
@@ -135,9 +137,10 @@ public class ActivityDALDatabase implements ActivityDAL {
                 int intervetiontime = rs.getInt("interventiontime");
                 boolean interruptible = rs.getBoolean("interruptible");
                 int week = rs.getInt("week");
+                String workspaceNotes = rs.getString("workspacenotes");
                 activity = new PlannedActivity(id, site,
                         typology, description, intervetiontime, interruptible,
-                        week, procedure);
+                        week, procedure, workspaceNotes);
             }
             if (connectionWasClosed) {
                 conn.close();
@@ -232,9 +235,10 @@ public class ActivityDALDatabase implements ActivityDAL {
                 int intervetiontime = rs.getInt("interventiontime");
                 boolean interruptible = rs.getBoolean("interruptible");
                 int week = rs.getInt("week");
+                String workspacenotes = rs.getString("workspacenotes");
                 activity = new PlannedActivity(id, site,
                         typology, description, intervetiontime, interruptible,
-                        week, procedure);
+                        week, procedure, workspacenotes);
                 activityList.add(activity);
             }
             if (connectionWasClosed) {
@@ -281,9 +285,10 @@ public class ActivityDALDatabase implements ActivityDAL {
                 int intervetiontime = rs.getInt("interventiontime");
                 boolean interruptible = rs.getBoolean("interruptible");
                 int week = rs.getInt("week");
+                String workspaceNotes = rs.getString("workspacenotes");
                 activity = new PlannedActivity(id, site,
                         typology, description, intervetiontime, interruptible,
-                        week, procedure);
+                        week, procedure, workspaceNotes);
             }
             if (connectionWasClosed) {
                 conn.close();
@@ -330,9 +335,10 @@ public class ActivityDALDatabase implements ActivityDAL {
                 int intervetiontime = rs.getInt("interventiontime");
                 boolean interruptible = rs.getBoolean("interruptible");
                 int week1 = rs.getInt("week");
+                String workspacenotes = rs.getString("workspacenotes");
                 activity = new PlannedActivity(id, site,
                         typology, description, intervetiontime, interruptible,
-                        week1, procedure);
+                        week1, procedure, workspacenotes);
                 activityList.add(activity);
             }
             if (connectionWasClosed) {
@@ -388,9 +394,10 @@ public class ActivityDALDatabase implements ActivityDAL {
                 int intervetiontime = rs.getInt("interventiontime");
                 boolean interruptible = rs.getBoolean("interruptible");
                 int week1 = rs.getInt("week");
+                String workspacenotes = rs.getString("workspacenotes");
                 activity = new PlannedActivity(id, site,
                         typology, description, intervetiontime, interruptible,
-                        week1, procedure);
+                        week1, procedure, workspacenotes);
                 activityList.add(activity);
             }
             if (connectionWasClosed) {

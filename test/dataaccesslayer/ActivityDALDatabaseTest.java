@@ -27,7 +27,7 @@ public class ActivityDALDatabaseTest {
     private ActivityDAL activityDALDatabase;
     private Connection conn;
 
-    /*remember to use the other constructor for PlannedActivity*/
+    
     public List<Activity> sampleListActivity() {
         List<Activity> activityList = new ArrayList<>();
 
