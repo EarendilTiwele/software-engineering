@@ -7,6 +7,7 @@ package dataaccesslayer;
 
 import businesslogiclayer.Activity;
 import businesslogiclayer.Assignment;
+import businesslogiclayer.Competency;
 import businesslogiclayer.Maintainer;
 import businesslogiclayer.User;
 import java.sql.Connection;
@@ -54,6 +55,12 @@ public class AssignmentDALDatabase implements AssignmentDAL {
                 activity = activityDAL.get(idactivity);
                 user = userDAL.get(rs.getInt("idmaintainer"));
                 maintainer = new Maintainer(user.getId(), user.getUsername(), user.getPassword());
+                MaintainerHasCompetenciesDALDatabase mhcDAL = new MaintainerHasCompetenciesDALDatabase();
+                Set<Competency> competencySet = mhcDAL.getAllCompetencies(maintainer);
+                for (Competency c : competencySet)
+                {
+                    maintainer.addCompetency(c);
+                }
                 assignment = new Assignment(maintainer, activity, rs.getString("day"), rs.getInt("hour"));
                 assignmentSet.add(assignment);
             }
