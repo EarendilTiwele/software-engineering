@@ -7,6 +7,7 @@ package businesslogiclayer;
 
 import dataaccesslayer.UserDALDatabase;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,17 +17,28 @@ import java.util.Set;
 public class UserBLL {
     
     private final UserDALDatabase userDAL;
+    private final MaintainerHasCompetenciesBLL mhcBLL;
     
     public UserBLL() {
         userDAL = new UserDALDatabase();
+        mhcBLL = new MaintainerHasCompetenciesBLL();
     }
     
     public User get(int id) throws SQLException {
         return userDAL.get(id);
     }
     
-    public Set<User> getAllMaintainers() throws SQLException {
-        return userDAL.getAllMaintainers();
+    public Set<Maintainer> getAllMaintainers() throws SQLException {
+        Set<Maintainer> maintainers = new HashSet<>();
+        for (User user: userDAL.getAllMaintainers()) {
+            Maintainer maintainer = new Maintainer(user.getId(), 
+                                    user.getUsername(), user.getPassword());
+            Set<Competency> competencies = mhcBLL.getAllCompetencies(maintainer);
+            for (Competency competency: competencies) {
+                maintainer.addCompetency(competency);
+            }
+        }
+        return maintainers;
     }
     
     
