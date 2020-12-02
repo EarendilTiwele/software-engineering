@@ -113,13 +113,6 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
 
         // Specify the listener to update the content of the table when a
         // different week is selected from the weekComboBox
-        /*
-        weekComboBox.addActionListener(
-                event -> updateTable(
-                        Integer.valueOf(
-                                (String) weekComboBox.getSelectedItem()
-                        )));
-         */
         weekComboBox.addActionListener(
                 (e) -> setUpTable(
                         Integer.valueOf(
@@ -226,17 +219,15 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
 
         scheduledActivitiesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID", "Area", "Type", "Estimanted Intervention Time"
             }
         ));
         scheduledActivitiesTable.setCellSelectionEnabled(true);
         jScrollPane2.setViewportView(scheduledActivitiesTable);
+        scheduledActivitiesTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         String[] weeks = new String[52];
         for (int i=0; i<weeks.length;i++){
@@ -261,8 +252,8 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                         .addGap(35, 35, 35)
                         .addComponent(weekLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 208, Short.MAX_VALUE)
+                        .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 192, Short.MAX_VALUE)
                         .addComponent(createButton))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -273,10 +264,13 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(weekLabel)
-                    .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(createButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(weekLabel)
+                        .addComponent(createButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(weekComboBox)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
                 .addGap(180, 180, 180))

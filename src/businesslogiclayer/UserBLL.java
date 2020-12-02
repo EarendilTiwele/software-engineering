@@ -37,6 +37,7 @@ public class UserBLL {
             for (Competency competency: competencies) {
                 maintainer.addCompetency(competency);
             }
+            maintainers.add(maintainer);
         }
         return maintainers;
     }

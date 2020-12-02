@@ -6,6 +6,7 @@
 package guilayer;
 
 import businesslogiclayer.Activity;
+import businesslogiclayer.AssignmentBLL;
 import businesslogiclayer.Competency;
 import businesslogiclayer.Maintainer;
 import businesslogiclayer.PlannedActivity;
@@ -14,12 +15,16 @@ import businesslogiclayer.Site;
 import businesslogiclayer.Typology;
 import java.awt.Color;
 import java.awt.Component;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -33,7 +38,8 @@ import javax.swing.table.TableModel;
 public class VerificationScreenFrame extends javax.swing.JFrame {
     
     private Activity activity;
-
+    private Map<Maintainer,Integer[]> agenda;
+    
     //table: column header
     private static final String MONDAY = "Mon";
     private static final String TUESDAY = "Tue";
@@ -60,6 +66,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         this.activity = activityToAssign;
         setTitle("Verification screen - Activity id: " + activityToAssign.getId());
         initGUI();
+        
     }
 
     /**
@@ -89,8 +96,9 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * Load the agenda in a new thread and complete the table.
      */
     private void initTable() {
+        initTableMouseListener();
         Runnable loader = (() -> {
-            Map<Maintainer, Integer[]> agenda = getAgenda();
+            agenda = getAgenda();
             Object[][] data = convertToObjectMatrix(agenda);
             SwingUtilities.invokeLater(() -> setTableData(tableColumnNames, data));
         });
@@ -98,13 +106,35 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     }
 
     /**
+     * Adds mouse listener to day's column such that assign activity to maintainer
+     * in that day
+     */
+    private void initTableMouseListener(){
+        agendaTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = agendaTable.rowAtPoint(evt.getPoint());
+                int col = agendaTable.columnAtPoint(evt.getPoint());
+                int mondayCol = Arrays.asList(tableColumnNames).indexOf(MONDAY);
+                int maintainerCol = Arrays.asList(tableColumnNames).indexOf(MAINTAINER_COLUMN);
+                if (row >= 0 && col >= mondayCol) {
+                    String username = (String)agendaTable.getValueAt(row, maintainerCol);
+                    String day = tableColumnNames[col];
+                    String msg = "Activity " + activity.getId()+ " assigned to "+ username + " on "+ day;
+                    JOptionPane.showMessageDialog(VerificationScreenFrame.this, msg, "Activity assigned", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+    }
+    
+    /**
      * Returns the agenda of the maintainers. The agenda is represented as a
      * Map. The key is a Maintainer and the value is an array of integer
      * availabilities for each day of the week.
      *
      * @return the agenda of the maintainers
      */
-    private Map<Maintainer, Integer[]> getAgenda() {
+    private Map<Maintainer, Integer[]> getAgenda1() {
         Maintainer m1 = new Maintainer("pippo", "pass");
         Maintainer m2 = new Maintainer("Pluto", "pass");
         
@@ -121,6 +151,24 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         return agenda;
     }
 
+    /**
+     * Returns the agenda of the maintainers. The agenda is represented as a
+     * Map. The key is a Maintainer and the value is an array of integer
+     * availabilities for each day of the week.
+     *
+     * @return the agenda of the maintainers 
+     */
+    private Map<Maintainer, Integer[]> getAgenda(){
+        AssignmentBLL assignmentBLL = new AssignmentBLL();
+        
+        try {
+            return assignmentBLL.getAgenda(activity.getWeek());
+        } catch (SQLException ex) {
+            SwingUtilities.invokeLater(()->JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE));
+        }
+        return new HashMap<Maintainer, Integer[]>();
+    }
+    
     /**
      * Convert an agenda into a matrix suitable for the table model.
      *
