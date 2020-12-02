@@ -5,16 +5,11 @@
  */
 package businesslogiclayer;
 
-import dataaccesslayer.AbstractDAL;
 import dataaccesslayer.AssignmentDAL;
 import dataaccesslayer.AssignmentDALDatabase;
-import dataaccesslayer.UserDALDatabase;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,8 +20,8 @@ import java.util.Set;
  */
 public class AssignmentBLL {
 
-    private AssignmentDAL assignmentDAL;
-    private UserBLL userBLL;
+    private final AssignmentDAL assignmentDAL;
+    private final UserBLL userBLL;
 
     private static final int NUM_WORKING_DAYS = 7;
     private static final int DAILY_WORKING_MINUTES = 7 * 60;
@@ -45,11 +40,9 @@ public class AssignmentBLL {
         this.userBLL = new UserBLL();
     }
 
-    
-
 
     /**
-     * Returns in a map the percentage of daily availability of each maintenance
+     * Returns in a map the percentage of daily availability of each maintainer
      * into specified week. 
      * 
      * @param week          

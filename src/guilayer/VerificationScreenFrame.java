@@ -9,12 +9,9 @@ import businesslogiclayer.Activity;
 import businesslogiclayer.AssignmentBLL;
 import businesslogiclayer.Competency;
 import businesslogiclayer.Maintainer;
-import businesslogiclayer.PlannedActivity;
-import businesslogiclayer.Procedure;
-import businesslogiclayer.Site;
-import businesslogiclayer.Typology;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,12 +19,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
+
 
 /**
  * Verification screen Frame allows a planner to view maintainers'
@@ -97,10 +92,17 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      */
     private void initTable() {
         initTableMouseListener();
+        // Cursor indicates to user the wait needed to load agenda from 
+        // the database and to update the table.
+        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = (() -> {
             agenda = getAgenda();
             Object[][] data = convertToObjectMatrix(agenda);
-            SwingUtilities.invokeLater(() -> setTableData(tableColumnNames, data));
+            SwingUtilities.invokeLater(() ->{ 
+                setTableData(tableColumnNames, data);
+                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            
+            });
         });
         new Thread(loader).start();
     }
@@ -127,29 +129,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         });
     }
     
-    /**
-     * Returns the agenda of the maintainers. The agenda is represented as a
-     * Map. The key is a Maintainer and the value is an array of integer
-     * availabilities for each day of the week.
-     *
-     * @return the agenda of the maintainers
-     */
-    private Map<Maintainer, Integer[]> getAgenda1() {
-        Maintainer m1 = new Maintainer("pippo", "pass");
-        Maintainer m2 = new Maintainer("Pluto", "pass");
-        
-        m1.addCompetency(new Competency("competenza2"));
-        m1.addCompetency(new Competency("competenza3"));
-        
-        Integer[] d1 = new Integer[]{80, 100, 20, 100, 50, 20, 100};
-        Integer[] d2 = new Integer[]{20, 50, 80, 50, 100, 50, 80};
-        
-        Map<Maintainer, Integer[]> agenda = new HashMap<>();
-        agenda.put(m1, d1);
-        agenda.put(m2, d2);
-        
-        return agenda;
-    }
 
     /**
      * Returns the agenda of the maintainers. The agenda is represented as a
@@ -378,67 +357,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                    
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VerificationScreenFrame.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VerificationScreenFrame.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VerificationScreenFrame.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VerificationScreenFrame.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        int activityId = 1;
-        int interventionTime = 10;
-        int week = 3;
-        boolean interruptible = true;
-        Procedure procedure = new Procedure("procedure name", "smp.pdf");
-        procedure.addCompetency(new Competency("competenza1"));
-        procedure.addCompetency(new Competency("competenza2"));
-        procedure.addCompetency(new Competency("competenza3"));
-        procedure.addCompetency(new Competency("competenza4"));
-        Activity activity = new PlannedActivity(
-                activityId,
-                new Site("factory", "area"),
-                new Typology("typology"),
-                "description",
-                interventionTime,
-                interruptible,
-                week,
-                procedure);
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new VerificationScreenFrame(activity).setVisible(true);
-            }
-        });
-    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel activityLabel;

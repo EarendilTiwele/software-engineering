@@ -59,7 +59,10 @@ public abstract class Activity {
      * @param procedure         the associated procedure
      * @param workspaceNotes    the workspace notes 
      * 
-     * 
+     * @throws IllegalArgumentException if week is less then 0 or 
+     *                                  greater than 52 or if one among site, 
+     *                                  typology, description, procedure and
+     *                                  workspaceNotes is null.
      */
     public Activity(int id, Site site, Typology tipology, String description, 
                     int interventionTime, boolean interruptible, int week, 
@@ -96,6 +99,11 @@ public abstract class Activity {
      * @param interruptible     the possibility of being interrupted
      * @param week              the week the activity is scheduled for
      * @param procedure         the associated procedure
+     * 
+     * @throws IllegalArgumentException if week is less then 0 or 
+     *                                  greater than 52 or if one among site, 
+     *                                  typology, description, procedure is null.
+     * 
      */
     public Activity(int id, Site site, Typology tipology, String description, 
                     int interventionTime, boolean interruptible, int week, 
