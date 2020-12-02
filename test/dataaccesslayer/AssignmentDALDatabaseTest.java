@@ -7,6 +7,7 @@ package dataaccesslayer;
 
 import businesslogiclayer.Activity;
 import businesslogiclayer.Assignment;
+import businesslogiclayer.Competency;
 import businesslogiclayer.Maintainer;
 import businesslogiclayer.PlannedActivity;
 import businesslogiclayer.Procedure;
@@ -53,6 +54,10 @@ public class AssignmentDALDatabaseTest {
         preparedStatement.execute();
         preparedStatement = conn.prepareStatement("delete from  users");
         preparedStatement.execute();
+        preparedStatement = conn.prepareStatement("delete from  maintainerhascompetencies");
+        preparedStatement.execute();
+        preparedStatement = conn.prepareStatement("delete from  competency");
+        preparedStatement.execute();
     }
 
     @After
@@ -74,12 +79,11 @@ public class AssignmentDALDatabaseTest {
     }
 
     /**
-     * Create assignments samples
-     * Insert them in the database
-     * Get the assignments with a specific week
-     * Check that the local copy and the database version of the assignments
-     * are equal
-     * @throws SQLException 
+     * Create assignments samples Insert them in the database Get the
+     * assignments with a specific week Check that the local copy and the
+     * database version of the assignments are equal
+     *
+     * @throws SQLException
      */
     @Test
     public void testGetAllForWeek() throws SQLException {
@@ -121,9 +125,8 @@ public class AssignmentDALDatabaseTest {
         String workspaceNotes = "Note to add";
         activityList.add(new PlannedActivity(0, site, typology, description, intervationTime,
                 interruptible, week, procedure, workspaceNotes));
-        
-        /*------------------------------------------------------------------------------------*/
 
+        /*------------------------------------------------------------------------------------*/
         site = new Site(0, "Lamborghini", "Sant'Agata bolognese");
         siteDAL = new SiteDALDatabase();
         site = siteDAL.insert(site);
@@ -179,16 +182,35 @@ public class AssignmentDALDatabaseTest {
         preparedStatement.executeQuery();
         activity = activityDAL.insert(activity);
         Maintainer user = new Maintainer(1, "Alfioc", "Alfioc99");
-        Assignment assignment = new Assignment(user, activity, "monday", 12);
-        assignmentSet.add(assignment);
+        /*---------------------*/
+        preparedStatement = conn.prepareStatement("insert into competency values (1, 'competency1');");
+        preparedStatement.execute();
+        Competency c1 = new Competency(1, "competency1");
+        /*---------------------*/
+
+        preparedStatement = conn.prepareStatement("insert into competency values (2, 'competency2');");
+        preparedStatement.execute();
+        Competency c2 = new Competency(2, "competency2");
+        /*---------------------*/
+
+        user.addCompetency(c1);
+        user.addCompetency(c2);
         
+        preparedStatement = conn.prepareStatement("insert into maintainerhascompetencies values (" + user.getId() + "," + c1.getId() + ");");
+        preparedStatement.execute();
+        preparedStatement = conn.prepareStatement("insert into maintainerhascompetencies values (" + user.getId() + "," + c2.getId() + ");");
+        preparedStatement.execute();
+
+        Assignment assignment = new Assignment(user, activity, "Mon", 12);
+        assignmentSet.add(assignment);
+
         /*Users DAL insert user*/
         preparedStatement = conn.prepareStatement("insert into users values(2,'francescoCarbone',"
                 + "'francescoCarbone98', 'maintainer') returning *;");
         preparedStatement.executeQuery();
         activity2 = activityDAL.insert(activity2);
         Maintainer user2 = new Maintainer(2, "francescoCarbone", "francescoCarbone98");
-        assignment = new Assignment(user2, activity2, "monday", 12);
+        assignment = new Assignment(user2, activity2, "Mon", 12);
         assignmentSet.add(assignment);
         return assignmentSet;
     }

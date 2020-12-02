@@ -56,7 +56,8 @@ public class AssignmentDALDatabase implements AssignmentDAL {
                 user = userDAL.get(rs.getInt("idmaintainer"));
                 maintainer = new Maintainer(user.getId(), user.getUsername(), user.getPassword());
                 MaintainerHasCompetenciesDALDatabase mhcDAL = new MaintainerHasCompetenciesDALDatabase();
-                Set<Competency> competencySet = mhcDAL.getAllCompetencies(maintainer);
+                Set<Competency> competencySet = null;
+                competencySet = mhcDAL.getAllCompetencies(maintainer);
                 for (Competency c : competencySet)
                 {
                     maintainer.addCompetency(c);
