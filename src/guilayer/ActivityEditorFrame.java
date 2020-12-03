@@ -175,7 +175,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         //da aggiungere materiali
         procedureComboBox.addItem(activity.getProcedure());
         workspaceNotesArea.setText(activity.getWorkspaceNotes());
-        System.out.println("WorkspaceNotes-------------->"+activity.getWorkspaceNotes());
         JComponent[] components = new JComponent[]{idTextField, siteComboBox,
             typologyComboBox, descriptionTextField, interventionTimeTextField,
             interruptibleCheckBox, weekTextField, procedureComboBox, materialsTable};

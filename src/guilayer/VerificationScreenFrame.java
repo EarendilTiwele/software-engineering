@@ -9,6 +9,7 @@ import businesslogiclayer.Activity;
 import businesslogiclayer.AssignmentBLL;
 import businesslogiclayer.Competency;
 import businesslogiclayer.Maintainer;
+import businesslogiclayer.UserBLL;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -139,9 +140,9 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      */
     private Map<Maintainer, Integer[]> getAgenda(){
         AssignmentBLL assignmentBLL = new AssignmentBLL();
-        
+        UserBLL userBLL = new UserBLL();
         try {
-            return assignmentBLL.getAgenda(activity.getWeek());
+            return assignmentBLL.getAgenda(assignmentBLL.getAllforWeek(activity.getWeek()),userBLL.getAllMaintainers());
         } catch (SQLException ex) {
             SwingUtilities.invokeLater(()->JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE));
         }

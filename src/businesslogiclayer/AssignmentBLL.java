@@ -40,21 +40,27 @@ public class AssignmentBLL {
         this.userBLL = new UserBLL();
     }
 
+    public Set<Assignment> getAllforWeek(int week){
+        return assignmentDAL.getAllForWeek(week);
+    }
 
     /**
      * Returns in a map the percentage of daily availability of each maintainer
      * into specified week. 
-     * 
-     * @param week          
+     *           
+     * @param assignments
+     * @param maintainers
      * @return
-     * @throws SQLException 
+     * 
      */
-    public Map<Maintainer, Integer[]> getAgenda(int week) throws SQLException {
+    public Map<Maintainer, Integer[]> getAgenda(Set<Assignment> assignments,Set<Maintainer> maintainers){
+        /*
         // Load  the whole assigments for the specified week
         Set<Assignment> assignments = assignmentDAL.getAllForWeek(week);
         // Load the set of all maintainers 
         Set<Maintainer> maintainers = userBLL.getAllMaintainers();
         // Association between a maintainer and his percentage of disponibility
+        */
         Map<Maintainer, Integer[]> agenda = new HashMap<>();
         
         // associates at each maintainer the array of disponabilities, initialy all
