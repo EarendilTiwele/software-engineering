@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  *
  * @author alexd
- * @param <T>
+ * @param <T> The entity managed by the DAL
  */
 public abstract class AbstractDAL<T> {
     
@@ -30,7 +30,7 @@ public abstract class AbstractDAL<T> {
         return rs;
     }
     
-    public T executeQuery(String query) throws SQLException {
+    public final T executeQuery(String query) throws SQLException {
         boolean connectionWasClosed = DatabaseConnection.isClosed();
         ResultSet rs = execute(query);
         T dbEntity = null;
@@ -43,7 +43,7 @@ public abstract class AbstractDAL<T> {
         return dbEntity;
     }
     
-    public Set<T> executeSetQuery(String query) throws SQLException {
+    public final Set<T> executeSetQuery(String query) throws SQLException {
         boolean connectionWasClosed = DatabaseConnection.isClosed();
         ResultSet rs = execute(query);
         Set<T> dbEntities = new HashSet<>();
