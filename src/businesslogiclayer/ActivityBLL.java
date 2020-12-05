@@ -7,7 +7,10 @@ package businesslogiclayer;
 
 import dataaccesslayer.ActivityDAL;
 import dataaccesslayer.ActivityDALDatabase;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -21,32 +24,44 @@ public class ActivityBLL {
         activityDAL = new ActivityDALDatabase();
     }
 
-    public Activity insert(Activity activity) {
+    public Activity insert(Activity activity) throws SQLException {
         return activityDAL.insert(activity);
     }
 
-    public Activity update(Activity activity) {
+    public Activity update(Activity activity) throws SQLException {
         return activityDAL.update(activity);
     }
 
-    public Activity delete(int id) {
+    public Activity delete(int id) throws SQLException {
         return activityDAL.delete(id);
     }
     
-    public List<Activity> getAll() {
-        return activityDAL.getAll();
+    public List<Activity> getAll() throws SQLException {
+        List<Activity> activityList = new ArrayList<>();
+        for (Activity activity:activityDAL.getAll()){
+            activityList.add(activity);
+        }
+        return activityList;
     }
     
-    public Activity get(int id) {
+    public Activity get(int id) throws SQLException {
         return activityDAL.get(id);
     }
     
-    public List<Activity> getAllOfWeek(int week) {
-        return activityDAL.getAllOfWeek(week);
+    public List<Activity> getAllOfWeek(int week) throws SQLException {
+       List<Activity> activityList = new ArrayList<>();
+        for (Activity activity:activityDAL.getAll()){
+            activityList.add(activity);
+        }
+        return activityList;
     }
     
-    public List<Activity> getAllPlannedOfWeek(int week){
-        return activityDAL.getAllPlannedOfWeek(week);
+    public List<Activity> getAllPlannedOfWeek(int week) throws SQLException{
+        List<Activity> activityList = new ArrayList<>();
+        for (Activity activity:activityDAL.getAll()){
+            activityList.add(activity);
+        }
+        return activityList;
     }
     
 }

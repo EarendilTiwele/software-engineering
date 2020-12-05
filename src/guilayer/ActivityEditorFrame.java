@@ -15,7 +15,10 @@ import businesslogiclayer.SiteBLL;
 import businesslogiclayer.Typology;
 import businesslogiclayer.TypologyBLL;
 import java.awt.Cursor;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -52,7 +55,12 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
             initUpdateGUI();
             okButton.addActionListener((event) -> {
                 Runnable saver = (() -> {
-                    updateActivity(this.activity);
+                    /*----------------------*/
+                    try {
+                        updateActivity(this.activity);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ActivityEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     SwingUtilities.invokeLater(() -> dispose());
                 });
                 new Thread(saver).start();
@@ -119,7 +127,14 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
                     description, interventionTime, interruptible, week,
                     procedure, workspaceNotes);
 
-            new Thread(() -> saveActivity(newPlannedActivity)).start();
+            new Thread(() -> {
+                /*-----------------------------------------*/ 
+                try {
+                    saveActivity(newPlannedActivity);
+                } catch (SQLException ex) {
+                    Logger.getLogger(ActivityEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }).start();
 
         } catch (NumberFormatException e) {
             showErrorMessage("Error in specified parameters");
@@ -129,13 +144,13 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
     }
 
-    private void saveActivity(Activity activity) {
+    private void saveActivity(Activity activity) throws SQLException {
         // cath exception if necessary 
         activityBLL.insert(activity);
 
     }
 
-    private void updateActivity(Activity activity) {
+    private void updateActivity(Activity activity) throws SQLException {
         activity.setWorkspaceNotes(workspaceNotesArea.getText());
         activityBLL.update(activity);
     }

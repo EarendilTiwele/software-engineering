@@ -13,6 +13,7 @@ import businesslogiclayer.Site;
 import businesslogiclayer.Typology;
 import java.awt.Component;
 import java.awt.Container;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,7 +108,7 @@ public class ScheduledActivitiesFrameTest {
 
 
     //Load the whole list of activities scheduled for specificied week
-    private List<Activity> loadAllActivitiesOfWeek(int week) {
+    private List<Activity> loadAllActivitiesOfWeek(int week) throws SQLException {
         return activityBLL.getAllOfWeek(week);
     }
 
