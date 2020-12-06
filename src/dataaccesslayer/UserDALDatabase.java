@@ -15,13 +15,13 @@ import java.util.Set;
  *
  * @author alexd
  */
-public class UserDALDatabase extends AbstractDAL<User> {
+public class UserDALDatabase extends AbstractDAL<User> implements UserDAL {
 
     @Override
     public User convertToEntity(ResultSet rs) throws SQLException {
         // rs.getString("role") to control which user to return
         User dbUser = new Maintainer(rs.getInt("id"), rs.getString("username"), 
-                                    rs.getString("password"));
+                                     rs.getString("password"));
         return dbUser;
     }
     
@@ -31,6 +31,7 @@ public class UserDALDatabase extends AbstractDAL<User> {
      * @return the user retrieved
      * @throws java.sql.SQLException
      */
+    @Override
     public User get(int id) throws SQLException {
         String query = String.format("select * from users "
                                    + "where id = %d;", id);
@@ -38,10 +39,11 @@ public class UserDALDatabase extends AbstractDAL<User> {
     }
     
     /**
-     * Retrieve all the maintainers from a database
-     * @return the set of the maintainers retrieved
+     * Retrieve all the users with maintainer role from a database
+     * @return the set of users retrieved
      * @throws java.sql.SQLException
      */
+    @Override
     public Set<User> getAllMaintainers() throws SQLException {
         String query = "select * from users where role = 'maintainer';";
         return executeSetQuery(query);
