@@ -6,7 +6,8 @@
 package dataaccesslayer;
 
 import businesslogiclayer.Typology;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Set;
 
 /**
  *
@@ -18,40 +19,46 @@ public interface TypologyDAL {
      * Insert a typology in a persistent storage
      * @param typology the typology to insert
      * @return the inserted typology
+     * @throws java.sql.SQLException
      */
-    public Typology insert (Typology typology);
+    public Typology insert (Typology typology) throws SQLException;
     
     /**
      * Update a typology in a persistent storage
      * @param typology the typology to update
      * @return the updated typology
+     * @throws java.sql.SQLException
      */
-    public Typology update (Typology typology);
+    public Typology update (Typology typology) throws SQLException;
     
     /**
      * Delete a typology with given id from a persistent storage
      * @param id the id which identifies the typology
      * @return the deleted typology
+     * @throws java.sql.SQLException
      */
-    public Typology delete (int id);
+    public Typology delete (int id) throws SQLException;
     
     /**
      * Delete all typologies in a persistent storage
-     * @return the number of deleted typologies
+     * @return the set of deleted typologies
+     * @throws java.sql.SQLException
      */
-    public int deleteAll ();
+    public Set<Typology> deleteAll () throws SQLException;
     
     /** 
      * Retrieve a typology with given id from a persistent storage
      * @param id the id which identifies the typology
      * @return the typology retrieved
+     * @throws java.sql.SQLException
      */
-    public Typology get(int id);
+    public Typology get(int id) throws SQLException;
     
     /**
      * Retrieve all the typologies from a persistent storage
-     * @return the list of the typologies retrieved
+     * @return the set of the typologies retrieved
+     * @throws java.sql.SQLException
      */
-    public List<Typology> getAll();
+    public Set<Typology> getAll() throws SQLException;
     
 }

@@ -7,7 +7,8 @@ package businesslogiclayer;
 
 import dataaccesslayer.TypologyDAL;
 import dataaccesslayer.TypologyDALDatabase;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Set;
 
 /**
  *
@@ -21,23 +22,23 @@ public class TypologyBLL {
         typologyDAL = new TypologyDALDatabase();
     }
 
-    public Typology insert(Typology typology) {
+    public Typology insert(Typology typology) throws SQLException {
         return typologyDAL.insert(typology);
     }
 
-    public Typology update(Typology typology) {
+    public Typology update(Typology typology) throws SQLException {
         return typologyDAL.update(typology);
     }
 
-    public Typology delete(int id) {
+    public Typology delete(int id) throws SQLException {
         return typologyDAL.delete(id);
     }
 
-    public Typology get(int id) {
+    public Typology get(int id) throws SQLException {
         return typologyDAL.get(id);
     }
     
-    public List<Typology> getAll() {
+    public Set<Typology> getAll() throws SQLException {
         return typologyDAL.getAll();
     }
     

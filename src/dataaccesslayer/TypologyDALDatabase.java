@@ -6,191 +6,97 @@
 package dataaccesslayer;
 
 import businesslogiclayer.Typology;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
 /**
  *
  * @author alexd
  */
-public class TypologyDALDatabase implements TypologyDAL {
+public class TypologyDALDatabase extends AbstractDAL<Typology> implements TypologyDAL {
     
-    private Connection conn;
+    @Override
+    public Typology convertToEntity(ResultSet rs) throws SQLException {
+        Typology dbTypology = new Typology(rs.getInt("id"), rs.getString("typo"));
+        return dbTypology;
+    }
 
     /**
      * Insert a typology in a database
      * @param typology the typology to insert
      * @return the inserted typology
+     * @throws java.sql.SQLException
      */
     @Override
-    public Typology insert(Typology typology) {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement = 
-                    conn.prepareStatement("insert into typology "
-                    + "(typo)"
-                    + "values (?) returning *;");
-            prepareStatement.setString(1, typology.getName());
-            ResultSet rs = prepareStatement.executeQuery();
-            Typology dbTypology = null;
-            while (rs.next()) {
-                dbTypology = new Typology(rs.getInt("id"), rs.getString("typo"));
-            }
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return dbTypology;
-        } catch (SQLException ex) {
-            Logger.getLogger(TypologyDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public Typology insert(Typology typology) throws SQLException {
+        String query = String.format("insert into typology "
+                                   + "(typo) values ('%s') returning *;"
+                                   , typology.getName());
+        return executeQuery(query);
     }
     
     /**
      * Update a typology in a database
      * @param typology the typology to update
      * @return the updated typology
+     * @throws java.sql.SQLException
      */
     @Override
-    public Typology update(Typology typology) {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement = 
-                    conn.prepareStatement("update typology "
-                    + "set typo = ? "
-                    + "where id = ? returning *;");
-            prepareStatement.setString(1, typology.getName());
-            prepareStatement.setInt(2, typology.getId());
-            ResultSet rs = prepareStatement.executeQuery();
-            Typology dbTypology = null;
-            while (rs.next()) {
-                dbTypology = new Typology(rs.getInt("id"), rs.getString("typo"));
-            }
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return dbTypology;
-        } catch (SQLException ex) {
-            Logger.getLogger(TypologyDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public Typology update(Typology typology) throws SQLException {
+        String query = String.format("update typology "
+                                   + "set typo = '%s' "
+                                   + "where id = %d returning *;"
+                                   , typology.getName(), typology.getId());
+        return executeQuery(query);
     }
 
     /**
      * Delete a typology with given id from a database
      * @param id the id which identifies the typology
      * @return the deleted typology
+     * @throws java.sql.SQLException
      */
     @Override
-    public Typology delete(int id) {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement = 
-                    conn.prepareStatement("delete from typology "
-                    + "where id = ? returning *;");
-            prepareStatement.setInt(1, id);
-            ResultSet rs = prepareStatement.executeQuery();
-            Typology dbTypology = null;
-            while (rs.next()) {
-                dbTypology = new Typology(rs.getInt("id"), rs.getString("typo"));
-            }
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return dbTypology;
-        } catch (SQLException ex) {
-            Logger.getLogger(TypologyDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public Typology delete(int id) throws SQLException {
+        String query = String.format("delete from typology "
+                                   + "where id = %d returning *;", id);
+        return executeQuery(query);
     }
 
     /**
      * Delete all typologies from a database
-     * @return the number of deleted typologies
+     * @return the set of deleted typologies
+     * @throws java.sql.SQLException
      */
     @Override
-    public int deleteAll() {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement = 
-                    conn.prepareStatement("delete from typology "
-                    + "where true;");
-            int deletedRows = prepareStatement.executeUpdate();
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return deletedRows;
-        } catch (SQLException ex) {
-            Logger.getLogger(TypologyDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
+    public Set<Typology> deleteAll() throws SQLException {
+        String query = "delete from typology returning *;";
+        return executeSetQuery(query);
     }
 
     /** 
      * Retrieve a typology with given id from a database
      * @param id the id which identifies the typology
      * @return the typology retrieved
+     * @throws java.sql.SQLException
      */
     @Override
-    public Typology get(int id) {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement = 
-                    conn.prepareStatement("select * from typology "
-                    + "where id = ?;");
-            prepareStatement.setInt(1, id);
-            ResultSet rs = prepareStatement.executeQuery();
-            Typology dbTypology = null;
-            while (rs.next()) {
-                dbTypology = new Typology(rs.getInt("id"), rs.getString("typo"));
-            }
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return dbTypology;
-        } catch (SQLException ex) {
-            Logger.getLogger(TypologyDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public Typology get(int id) throws SQLException {
+        String query = String.format("select * from typology "
+                                   + "where id = %d;", id);
+        return executeQuery(query);
     }
 
     /**
      * Retrieve all the typologies from a database
-     * @return the list of the typologies retrieved
+     * @return the set of the typologies retrieved
+     * @throws java.sql.SQLException
      */
     @Override
-    public List<Typology> getAll() {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        List<Typology> typologies = new ArrayList<>();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement = 
-                    conn.prepareStatement("select * from typology;");
-            ResultSet rs = prepareStatement.executeQuery();
-            Typology dbTypology;
-            while (rs.next()) {
-                dbTypology = new Typology(rs.getInt("id"), rs.getString("typo"));
-                typologies.add(dbTypology);
-            }
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return typologies;
-        } catch (SQLException ex) {
-            Logger.getLogger(TypologyDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public Set<Typology> getAll() throws SQLException {
+        String query = "select * from typology;";
+        return executeSetQuery(query);
     }
     
 }

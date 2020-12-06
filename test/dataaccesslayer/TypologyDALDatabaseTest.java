@@ -8,11 +8,9 @@ package dataaccesslayer;
 import businesslogiclayer.Typology;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.After;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -23,29 +21,21 @@ import static org.junit.Assert.*;
  */
 public class TypologyDALDatabaseTest {
     
-    private TypologyDALDatabase typologyDAL;
-    private Connection conn;
+    private static TypologyDALDatabase typologyDAL;
+    private static Connection conn;
     
     public TypologyDALDatabaseTest() {
     }
     
     @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() throws SQLException {
+    public static void setUpClass() throws SQLException {
         typologyDAL = new TypologyDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }
     
-    @After
-    public void tearDown() throws SQLException {
+    @AfterClass
+    public static void tearDownClass() throws SQLException {
         conn.rollback();
         conn.close();
     }
@@ -54,9 +44,10 @@ public class TypologyDALDatabaseTest {
      * Create a local typology
      * Insert it into db and retrieve the db version
      * Compare the two typologies
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testInsert () {
+    public void testInsert () throws SQLException {
         Typology localTypology = new Typology("prova");
         Typology dbTypology = typologyDAL.insert(localTypology);
         localTypology.setId(dbTypology.getId());
@@ -69,9 +60,10 @@ public class TypologyDALDatabaseTest {
      * Update the local typology
      * Update it into db and retrieve the db version
      * Compare the two typologies
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdate () {
+    public void testUpdate () throws SQLException {
         Typology localTypology = new Typology("test");
         Typology dbTypology = typologyDAL.insert(localTypology);
         localTypology.setId(dbTypology.getId());
@@ -87,9 +79,10 @@ public class TypologyDALDatabaseTest {
      * Delete it from db and retrieve the db version
      * Compare the two version
      * Delete a non existing typology from db and check if return null
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testDelete () {
+    public void testDelete () throws SQLException {
         Typology localTypology = new Typology("test");
         Typology dbTypology = typologyDAL.insert(localTypology);
         localTypology.setId(dbTypology.getId());
@@ -104,25 +97,27 @@ public class TypologyDALDatabaseTest {
      * Verify if the number of deleted typologies is equals to the size of the table
      * Verify if the size of the table is zero after the deletion
      * Verify if the deletion on an empty table returns zero
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testDeleteAll () {
+    public void testDeleteAll () throws SQLException {
         new ActivityDALDatabase().deleteAll();
-        typologyDAL.insert(new Typology("test"));
+        typologyDAL.insert(new Typology("test1"));
         typologyDAL.insert(new Typology("test2"));
         int tableSize = typologyDAL.getAll().size();
-        assertEquals(tableSize, typologyDAL.deleteAll());
+        assertEquals(tableSize, typologyDAL.deleteAll().size());
         assertEquals(0, typologyDAL.getAll().size());
-        assertEquals(0, typologyDAL.deleteAll());
+        assertEquals(0, typologyDAL.deleteAll().size());
     }
     
     /**
      * Create a local typology
      * Insert it into db and retrieve the db version
      * Get the typology from db and compare it with the local typology
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testGet () {
+    public void testGet () throws SQLException {
         Typology localTypology = new Typology("test");
         Typology dbTypology = typologyDAL.insert(localTypology);
         localTypology.setId(dbTypology.getId());
@@ -135,10 +130,11 @@ public class TypologyDALDatabaseTest {
      * Create a list of local typologies
      * Insert one by one typologies both in the local list and in db
      * Get all the typologies from db and compare them with the local list
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testGetAll () {
-        List<Typology> localTypologies = new ArrayList<>();
+    public void testGetAll () throws SQLException {
+        Set<Typology> localTypologies = new HashSet<>();
         Typology typology1 = new Typology("typo1");
         typology1 = typologyDAL.insert(typology1);
         localTypologies.add(typology1);
@@ -148,7 +144,7 @@ public class TypologyDALDatabaseTest {
         Typology typology3 = new Typology("typo3");
         typology3 = typologyDAL.insert(typology3);
         localTypologies.add(typology3);
-        List<Typology> dbTypologies = typologyDAL.getAll();
+        Set<Typology> dbTypologies = typologyDAL.getAll();
         assertTrue(dbTypologies.containsAll(localTypologies));
     }
 }
