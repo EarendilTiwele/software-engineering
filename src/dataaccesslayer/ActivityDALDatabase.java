@@ -6,6 +6,7 @@
 package dataaccesslayer;
 
 import businesslogiclayer.Activity;
+import businesslogiclayer.Competency;
 import businesslogiclayer.PlannedActivity;
 import businesslogiclayer.Procedure;
 import businesslogiclayer.Site;
@@ -40,6 +41,11 @@ public class ActivityDALDatabase extends AbstractDAL<Activity> implements Activi
         ProcedureDAL procedureDAL = new ProcedureDALDatabase();
         int procedureId = rs.getInt("procedure");
         Procedure procedure = procedureDAL.get(procedureId);
+        ProcedureHasCompetenciesDAL procedureHasCompetencies = new ProcedureHasCompetenciesDALDatabase();
+        for (Competency competency : procedureHasCompetencies.getAllCompetencies(procedure))
+        {
+            procedure.addCompetency(competency);
+        }
         /*-------------------------------------------------------*/
         TypologyDAL typologyDAL = new TypologyDALDatabase();
         int typologyId = rs.getInt("type");
