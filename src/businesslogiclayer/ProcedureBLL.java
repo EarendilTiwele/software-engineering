@@ -7,6 +7,8 @@ package businesslogiclayer;
 
 import dataaccesslayer.ProcedureDAL;
 import dataaccesslayer.ProcedureDALDatabase;
+import dataaccesslayer.ProcedureHasCompetenciesDAL;
+import dataaccesslayer.ProcedureHasCompetenciesDALDatabase;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +38,24 @@ public class ProcedureBLL {
     }
 
     public List<Procedure> getAll() throws SQLException {
-        return new ArrayList<>(procedureDAL.getAll());
+        List<Procedure> listProcedure = new ArrayList<>();
+        ProcedureHasCompetenciesDAL procedureHasCompetencies = new ProcedureHasCompetenciesDALDatabase();
+        for (Procedure procedure : procedureDAL.getAll()) {
+            for (Competency competency : procedureHasCompetencies.getAllCompetencies(procedure)) {
+                procedure.addCompetency(competency);
+            }
+            listProcedure.add(procedure);
+        }
+        return listProcedure;
     }
 
     public Procedure get(int id) throws SQLException {
-        return procedureDAL.get(id);
+        Procedure procedure = procedureDAL.get(id);
+        ProcedureHasCompetenciesDAL procedureHasCompetencies = new ProcedureHasCompetenciesDALDatabase();
+        for (Competency competency : procedureHasCompetencies.getAllCompetencies(procedure)) {
+            procedure.addCompetency(competency);
+        }
+        return procedure;
     }
 
 }
