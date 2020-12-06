@@ -7,7 +7,8 @@ package businesslogiclayer;
 
 import dataaccesslayer.SiteDAL;
 import dataaccesslayer.SiteDALDatabase;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Set;
 
 /**
  *
@@ -15,29 +16,29 @@ import java.util.List;
  */
 public class SiteBLL {
 
-    private SiteDAL siteDAL;
+    private final SiteDAL siteDAL;
 
     public SiteBLL() {
         siteDAL = new SiteDALDatabase();
     }
 
-    public Site insert(Site site) {
+    public Site insert(Site site) throws SQLException {
         return siteDAL.insert(site);
     }
     
-    public Site update (Site site){
+    public Site update (Site site) throws SQLException {
         return siteDAL.update(site);
     }
     
-    public Site delete(int id){
+    public Site delete(int id) throws SQLException {
         return siteDAL.delete(id);
     }
     
-    public List<Site> getAll(){
+    public Set<Site> getAll() throws SQLException {
         return siteDAL.getAll();
     }
     
-    public Site get(int id){
+    public Site get(int id) throws SQLException {
         return siteDAL.get(id);
     }
 }
