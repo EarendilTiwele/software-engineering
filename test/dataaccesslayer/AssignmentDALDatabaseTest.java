@@ -132,7 +132,7 @@ public class AssignmentDALDatabaseTest {
                 interruptible, week, procedure, workspaceNotes));
 
         /*------------------------------------------------------------------------------------*/
-        site = new Site(0, "Lamborghini", "Sant'Agata bolognese");
+        site = new Site(0, "Lamborghini", "SantAgata bolognese");
         siteDAL = new SiteDALDatabase();
         site = siteDAL.insert(site);
 

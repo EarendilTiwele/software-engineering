@@ -8,6 +8,8 @@ package businesslogiclayer;
 import dataaccesslayer.SiteDAL;
 import dataaccesslayer.SiteDALDatabase;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,8 +36,8 @@ public class SiteBLL {
         return siteDAL.delete(id);
     }
     
-    public Set<Site> getAll() throws SQLException {
-        return siteDAL.getAll();
+    public List<Site> getAll() throws SQLException {
+        return new ArrayList<>(siteDAL.getAll());
     }
     
     public Site get(int id) throws SQLException {

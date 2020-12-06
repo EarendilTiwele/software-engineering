@@ -36,11 +36,7 @@ public class ProcedureBLL {
     }
 
     public List<Procedure> getAll() throws SQLException {
-        List<Procedure> procedureList = new ArrayList<>();
-        for (Procedure p : procedureDAL.getAll()) {
-            procedureList.add(p);
-        }
-        return procedureList;
+        return new ArrayList<>(procedureDAL.getAll());
     }
 
     public Procedure get(int id) throws SQLException {

@@ -8,6 +8,8 @@ package businesslogiclayer;
 import dataaccesslayer.TypologyDAL;
 import dataaccesslayer.TypologyDALDatabase;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,8 +40,8 @@ public class TypologyBLL {
         return typologyDAL.get(id);
     }
     
-    public Set<Typology> getAll() throws SQLException {
-        return typologyDAL.getAll();
+    public List<Typology> getAll() throws SQLException {
+        return new ArrayList<>(typologyDAL.getAll());
     }
     
 }

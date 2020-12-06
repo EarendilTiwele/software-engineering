@@ -10,7 +10,6 @@ import dataaccesslayer.ActivityDALDatabase;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -37,11 +36,7 @@ public class ActivityBLL {
     }
     
     public List<Activity> getAll() throws SQLException {
-        List<Activity> activityList = new ArrayList<>();
-        for (Activity activity:activityDAL.getAll()){
-            activityList.add(activity);
-        }
-        return activityList;
+        return new ArrayList<>(activityDAL.getAll());
     }
     
     public Activity get(int id) throws SQLException {
@@ -49,19 +44,11 @@ public class ActivityBLL {
     }
     
     public List<Activity> getAllOfWeek(int week) throws SQLException {
-       List<Activity> activityList = new ArrayList<>();
-        for (Activity activity:activityDAL.getAll()){
-            activityList.add(activity);
-        }
-        return activityList;
+       return new ArrayList<>(activityDAL.getAllOfWeek(week));
     }
     
     public List<Activity> getAllPlannedOfWeek(int week) throws SQLException{
-        List<Activity> activityList = new ArrayList<>();
-        for (Activity activity:activityDAL.getAll()){
-            activityList.add(activity);
-        }
-        return activityList;
+        return new ArrayList<>(activityDAL.getAllPlannedOfWeek(week));
     }
     
 }

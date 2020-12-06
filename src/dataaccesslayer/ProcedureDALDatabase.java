@@ -23,20 +23,20 @@ public class ProcedureDALDatabase extends AbstractDAL<Procedure> implements Proc
     @Override
     public Procedure convertToEntity(ResultSet rs) throws SQLException {
         Procedure procedure = new Procedure(rs.getInt("id"), rs.getString("name"), rs.getString("smp"));
-        PreparedStatement prepareStatement
-                    = DatabaseConnection.getConnection().prepareStatement("select tb1.id as ProcedureId, tb1.name as ProcedureName, tb1.smp as ProcedureSmp,\n" +
-                    "competency.id as CompetencyId, competency.description as CompetencyDescription " +
-                    "from (procedure inner join procedurehascompetencies on " +
-                    "procedure.id = procedurehascompetencies.procedureid) as tb1 " +
-                    "inner join competency on tb1.competencyid = competency.id "+
-                    "where ProcedureId = ?; ");
-            prepareStatement.setInt(1, procedure.getId());
-            ResultSet rs2 = prepareStatement.executeQuery();
-            Competency competency = null;
-            while (rs2.next()) {
-                competency = new Competency(rs.getInt("CompetencyId"), rs.getString("CompetencyDescription"));
-                procedure.addCompetency(competency);
-            }
+//        PreparedStatement prepareStatement
+//                    = DatabaseConnection.getConnection().prepareStatement("select tb1.id as ProcedureId, tb1.name as ProcedureName, tb1.smp as ProcedureSmp, " +
+//                    "competency.id as CompetencyId, competency.description as CompetencyDescription " +
+//                    "from (procedure inner join procedurehascompetencies on " +
+//                    "procedure.id = procedurehascompetencies.procedureid) as tb1 " +
+//                    "inner join competency on tb1.competencyid = competency.id "+
+//                    "where ProcedureId = ?; ");
+//            prepareStatement.setInt(1, procedure.getId());
+//            ResultSet rs2 = prepareStatement.executeQuery();
+//            Competency competency = null;
+//            while (rs2.next()) {
+//                competency = new Competency(rs.getInt("CompetencyId"), rs.getString("CompetencyDescription"));
+//                procedure.addCompetency(competency);
+//            }
          return procedure;
     }
 

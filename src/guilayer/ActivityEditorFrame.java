@@ -90,19 +90,23 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     private void initCreateGUI() {
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = (() -> {
-            SiteBLL siteBLL = new SiteBLL();
-            List<Site> listSites = siteBLL.getAll();
-            TypologyBLL typologyBLL = new TypologyBLL();
-            List<Typology> listTypologies = typologyBLL.getAll();
-            ProcedureBLL procedureBLL = new ProcedureBLL();
-            List<Procedure> listProcedure = procedureBLL.getAll();
-
-            SwingUtilities.invokeLater(() -> {
-                addListToComboBox(listSites, siteComboBox);
-                addListToComboBox(listTypologies, typologyComboBox);
-                addListToComboBox(listProcedure, procedureComboBox);
-                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            });
+            try {
+                SiteBLL siteBLL = new SiteBLL();
+                List<Site> listSites = siteBLL.getAll();
+                TypologyBLL typologyBLL = new TypologyBLL();
+                List<Typology> listTypologies = typologyBLL.getAll();
+                ProcedureBLL procedureBLL = new ProcedureBLL();
+                List<Procedure> listProcedure = procedureBLL.getAll();
+                
+                SwingUtilities.invokeLater(() -> {
+                    addListToComboBox(listSites, siteComboBox);
+                    addListToComboBox(listTypologies, typologyComboBox);
+                    addListToComboBox(listProcedure, procedureComboBox);
+                    this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                });
+            } catch (SQLException ex) {
+                Logger.getLogger(ActivityEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
 
         new Thread(loader).start();
