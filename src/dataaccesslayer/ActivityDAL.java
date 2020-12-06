@@ -7,7 +7,8 @@ package dataaccesslayer;
 
 import businesslogiclayer.Activity;
 import java.sql.ResultSet;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Set;
 
 /**
  *
@@ -21,7 +22,7 @@ public interface ActivityDAL {
      * @param activity
      * @return the version of the activity presents after the insert operation.
      */
-    public Activity insert(Activity activity);
+    public Activity insert(Activity activity) throws SQLException;
 
     /**
      * Update an activity
@@ -29,7 +30,7 @@ public interface ActivityDAL {
      * @param activity
      * @return the version of the activity presents after the update operation.
      */
-    public Activity update(Activity activity);
+    public Activity update(Activity activity) throws SQLException;
 
     /**
      * Delete an activity
@@ -37,14 +38,14 @@ public interface ActivityDAL {
      * @param id
      * @return the version of the activity presents before the delete operation.
      */
-    public Activity delete(int id);
+    public Activity delete(int id) throws SQLException;
 
     /**
      * Retrieve all activities present
      *
      * @return the list of activities
      */
-    public List<Activity> getAll();
+    public Set<Activity> getAll() throws SQLException;
 
     /**
      * Retrieve the activity with a specified id
@@ -52,28 +53,31 @@ public interface ActivityDAL {
      * @param id
      * @return the activity with the specified id
      */
-    public Activity get(int id);
+    public Activity get(int id) throws SQLException;
 
     /**
      * Retrieve the activities with a specified week
      *
      * @param week
      * @return the activities with the specified week
+     * @throws java.sql.SQLException
      */
-    public List<Activity> getAllOfWeek(int week);
+    public Set<Activity> getAllOfWeek(int week) throws SQLException;
 
     /**
      * Retrieve the planned activities with a specified week
      *
      * @param week
      * @return
+     * @throws java.sql.SQLException
      */
-    public List<Activity> getAllPlannedOfWeek(int week);
+    public Set<Activity> getAllPlannedOfWeek(int week) throws SQLException;
 
     /**
      * Delete all activities
      * @return the list of activities before the delete operation
+     * @throws java.sql.SQLException
      */
-    public List<Activity> deleteAll();
+    public Set<Activity> deleteAll() throws SQLException;
 
 }

@@ -11,7 +11,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -25,28 +27,34 @@ import static org.junit.Assert.*;
  */
 public class ProcedureDALDatabaseTest {
 
-    private ProcedureDAL procedureDALDatabase;
-    private Connection conn;
+    private static ProcedureDAL procedureDALDatabase;
+    private static Connection conn;
 
-    @Before
-    public void setUp() throws SQLException {
+    @BeforeClass
+    public static void setUpClass() throws SQLException {
         procedureDALDatabase = new ProcedureDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
-        ActivityDAL activityDAL = new ActivityDALDatabase();
-        activityDAL.deleteAll();
-        PreparedStatement prepareStatement = conn.prepareStatement("delete from  procedurehascompetencies");
-        prepareStatement.execute();
-        prepareStatement = conn.prepareStatement("delete from competency ");
-        prepareStatement.execute();
-        procedureDALDatabase.deleteAll();
     }
 
-    @After
-    public void tearDown() throws SQLException {
+    @AfterClass
+    public static void tearDownClass() throws SQLException {
         conn.rollback();
         conn.close();
     }
+
+    @Before
+    public void setUp() throws SQLException {
+        PreparedStatement prepareStatement = conn.prepareStatement("delete from  activity");
+        prepareStatement.execute();
+        prepareStatement = conn.prepareStatement("delete from  procedurehascompetencies");
+        prepareStatement.execute();
+        prepareStatement = conn.prepareStatement("delete from competency ");
+        prepareStatement.execute();
+        prepareStatement = conn.prepareStatement("delete from procedure ");
+        prepareStatement.execute();
+    }
+
 
     /**
      * Test the connection with the database checking that the connection is
@@ -63,9 +71,11 @@ public class ProcedureDALDatabaseTest {
     /**
      * Create a local procedure Insert it into db and retrieve the db version
      * Compare the two procedures
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testInsert() {
+    public void testInsert() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         procedure = procedureDALDatabase.insert(procedure);
         assertNotNull(procedure);
@@ -78,9 +88,11 @@ public class ProcedureDALDatabaseTest {
      * Create a local procedure Insert it into db and retrieve the db version
      * Update the local procedure Update it into db and retrieve the db version
      * Compare the two procedures
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdate() {
+    public void testUpdate() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         procedure = procedureDALDatabase.insert(procedure);
         assertNotNull(procedure);
@@ -95,9 +107,11 @@ public class ProcedureDALDatabaseTest {
      * Create a local procedure Insert it into db and retrieve the db version
      * Delete it form db Delete a non existing procedure from db and check if
      * return null
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testDelete() {
+    public void testDelete() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         procedure = procedureDALDatabase.insert(procedure);
         assertNotNull(procedure);
@@ -110,9 +124,11 @@ public class ProcedureDALDatabaseTest {
      * Update the local list with the db version of the procedures Get all the
      * procedures from db and check that the procedures in the local list are
      * present in the db version list.
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testGetAll() {
+    public void testGetAll() throws SQLException {
         List<Procedure> procedureList = new ArrayList<>();
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         Procedure procedure2 = new Procedure(procedure.getId(), "moto maintenance", "./moto.pdf");
@@ -120,22 +136,24 @@ public class ProcedureDALDatabaseTest {
         procedureList.add(procedure);
         procedureList.add(procedure2);
         procedureList.add(procedure3);
-        List<Procedure> procedureResultList1 = new ArrayList<>();
-        List<Procedure> procedureResultList2;
+        Set<Procedure> procedureResultSet1 = new HashSet<>();
+        Set<Procedure> procedureResultSet2;
         for (Procedure p : procedureList) {
-            procedureResultList1.add(procedureDALDatabase.insert(p));
+            procedureResultSet1.add(procedureDALDatabase.insert(p));
         }
-        procedureResultList2 = procedureDALDatabase.getAll();
-        for (Procedure p : procedureResultList1) {
-            assertTrue(procedureResultList2.contains(p));
+        procedureResultSet2 = procedureDALDatabase.getAll();
+        for (Procedure p : procedureResultSet1) {
+            assertTrue(procedureResultSet2.contains(p));
         }
     }
 
     /**
      * Create a local procedure Insert it into db and retrieve the db version
-     * Create a new Competency and assign it to the procedure
-     * Insert the procedure in the database
-     * Get the procedure from db and compare it with the local procedure
+     * Create a new Competency and assign it to the procedure Insert the
+     * procedure in the database Get the procedure from db and compare it with
+     * the local procedure
+     *
+     * @throws java.sql.SQLException
      */
     @Test
     public void testGet() throws SQLException {
@@ -156,14 +174,16 @@ public class ProcedureDALDatabaseTest {
     /**
      * Insert 2 procedures Check the table size before the deleteAll Check the
      * table size after the deleAll that must be 0
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testDeleteAll() {
-        List<Procedure> procedureList = new ArrayList<>();
+    public void testDeleteAll() throws SQLException {
+        Set<Procedure> procedureSet = new HashSet<>();
         procedureDALDatabase.insert(new Procedure("procedure1", "/procedure1.pdf"));
         procedureDALDatabase.insert(new Procedure("procedure2", "/procedure2.pdf"));
-        int tableSize = procedureDALDatabase.getAll().size();
-        assertEquals(tableSize, procedureDALDatabase.deleteAll().size());
+        procedureSet = procedureDALDatabase.getAll();
+        assertEquals(procedureSet, procedureDALDatabase.deleteAll());
         assertEquals(0, procedureDALDatabase.getAll().size());
     }
 

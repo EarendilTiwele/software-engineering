@@ -6,7 +6,9 @@
 package dataaccesslayer;
 
 import businesslogiclayer.Procedure;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -14,10 +16,10 @@ import java.util.List;
  */
 public interface ProcedureDAL {
     
-    public Procedure insert(Procedure procedure);
-    public Procedure update(Procedure procedure);
-    public Procedure delete(int id);
-    public List<Procedure> getAll();
-    public Procedure get(int id);
-    public List<Procedure> deleteAll();
+    public Procedure insert(Procedure procedure) throws SQLException;
+    public Procedure update(Procedure procedure) throws SQLException;
+    public Procedure delete(int id) throws SQLException;
+    public Set<Procedure> getAll() throws SQLException;
+    public Procedure get(int id) throws SQLException;
+    public Set<Procedure> deleteAll() throws SQLException;
 }

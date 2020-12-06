@@ -25,31 +25,33 @@ import static org.junit.Assert.*;
  */
 public class ProcedureHasCompetenciesDALTest {
 
-    ProcedureHasCompetenciesDAL procedureHasCompetenciesDAL;
-    ProcedureDAL procedureDAL;
-    ActivityDAL activityDAL;
-    private Connection conn;
+    private static ProcedureHasCompetenciesDAL procedureHasCompetenciesDAL;
+    private static Connection conn;
+
+    @BeforeClass
+    public static void setUpClass() throws SQLException {
+        procedureHasCompetenciesDAL = new ProcedureHasCompetenciesDALDatabase();
+        conn = DatabaseConnection.getConnection();
+        conn.setAutoCommit(false);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws SQLException {
+        conn.rollback();
+        conn.close();
+    }
 
     @Before
     public void setUp() throws SQLException {
-        procedureHasCompetenciesDAL = new ProcedureHasCompetenciesDALDatabase();
-        activityDAL = new ActivityDALDatabase();
-        procedureDAL = new ProcedureDALDatabase();
-        conn = DatabaseConnection.getConnection();
-        conn.setAutoCommit(false);
         PreparedStatement prepareStatement = conn.prepareStatement("delete from  procedurehascompetencies");
         prepareStatement.execute();
-        activityDAL.deleteAll();
-        procedureDAL.deleteAll();
+        prepareStatement = conn.prepareStatement("delete from  activity");
+        prepareStatement.execute();
+        prepareStatement = conn.prepareStatement("delete from  procedure");
+        prepareStatement.execute();
         prepareStatement = conn.prepareStatement("delete from competency ");
         prepareStatement.execute();
         /*also deleteAll of the competencies*/
-    }
-
-    @After
-    public void tearDown() throws SQLException {
-        conn.rollback();
-        conn.close();
     }
 
     /**
@@ -65,23 +67,24 @@ public class ProcedureHasCompetenciesDALTest {
     }
 
     /**
-     * Create new Procedure with 3 competencies required
-     * Insert the Procedure in the database
-     * Insert the 3 competencies in the database
-     * Insert the associations in the ProcedureHasCompetencies table
-     * Get the procedure from the database
-     * Check that the local copy and the database version of the procedure
-     * are equal.
-     * @throws SQLException 
+     * Create new Procedure with 3 competencies required Insert the Procedure in
+     * the database Insert the 3 competencies in the database Insert the
+     * associations in the ProcedureHasCompetencies table Get the procedure from
+     * the database Check that the local copy and the database version of the
+     * procedure are equal.
+     *
+     * @throws SQLException
      */
     @Test
     public void testgetAllCompetencies() throws SQLException {
-        Procedure procedure = new Procedure("procedure1", "smp1");
-        procedure = procedureDAL.insert(procedure);
+        Procedure procedure = new Procedure(1, "procedure1", "smp1");
+        PreparedStatement prepareStatement = conn.prepareStatement(String.format("insert into procedure (id, name, smp)"
+                + " VALUES (%d, '%s', '%s')", procedure.getId(), procedure.getName(), procedure.getSmp()));
+        prepareStatement.execute();
         Set<Competency> competencySet = new HashSet<>();
 
         competencySet.add(new Competency(1, "mechanical competence"));
-        PreparedStatement prepareStatement = conn.prepareStatement("insert into competency VALUES (1, 'mechanical competence')");
+        prepareStatement = conn.prepareStatement("insert into competency VALUES (1, 'mechanical competence')");
         prepareStatement.execute();
         competencySet.add(new Competency(2, "hydraulic competence"));
         prepareStatement = conn.prepareStatement("insert into competency VALUES (2, 'hydraulic competence')");
@@ -99,11 +102,10 @@ public class ProcedureHasCompetenciesDALTest {
         prepareStatement = conn.prepareStatement("insert into procedurehascompetencies VALUES(?,3)");
         prepareStatement.setInt(1, procedure.getId());
         prepareStatement.execute();
-        
-        Set<Competency> competencySet2 = procedureHasCompetenciesDAL.getAllCompetencies(procedure);
-        
-        assertEquals(competencySet, competencySet2);
 
+        Set<Competency> competencySet2 = procedureHasCompetenciesDAL.getAllCompetencies(procedure);
+
+        assertEquals(competencySet, competencySet2);
     }
 
     // TODO add test methods here.

@@ -13,8 +13,11 @@ import businesslogiclayer.Typology;
 import dataaccesslayer.ActivityDALDatabase;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -24,24 +27,46 @@ import static org.junit.Assert.*;
  */
 public class ActivityDALDatabaseTest {
 
-    private ActivityDAL activityDALDatabase;
-    private Connection conn;
+    private static ActivityDAL activityDALDatabase;
+    private static Connection conn;
 
-    
-    public List<Activity> sampleListActivity() {
+    @BeforeClass
+    public static void setUpClass() throws SQLException {
+        activityDALDatabase = new ActivityDALDatabase();
+        conn = DatabaseConnection.getConnection();
+        conn.setAutoCommit(false);
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws SQLException {
+        conn.rollback();
+        conn.close();
+    }
+
+    @Before
+    public void setUp() throws SQLException {
+        Statement stm = conn.createStatement();
+        stm.executeUpdate("delete from activity where true");
+        stm.executeUpdate("delete from procedure where true");
+        stm.executeUpdate("delete from typology where true");
+        stm.executeUpdate("delete from site where true");
+    }
+
+    public List<Activity> sampleListActivity() throws SQLException {
         List<Activity> activityList = new ArrayList<>();
+        Statement stm = conn.createStatement();
 
         Site site = new Site(189, "Ferrari", "Maranello");
-        SiteDAL siteDAL = new SiteDALDatabase();
-        site = siteDAL.insert(site);
+        stm.executeUpdate(String.format("insert into Site values (%d,'%s','%s');",
+                site.getId(), site.getFactory(), site.getArea()));
 
         Typology typology = new Typology(3, "Hydraulic");
-        TypologyDAL typologyDAL = new TypologyDALDatabase();
-        typology = typologyDAL.insert(typology);
+        stm.executeUpdate(String.format("insert into Typology values (%d,'%s');",
+                typology.getId(), typology.getName()));
 
         Procedure procedure = new Procedure(1, "hydraulicProcedure", "SMP1");
-        ProcedureDAL procedureDAL = new ProcedureDALDatabase();
-        procedure = procedureDAL.insert(procedure);
+        stm.executeUpdate(String.format("insert into Procedure values (%d,'%s','%s');",
+                procedure.getId(), procedure.getName(), procedure.getSmp()));
 
         String description = "hydraulic maintenance activity";
         int intervationTime = 12;
@@ -52,17 +77,17 @@ public class ActivityDALDatabaseTest {
                 interruptible, week, procedure, workspaceNotes));
         /*------------------------------------------------------------------------------------*/
 
-        site = new Site(0, "Lamborghini", "Sant'Agata bolognese");
-        siteDAL = new SiteDALDatabase();
-        site = siteDAL.insert(site);
+        site = new Site(0, "Lamborghini", "Sant Agata bolognese");
+        stm.executeUpdate(String.format("insert into Site values (%d,'%s','%s');",
+                site.getId(), site.getFactory(), site.getArea()));
 
         typology = new Typology(0, "Mechanical");
-        typologyDAL = new TypologyDALDatabase();
-        typology = typologyDAL.insert(typology);
+        stm.executeUpdate(String.format("insert into Typology values (%d,'%s');",
+                typology.getId(), typology.getName()));
 
         procedure = new Procedure(0, "mechanicalProcedure", "SMP2");
-        procedureDAL = new ProcedureDALDatabase();
-        procedure = procedureDAL.insert(procedure);
+        stm.executeUpdate(String.format("insert into Procedure values (%d,'%s','%s');",
+                procedure.getId(), procedure.getName(), procedure.getSmp()));
 
         description = "mechanical maintenance activity";
         intervationTime = 15;
@@ -72,18 +97,18 @@ public class ActivityDALDatabaseTest {
         activityList.add(new PlannedActivity(1, site, typology, description, intervationTime,
                 interruptible, week, procedure, workspaceNotes));
         /*------------------------------------------------------------------------------------*/
-        site = new Site(0, "Fiat", "Torino");
-        siteDAL = new SiteDALDatabase();
-        site = siteDAL.insert(site);
+        site = new Site(100, "Fiat", "Torino");
+        stm.executeUpdate(String.format("insert into Site values (%d,'%s','%s');",
+                site.getId(), site.getFactory(), site.getArea()));
 
         typology = new Typology(2, "Eletrical");
-        typologyDAL = new TypologyDALDatabase();
-        typology = typologyDAL.insert(typology);
+        stm.executeUpdate(String.format("insert into Typology values (%d,'%s');",
+                typology.getId(), typology.getName()));
 
         procedure = new Procedure(3, "eletricalProcedure", "SMP3");
-        procedureDAL = new ProcedureDALDatabase();
-        procedure = procedureDAL.insert(procedure);
-        
+        stm.executeUpdate(String.format("insert into Procedure values (%d,'%s','%s');",
+                procedure.getId(), procedure.getName(), procedure.getSmp()));
+
         description = "eletrical maintenance activity";
         intervationTime = 19;
         interruptible = true;
@@ -93,26 +118,6 @@ public class ActivityDALDatabaseTest {
                 interruptible, week, procedure, workspaceNotes));
 
         return activityList;
-    }
-
-    @Before
-    public void setUp() throws SQLException {
-        activityDALDatabase = new ActivityDALDatabase();
-        conn = DatabaseConnection.getConnection();
-        conn.setAutoCommit(false);
-        ProcedureDAL procedureDAL = new ProcedureDALDatabase();
-        TypologyDAL typologyDAL = new TypologyDALDatabase();
-        SiteDAL siteDAL = new SiteDALDatabase();
-        activityDALDatabase.deleteAll();
-        procedureDAL.deleteAll();
-        typologyDAL.deleteAll();
-        siteDAL.deleteAll();
-    }
-
-    @After
-    public void tearDown() throws SQLException {
-        conn.rollback();
-        conn.close();
     }
 
     /**
@@ -133,7 +138,7 @@ public class ActivityDALDatabaseTest {
      *
      */
     @Test
-    public void testInsert() {
+    public void testInsert() throws SQLException {
         Activity activity = sampleListActivity().get(0);
         activity = activityDALDatabase.insert(activity);
         assertNotNull(activity);
@@ -147,7 +152,7 @@ public class ActivityDALDatabaseTest {
      * reinsert it. Check that the record is updated.
      */
     @Test
-    public void testuUpdate() {
+    public void testuUpdate() throws SQLException {
 
         List<Activity> activityList = sampleListActivity();
         Activity activity = activityList.get(0);
@@ -180,7 +185,7 @@ public class ActivityDALDatabaseTest {
      *
      */
     @Test
-    public void testDelete() {
+    public void testDelete() throws SQLException {
         Activity activity = sampleListActivity().get(0);
         activity = activityDALDatabase.insert(activity);
         assertNotNull(activity);
@@ -194,18 +199,18 @@ public class ActivityDALDatabaseTest {
      * and retrieve all list. Check that the both lists are equals
      */
     @Test
-    public void testGetAll() {
+    public void testGetAll() throws SQLException {
 
         List<Activity> activityList = sampleListActivity();
-        List<Activity> resultActivityList = new ArrayList<>();
+        Set<Activity> resultActivitySet = new HashSet<>();
         Activity resultActivity;
         for (Activity activity : activityList) {
             resultActivity = activityDALDatabase.insert(activity);
             assertNotNull(resultActivity);
-            resultActivityList.add(resultActivity);
+            resultActivitySet.add(resultActivity);
         }
-        List<Activity> activityList2 = activityDALDatabase.getAll();
-        assertTrue(resultActivityList.equals(activityList2));
+        Set<Activity> activityList2 = activityDALDatabase.getAll();
+        assertTrue(resultActivitySet.equals(activityList2));
 
     }
 
@@ -214,7 +219,7 @@ public class ActivityDALDatabaseTest {
      * Compare the local activity with the activity retrieve from the database
      */
     @Test
-    public void testGet() {
+    public void testGet() throws SQLException {
         Activity activity = sampleListActivity().get(0);
         activity = activityDALDatabase.insert(activity);
         assertNotNull(activity);
@@ -226,63 +231,64 @@ public class ActivityDALDatabaseTest {
      * Create a sample list of activities Insert each activity in the database
      * and retrieve all list Insert in the resulting list only the activity for
      * the specified week Select from the db the activities for the specified
-     * week Create a new list of activities 
-     * Check that the both lists are equals
+     * week Create a new list of activities Check that the both lists are equals
      */
     @Test
-    public void testGetAllOfWeek() {
+    public void testGetAllOfWeek() throws SQLException {
         List<Activity> activityList = sampleListActivity();
-        List<Activity> resultActivityList = new ArrayList<>();
+        Set<Activity> resultActivitySet = new HashSet<>();
         int week = 9;
         Activity resultActivity;
         for (Activity activity : activityList) {
             resultActivity = activityDALDatabase.insert(activity);
             assertNotNull(resultActivity);
             if (resultActivity.getWeek() == week) {
-                resultActivityList.add(resultActivity);
+                resultActivitySet.add(resultActivity);
             }
         }
-        List<Activity> activityList2 = activityDALDatabase.getAllOfWeek(week);
-        assertTrue(resultActivityList.equals(activityList2));
+        Set<Activity> activitySet2 = activityDALDatabase.getAllOfWeek(week);
+        assertTrue(resultActivitySet.equals(activitySet2));
     }
 
     /**
      * Create a sample list of activities Insert each activity in the database
      * and retrieve all list Insert in the resulting list only the activity for
      * the specified week Select from the db the activities for the specified
-     * week Create a new list of planned activities 
-     * Check that the both lists are equals
+     * week Create a new list of planned activities Check that the both lists
+     * are equals
      */
     @Test
-    public void testGetAllPlannedOfWeek() {
+    public void testGetAllPlannedOfWeek() throws SQLException {
         List<Activity> activityList = sampleListActivity();
-        List<Activity> resultActivityList = new ArrayList<>();
+        Set<Activity> resultActivitySet = new HashSet<>();
         int week = 9;
         Activity resultActivity;
         for (Activity activity : activityList) {
             resultActivity = activityDALDatabase.insert(activity);
             assertNotNull(resultActivity);
             if (resultActivity.getWeek() == week) {
-                resultActivityList.add(resultActivity);
+                resultActivitySet.add(resultActivity);
             }
         }
-        List<Activity> activityList2 = activityDALDatabase.getAllPlannedOfWeek(week);
-        assertTrue(resultActivityList.equals(activityList2));
+        Set<Activity> activitySet2 = activityDALDatabase.getAllPlannedOfWeek(week);
+        assertTrue(resultActivitySet.equals(activitySet2));
     }
-    
+
     /**
-     * Insert 2 activities
-     * Check the table size before the deleteAll
-     * Check the table size after the deleAll that must be 0
+     * Insert 2 activities Check the table size before the deleteAll Check the
+     * table size after the deleAll that must be 0
      */
     @Test
-    public void testDeleteAll()
-    {
+    public void testDeleteAll() throws SQLException {
         List<Activity> activityList = sampleListActivity();
+        HashSet<Activity> activitySet = new HashSet<>();
+        activitySet.add(activityList.get(0));
+        activitySet.add(activityList.get(1));
         activityDALDatabase.insert(activityList.get(0));
         activityDALDatabase.insert(activityList.get(1));
         int tableSize = activityDALDatabase.getAll().size();
-        assertEquals(tableSize, activityDALDatabase.deleteAll().size());
+        Set<Activity> activitySet2 = activityDALDatabase.deleteAll();
+        assertEquals(activitySet, activitySet2);
         assertEquals(0, activityDALDatabase.getAll().size());
     }
 

@@ -6,6 +6,7 @@
 package dataaccesslayer;
 
 import businesslogiclayer.Assignment;
+import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -18,5 +19,5 @@ public interface AssignmentDAL {
      * @param week
      * @return 
      */
-    public Set<Assignment> getAllForWeek(int week);
+    public Set<Assignment> getAllForWeek(int week) throws SQLException;
 }

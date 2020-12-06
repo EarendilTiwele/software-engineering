@@ -23,57 +23,38 @@ import java.util.logging.Logger;
  *
  * @author avall
  */
-public class AssignmentDALDatabase implements AssignmentDAL {
+public class AssignmentDALDatabase extends AbstractDAL<Assignment> implements AssignmentDAL {
 
-    private Connection conn;
+    @Override
+    public Assignment convertToEntity(ResultSet rs) throws SQLException {
+        ActivityDAL activityDAL = new ActivityDALDatabase();
+        UserDALDatabase userDAL = new UserDALDatabase();
+        int idactivity = rs.getInt("idactivity");
+        Activity activity = activityDAL.get(idactivity);
+        User user = userDAL.get(rs.getInt("idmaintainer"));
+        Maintainer maintainer = new Maintainer(user.getId(), user.getUsername(), user.getPassword());
+        MaintainerHasCompetenciesDALDatabase mhcDAL = new MaintainerHasCompetenciesDALDatabase();
+        Set<Competency> competencySet = null;
+        competencySet = mhcDAL.getAllCompetencies(maintainer);
+        for (Competency c : competencySet) {
+            maintainer.addCompetency(c);
+        }
+        Assignment assignment = new Assignment(maintainer, activity, rs.getString("day"), rs.getInt("hour"));
+        return assignment;
+    }
 
     /**
      * Get all Assignment with a specific week
+     *
      * @param week
-     * @return 
+     * @return
      */
     @Override
-    public Set<Assignment> getAllForWeek(int week) {
-        boolean connectionWasClosed = DatabaseConnection.isClosed();
-        Set<Assignment> assignmentSet = new HashSet<>();
-        ActivityDAL activityDAL = new ActivityDALDatabase();
-        UserDALDatabase userDAL = new UserDALDatabase();
-        try {
-            conn = DatabaseConnection.getConnection();
-            PreparedStatement prepareStatement
-                    = conn.prepareStatement("select idmaintainer, idactivity, day,hour from"
-                            + " assignment inner join activity on idactivity = activity.id"
-                            + " where week = ?; ");
-            prepareStatement.setInt(1, week);
-            ResultSet rs = prepareStatement.executeQuery();
-            Assignment assignment = null;
-            Activity activity = null;
-            User user = null;
-            Maintainer maintainer = null;
-            while (rs.next()) {
-                int idactivity = rs.getInt("idactivity");
-                activity = activityDAL.get(idactivity);
-                user = userDAL.get(rs.getInt("idmaintainer"));
-                maintainer = new Maintainer(user.getId(), user.getUsername(), user.getPassword());
-                MaintainerHasCompetenciesDALDatabase mhcDAL = new MaintainerHasCompetenciesDALDatabase();
-                Set<Competency> competencySet = null;
-                competencySet = mhcDAL.getAllCompetencies(maintainer);
-                for (Competency c : competencySet)
-                {
-                    maintainer.addCompetency(c);
-                }
-                assignment = new Assignment(maintainer, activity, rs.getString("day"), rs.getInt("hour"));
-                assignmentSet.add(assignment);
-            }
-            if (connectionWasClosed) {
-                conn.close();
-            }
-            return assignmentSet;
-        } catch (SQLException ex) {
-            Logger.getLogger(SiteDALDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-
+    public Set<Assignment> getAllForWeek(int week) throws SQLException {
+            String query = String.format("select idmaintainer, idactivity, day,hour from"
+                    + " assignment inner join activity on idactivity = activity.id"
+                    + " where week = %d;", week);
+            return executeSetQuery(query);
     }
 
 }

@@ -9,8 +9,11 @@ import businesslogiclayer.Activity;
 import businesslogiclayer.ActivityBLL;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
@@ -90,8 +93,13 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         // the database and to update the table.
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = () -> {
-            // Load all the scheduled activities for the week
-            activities = loadAllActivitiesOfWeek(week);
+            /*-----------------------*/
+            try {
+                // Load all the scheduled activities for the week
+                activities = loadAllActivitiesOfWeek(week);
+            } catch (SQLException ex) {
+                Logger.getLogger(ScheduledActivitiesFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             SwingUtilities.invokeLater(() -> {
                 updateTable();
@@ -190,7 +198,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @param week the week of the scheduled activities needed to load
      * @return
      */
-    private List<Activity> loadAllActivitiesOfWeek(int week) {
+    private List<Activity> loadAllActivitiesOfWeek(int week) throws SQLException {
         ActivityBLL activityBLL = new ActivityBLL();
         return activityBLL.getAllOfWeek(week);
 

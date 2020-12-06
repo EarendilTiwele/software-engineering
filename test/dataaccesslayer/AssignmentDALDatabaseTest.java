@@ -34,14 +34,24 @@ import static org.junit.Assert.*;
  */
 public class AssignmentDALDatabaseTest {
 
-    private AssignmentDAL assignmentDAL;
-    private Connection conn;
+    private static AssignmentDAL assignmentDAL;
+    private static Connection conn;
 
-    @Before
-    public void setUp() throws SQLException {
+    @BeforeClass
+    public static void setUpClass() throws SQLException {
         assignmentDAL = new AssignmentDALDatabase();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
+    }
+    
+    @AfterClass
+    public static void tearDownClass() throws SQLException {
+        conn.rollback();
+        conn.close();
+    }
+    
+    @Before
+    public void setUp() throws SQLException {
         PreparedStatement preparedStatement = conn.prepareStatement("delete from assignment");
         preparedStatement.execute();
         preparedStatement = conn.prepareStatement("delete from  activity");
@@ -60,11 +70,6 @@ public class AssignmentDALDatabaseTest {
         preparedStatement.execute();
     }
 
-    @After
-    public void tearDown() throws SQLException {
-        conn.rollback();
-        conn.close();
-    }
 
     /**
      * Test the connection with the database checking that the connection is
@@ -103,7 +108,7 @@ public class AssignmentDALDatabaseTest {
         assertEquals(assignmentSet, assignmentSet2);
     }
 
-    public List<Activity> sampleListActivity() {
+    public List<Activity> sampleListActivity() throws SQLException {
         List<Activity> activityList = new ArrayList<>();
 
         Site site = new Site(189, "Ferrari", "Maranello");

@@ -40,7 +40,7 @@ public class AssignmentBLL {
         this.userBLL = new UserBLL();
     }
 
-    public Set<Assignment> getAllforWeek(int week){
+    public Set<Assignment> getAllforWeek(int week) throws SQLException{
         return assignmentDAL.getAllForWeek(week);
     }
 

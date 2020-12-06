@@ -7,6 +7,8 @@ package businesslogiclayer;
 
 import dataaccesslayer.ProcedureDAL;
 import dataaccesslayer.ProcedureDALDatabase;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,23 +23,27 @@ public class ProcedureBLL {
         procedureDAL = new ProcedureDALDatabase();
     }
 
-    public Procedure insert(Procedure procedure) {
+    public Procedure insert(Procedure procedure) throws SQLException {
         return procedureDAL.insert(procedure);
     }
 
-    public Procedure update(Procedure procedure) {
+    public Procedure update(Procedure procedure) throws SQLException {
         return procedureDAL.update(procedure);
     }
 
-    public Procedure delete(int id) {
+    public Procedure delete(int id) throws SQLException {
         return procedureDAL.delete(id);
     }
 
-    public List<Procedure> getAll() {
-        return procedureDAL.getAll();
+    public List<Procedure> getAll() throws SQLException {
+        List<Procedure> procedureList = new ArrayList<>();
+        for (Procedure p : procedureDAL.getAll()) {
+            procedureList.add(p);
+        }
+        return procedureList;
     }
 
-    public Procedure get(int id) {
+    public Procedure get(int id) throws SQLException {
         return procedureDAL.get(id);
     }
 
