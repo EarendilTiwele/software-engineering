@@ -13,7 +13,7 @@ import java.sql.SQLException;
  *
  * @author alexd
  */
-public class CompetencyDALDatabase extends AbstractDAL<Competency> {
+public class CompetencyDALDatabase extends AbstractDAL<Competency> implements CompetencyDAL {
     
     @Override
     public Competency convertToEntity(ResultSet rs) throws SQLException {
@@ -28,6 +28,7 @@ public class CompetencyDALDatabase extends AbstractDAL<Competency> {
      * @return the competency retrieved
      * @throws java.sql.SQLException
      */
+    @Override
     public Competency get(int id) throws SQLException {
         String query = String.format("select * from competency "
                                    + "where id = %d;", id);
