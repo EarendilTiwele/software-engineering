@@ -7,6 +7,7 @@ package dataaccesslayer;
 
 import businesslogiclayer.Competency;
 import businesslogiclayer.Procedure;
+import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -18,6 +19,7 @@ public interface ProcedureHasCompetenciesDAL {
      * Get all competencies associated with a specific procedure
      * @param procedure
      * @return the competencies of the procedure
+     * @throws java.sql.SQLException
      */
-    public Set<Competency> getAllCompetencies(Procedure procedure);
+    public Set<Competency> getAllCompetencies(Procedure procedure) throws SQLException;
 }
