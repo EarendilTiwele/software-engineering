@@ -15,7 +15,8 @@ import java.util.Set;
  *
  * @author alexd
  */
-public class MaintainerHasCompetenciesDALDatabase extends AbstractDAL<Competency> {
+public class MaintainerHasCompetenciesDALDatabase 
+    extends AbstractDAL<Competency> implements MaintainerHasCompetenciesDAL {
 
     @Override
     public Competency convertToEntity(ResultSet rs) throws SQLException {
@@ -30,6 +31,7 @@ public class MaintainerHasCompetenciesDALDatabase extends AbstractDAL<Competency
      * @return the set of the competencies retrieved
      * @throws java.sql.SQLException
      */
+    @Override
     public Set<Competency> getAllCompetencies(Maintainer maintainer) throws SQLException {
         String query = String.format("select * from competency where id in "
                                    + "(select competencyId from "
