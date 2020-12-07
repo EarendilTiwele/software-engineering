@@ -5,6 +5,13 @@
  */
 package businesslogiclayer;
 
+import datatransferobjects.Maintainer;
+import datatransferobjects.Site;
+import datatransferobjects.Activity;
+import datatransferobjects.Assignment;
+import datatransferobjects.Procedure;
+import datatransferobjects.Typology;
+import datatransferobjects.PlannedActivity;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -81,7 +88,7 @@ public class AssignmentBLLTest {
         
     }
     /**
-     * Test of getAgenda method, of class AssignmentBLL.
+     * Test of getAgenda method, of class AssignmentBO.
      */
     @Test
     public void testGetAgendaOfThreeMaintainers() {
@@ -99,7 +106,7 @@ public class AssignmentBLLTest {
             expectedAgenda.put(maintainer,disponibilities );
         }
         
-        AssignmentBLL instance = new AssignmentBLL();
+        AssignmentBO instance = new AssignmentBO();
         Map expResult = expectedAgenda;
         Map result = instance.getAgenda(assignments, maintainers);
         assertEquals(expResult, result);
@@ -107,7 +114,7 @@ public class AssignmentBLLTest {
     }
     
     /**
-     * Test of getAgenda method, of class AssignmentBLL.
+     * Test of getAgenda method, of class AssignmentBO.
      */
     @Test
     public void testGetAgendaOfZeroMaintainer() {
@@ -124,7 +131,7 @@ public class AssignmentBLLTest {
             expectedAgenda.put(maintainer,disponibilities );
         }
         
-        AssignmentBLL instance = new AssignmentBLL();
+        AssignmentBO instance = new AssignmentBO();
         Map expResult = expectedAgenda;
         Map result = instance.getAgenda(assignments, maintainers);
         assertEquals(expResult, result);

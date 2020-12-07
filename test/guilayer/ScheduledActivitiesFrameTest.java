@@ -5,12 +5,12 @@
  */
 package guilayer;
 
-import businesslogiclayer.Activity;
-import businesslogiclayer.ActivityBLL;
-import businesslogiclayer.PlannedActivity;
-import businesslogiclayer.Procedure;
-import businesslogiclayer.Site;
-import businesslogiclayer.Typology;
+import datatransferobjects.Activity;
+import businesslogiclayer.ActivityBO;
+import datatransferobjects.PlannedActivity;
+import datatransferobjects.Procedure;
+import datatransferobjects.Site;
+import datatransferobjects.Typology;
 import java.awt.Component;
 import java.awt.Container;
 import java.sql.SQLException;
@@ -54,7 +54,7 @@ public class ScheduledActivitiesFrameTest {
     private static final String WEEK_COMBO_NAME = "Week combo box";
     
     // Activity BLL to retrieve scheduled activities
-    private ActivityBLL activityBLL;
+    private ActivityBO activityBLL;
 
     /**
      * Retrieves the component whose parent is <code>parent</code> named
@@ -98,7 +98,7 @@ public class ScheduledActivitiesFrameTest {
         //search for GUI components
         table = (JTable) getChildNamed(frame, SCHEDULED_TABLE_NAME);
         weekComboBox = (JComboBox<String>) getChildNamed(frame, WEEK_COMBO_NAME);
-        activityBLL = new ActivityBLL();
+        activityBLL = new ActivityBO();
         
     }
 

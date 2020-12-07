@@ -5,7 +5,8 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Competency;
+import dataaccesslayer.postgres.PostgresCompetencyDAO;
+import datatransferobjects.Competency;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,7 +21,7 @@ import org.junit.BeforeClass;
  */
 public class CompetencyDALDatabaseTest {
     
-    private static CompetencyDALDatabase competencyDAL;
+    private static PostgresCompetencyDAO competencyDAL;
     private static Connection conn;
     private static final int ID = 1;
     private static final String DESCRIPTION = "test";
@@ -30,7 +31,7 @@ public class CompetencyDALDatabaseTest {
     
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        competencyDAL = new CompetencyDALDatabase();
+        competencyDAL = new PostgresCompetencyDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
         Statement stm = conn.createStatement();

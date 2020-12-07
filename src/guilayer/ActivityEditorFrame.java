@@ -5,15 +5,15 @@
  */
 package guilayer;
 
-import businesslogiclayer.Activity;
-import businesslogiclayer.ActivityBLL;
-import businesslogiclayer.PlannedActivity;
-import businesslogiclayer.Procedure;
-import businesslogiclayer.ProcedureBLL;
-import businesslogiclayer.Site;
-import businesslogiclayer.SiteBLL;
-import businesslogiclayer.Typology;
-import businesslogiclayer.TypologyBLL;
+import datatransferobjects.Activity;
+import businesslogiclayer.ActivityBO;
+import datatransferobjects.PlannedActivity;
+import datatransferobjects.Procedure;
+import businesslogiclayer.ProcedureBO;
+import datatransferobjects.Site;
+import businesslogiclayer.SiteBO;
+import datatransferobjects.Typology;
+import businesslogiclayer.TypologyBO;
 import java.awt.Cursor;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,7 +32,7 @@ import javax.swing.SwingUtilities;
 public class ActivityEditorFrame extends javax.swing.JFrame {
 
     private Activity activity;
-    private final ActivityBLL activityBLL = new ActivityBLL();
+    private final ActivityBO activityBLL = new ActivityBO();
 
     /**
      * Creates new form ActivityEditorFrame
@@ -91,11 +91,11 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = (() -> {
             try {
-                SiteBLL siteBLL = new SiteBLL();
+                SiteBO siteBLL = new SiteBO();
                 List<Site> listSites = siteBLL.getAll();
-                TypologyBLL typologyBLL = new TypologyBLL();
+                TypologyBO typologyBLL = new TypologyBO();
                 List<Typology> listTypologies = typologyBLL.getAll();
-                ProcedureBLL procedureBLL = new ProcedureBLL();
+                ProcedureBO procedureBLL = new ProcedureBO();
                 List<Procedure> listProcedure = procedureBLL.getAll();
                 
                 SwingUtilities.invokeLater(() -> {

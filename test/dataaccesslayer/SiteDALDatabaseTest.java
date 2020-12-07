@@ -5,7 +5,9 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Site;
+import dataaccesslayer.postgres.PostgresActivityDAO;
+import dataaccesslayer.postgres.PostgresSiteDAO;
+import datatransferobjects.Site;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -21,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class SiteDALDatabaseTest {
     
-    private static SiteDALDatabase siteDAL;
+    private static PostgresSiteDAO siteDAL;
     private static Connection conn;
     
     public SiteDALDatabaseTest() {
@@ -29,7 +31,7 @@ public class SiteDALDatabaseTest {
     
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        siteDAL = new SiteDALDatabase();
+        siteDAL = new PostgresSiteDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }
@@ -101,7 +103,7 @@ public class SiteDALDatabaseTest {
      */
     @Test
     public void testDeleteAll () throws SQLException {
-        new ActivityDALDatabase().deleteAll();
+        new PostgresActivityDAO().deleteAll();
         siteDAL.insert(new Site("test", "prova"));
         siteDAL.insert(new Site("test2", "prova2"));
         int tableSize = siteDAL.getAll().size();

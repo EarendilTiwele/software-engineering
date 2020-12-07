@@ -15,7 +15,7 @@ import java.lang.invoke.MethodHandles;
 
 /**
  *
- * @author alexd
+ * @author alexd TO BE REMOVED
  */
 public class DatabaseConnection {
     

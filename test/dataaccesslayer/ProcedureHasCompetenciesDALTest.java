@@ -5,8 +5,9 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Competency;
-import businesslogiclayer.Procedure;
+import dataaccesslayer.postgres.PostgresProcedureSkillsDAO;
+import datatransferobjects.Competency;
+import datatransferobjects.Procedure;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,12 +26,12 @@ import static org.junit.Assert.*;
  */
 public class ProcedureHasCompetenciesDALTest {
 
-    private static ProcedureHasCompetenciesDAL procedureHasCompetenciesDAL;
+    private static ProcedureSkillsDAO procedureHasCompetenciesDAL;
     private static Connection conn;
 
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        procedureHasCompetenciesDAL = new ProcedureHasCompetenciesDALDatabase();
+        procedureHasCompetenciesDAL = new PostgresProcedureSkillsDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }

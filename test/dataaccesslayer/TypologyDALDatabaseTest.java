@@ -5,7 +5,9 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Typology;
+import dataaccesslayer.postgres.PostgresTypologyDAO;
+import dataaccesslayer.postgres.PostgresActivityDAO;
+import datatransferobjects.Typology;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
@@ -21,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class TypologyDALDatabaseTest {
     
-    private static TypologyDALDatabase typologyDAL;
+    private static PostgresTypologyDAO typologyDAL;
     private static Connection conn;
     
     public TypologyDALDatabaseTest() {
@@ -29,7 +31,7 @@ public class TypologyDALDatabaseTest {
     
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        typologyDAL = new TypologyDALDatabase();
+        typologyDAL = new PostgresTypologyDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }
@@ -101,7 +103,7 @@ public class TypologyDALDatabaseTest {
      */
     @Test
     public void testDeleteAll () throws SQLException {
-        new ActivityDALDatabase().deleteAll();
+        new PostgresActivityDAO().deleteAll();
         typologyDAL.insert(new Typology("test1"));
         typologyDAL.insert(new Typology("test2"));
         int tableSize = typologyDAL.getAll().size();

@@ -5,12 +5,12 @@ package dataaccesslayer;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import businesslogiclayer.Activity;
-import businesslogiclayer.PlannedActivity;
-import businesslogiclayer.Procedure;
-import businesslogiclayer.Site;
-import businesslogiclayer.Typology;
-import dataaccesslayer.ActivityDALDatabase;
+import datatransferobjects.Activity;
+import datatransferobjects.PlannedActivity;
+import datatransferobjects.Procedure;
+import datatransferobjects.Site;
+import datatransferobjects.Typology;
+import dataaccesslayer.postgres.PostgresActivityDAO;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,12 +27,12 @@ import static org.junit.Assert.*;
  */
 public class ActivityDALDatabaseTest {
 
-    private static ActivityDAL activityDALDatabase;
+    private static ActivityDAO activityDALDatabase;
     private static Connection conn;
 
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        activityDALDatabase = new ActivityDALDatabase();
+        activityDALDatabase = new PostgresActivityDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }

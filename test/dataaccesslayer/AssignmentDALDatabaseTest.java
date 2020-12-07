@@ -5,15 +5,20 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Activity;
-import businesslogiclayer.Assignment;
-import businesslogiclayer.Competency;
-import businesslogiclayer.Maintainer;
-import businesslogiclayer.PlannedActivity;
-import businesslogiclayer.Procedure;
-import businesslogiclayer.Site;
-import businesslogiclayer.Typology;
-import businesslogiclayer.User;
+import dataaccesslayer.postgres.PostgresTypologyDAO;
+import dataaccesslayer.postgres.PostgresProcedureDAO;
+import dataaccesslayer.postgres.PostgresActivityDAO;
+import dataaccesslayer.postgres.PostgresAssignmentDAO;
+import dataaccesslayer.postgres.PostgresSiteDAO;
+import datatransferobjects.Activity;
+import datatransferobjects.Assignment;
+import datatransferobjects.Competency;
+import datatransferobjects.Maintainer;
+import datatransferobjects.PlannedActivity;
+import datatransferobjects.Procedure;
+import datatransferobjects.Site;
+import datatransferobjects.Typology;
+import datatransferobjects.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -34,12 +39,12 @@ import static org.junit.Assert.*;
  */
 public class AssignmentDALDatabaseTest {
 
-    private static AssignmentDAL assignmentDAL;
+    private static AssignmentDAO assignmentDAL;
     private static Connection conn;
 
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        assignmentDAL = new AssignmentDALDatabase();
+        assignmentDAL = new PostgresAssignmentDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
     }
@@ -112,15 +117,15 @@ public class AssignmentDALDatabaseTest {
         List<Activity> activityList = new ArrayList<>();
 
         Site site = new Site(189, "Ferrari", "Maranello");
-        SiteDAL siteDAL = new SiteDALDatabase();
+        SiteDAO siteDAL = new PostgresSiteDAO();
         site = siteDAL.insert(site);
 
         Typology typology = new Typology(3, "Hydraulic");
-        TypologyDAL typologyDAL = new TypologyDALDatabase();
+        TypologyDAO typologyDAL = new PostgresTypologyDAO();
         typology = typologyDAL.insert(typology);
 
         Procedure procedure = new Procedure(1, "hydraulicProcedure", "SMP1");
-        ProcedureDAL procedureDAL = new ProcedureDALDatabase();
+        ProcedureDAO procedureDAL = new PostgresProcedureDAO();
         procedure = procedureDAL.insert(procedure);
 
         String description = "hydraulic maintenance activity";
@@ -133,15 +138,15 @@ public class AssignmentDALDatabaseTest {
 
         /*------------------------------------------------------------------------------------*/
         site = new Site(0, "Lamborghini", "SantAgata bolognese");
-        siteDAL = new SiteDALDatabase();
+        siteDAL = new PostgresSiteDAO();
         site = siteDAL.insert(site);
 
         typology = new Typology(0, "Mechanical");
-        typologyDAL = new TypologyDALDatabase();
+        typologyDAL = new PostgresTypologyDAO();
         typology = typologyDAL.insert(typology);
 
         procedure = new Procedure(0, "mechanicalProcedure", "SMP2");
-        procedureDAL = new ProcedureDALDatabase();
+        procedureDAL = new PostgresProcedureDAO();
         procedure = procedureDAL.insert(procedure);
 
         description = "mechanical maintenance activity";
@@ -153,15 +158,15 @@ public class AssignmentDALDatabaseTest {
                 interruptible, week, procedure, workspaceNotes));
         /*------------------------------------------------------------------------------------*/
         site = new Site(50, "Fiat", "Torino");
-        siteDAL = new SiteDALDatabase();
+        siteDAL = new PostgresSiteDAO();
         site = siteDAL.insert(site);
 
         typology = new Typology(2, "Eletrical");
-        typologyDAL = new TypologyDALDatabase();
+        typologyDAL = new PostgresTypologyDAO();
         typology = typologyDAL.insert(typology);
 
         procedure = new Procedure(3, "eletricalProcedure", "SMP3");
-        procedureDAL = new ProcedureDALDatabase();
+        procedureDAL = new PostgresProcedureDAO();
         procedure = procedureDAL.insert(procedure);
 
         description = "eletrical maintenance activity";
@@ -180,7 +185,7 @@ public class AssignmentDALDatabaseTest {
         List<Activity> activityList = sampleListActivity();
         Activity activity = activityList.get(0);
         Activity activity2 = activityList.get(1);
-        ActivityDAL activityDAL = new ActivityDALDatabase();
+        ActivityDAO activityDAL = new PostgresActivityDAO();
         /*Users DAL insert user*/
         PreparedStatement preparedStatement = conn.prepareStatement("insert into users values(1,'Alfioc',"
                 + "'Alfioc99', 'maintainer') returning *;");

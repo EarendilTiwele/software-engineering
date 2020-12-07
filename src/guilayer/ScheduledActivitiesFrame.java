@@ -5,8 +5,8 @@
  */
 package guilayer;
 
-import businesslogiclayer.Activity;
-import businesslogiclayer.ActivityBLL;
+import datatransferobjects.Activity;
+import businesslogiclayer.ActivityBO;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -199,7 +199,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @return
      */
     private List<Activity> loadAllActivitiesOfWeek(int week) throws SQLException {
-        ActivityBLL activityBLL = new ActivityBLL();
+        ActivityBO activityBLL = new ActivityBO();
         return activityBLL.getAllOfWeek(week);
 
     }

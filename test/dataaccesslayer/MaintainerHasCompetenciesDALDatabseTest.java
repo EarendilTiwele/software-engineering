@@ -5,8 +5,9 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Competency;
-import businesslogiclayer.Maintainer;
+import dataaccesslayer.postgres.PostgresMaintainerSkillsDAO;
+import datatransferobjects.Competency;
+import datatransferobjects.Maintainer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,7 +24,7 @@ import org.junit.BeforeClass;
  */
 public class MaintainerHasCompetenciesDALDatabseTest {
     
-    private static MaintainerHasCompetenciesDALDatabase mhcDAL;
+    private static PostgresMaintainerSkillsDAO mhcDAL;
     private static Connection conn;
     private static final int ID = 1;
     private static final String DESCRIPTION = "test";
@@ -33,7 +34,7 @@ public class MaintainerHasCompetenciesDALDatabseTest {
     
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        mhcDAL = new MaintainerHasCompetenciesDALDatabase();
+        mhcDAL = new PostgresMaintainerSkillsDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
         Statement stm = conn.createStatement();

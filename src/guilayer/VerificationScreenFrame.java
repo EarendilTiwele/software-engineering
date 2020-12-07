@@ -5,11 +5,11 @@
  */
 package guilayer;
 
-import businesslogiclayer.Activity;
-import businesslogiclayer.AssignmentBLL;
-import businesslogiclayer.Competency;
-import businesslogiclayer.Maintainer;
-import businesslogiclayer.UserBLL;
+import datatransferobjects.Activity;
+import businesslogiclayer.AssignmentBO;
+import datatransferobjects.Competency;
+import datatransferobjects.Maintainer;
+import businesslogiclayer.UserBO;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -139,8 +139,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * @return the agenda of the maintainers 
      */
     private Map<Maintainer, Integer[]> getAgenda(){
-        AssignmentBLL assignmentBLL = new AssignmentBLL();
-        UserBLL userBLL = new UserBLL();
+        AssignmentBO assignmentBLL = new AssignmentBO();
+        UserBO userBLL = new UserBO();
         try {
             return assignmentBLL.getAgenda(assignmentBLL.getAllforWeek(activity.getWeek()),userBLL.getAllMaintainers());
         } catch (SQLException ex) {

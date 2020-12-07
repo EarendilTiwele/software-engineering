@@ -5,8 +5,9 @@
  */
 package dataaccesslayer;
 
-import businesslogiclayer.Maintainer;
-import businesslogiclayer.User;
+import dataaccesslayer.postgres.PostgresUserDAO;
+import datatransferobjects.Maintainer;
+import datatransferobjects.User;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,7 +24,7 @@ import org.junit.BeforeClass;
  */
 public class UserDALDatabaseTest {
     
-    private static UserDALDatabase userDAL;
+    private static PostgresUserDAO userDAL;
     private static Connection conn;
     private static final int ID = 1;
     private static final String USERNAME = "test";
@@ -35,7 +36,7 @@ public class UserDALDatabaseTest {
     
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        userDAL = new UserDALDatabase();
+        userDAL = new PostgresUserDAO();
         conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
         Statement stm = conn.createStatement();
