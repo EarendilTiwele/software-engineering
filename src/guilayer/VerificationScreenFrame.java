@@ -23,7 +23,7 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
-
+import static businesslogiclayer.AssignmentBO.*;
 
 /**
  * Verification screen Frame allows a planner to view maintainers'
@@ -37,13 +37,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     private Map<Maintainer,Integer[]> agenda;
     
     //table: column header
-    private static final String MONDAY = "Mon";
-    private static final String TUESDAY = "Tue";
-    private static final String WEDNESDAY = "Wed";
-    private static final String THURSDAY = "Thu";
-    private static final String FRIDAY = "Fri";
-    private static final String SATURDAY = "Sat";
-    private static final String SUNDAY = "Sun";
     private static final String MAINTAINER_COLUMN = "Maintainer";
     private static final String SKILLS_COLUMN = "Skills";
     
@@ -79,8 +72,9 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         activityLabel.setText(activityString);
         
         String skillsString = "";
+        String dot = String.valueOf("\u2022");
         for (Competency competency : activity.getProcedure().getCompetencies()) {
-            skillsString += String.valueOf("\u2022") + competency + "<br>";
+            skillsString += dot + competency + "<br>";
         }
         
         skillsNeededEditorPane.setText(skillsString);
@@ -109,8 +103,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Adds mouse listener to day's column such that assign activity to maintainer
-     * in that day
+     * Adds mouse listener to day's column such that assign activity to
+     * maintainer in that day
      */
     private void initTableMouseListener(){
         agendaTable.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -142,11 +136,17 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         AssignmentBO assignmentBLL = new AssignmentBO();
         UserBO userBLL = new UserBO();
         try {
-            return assignmentBLL.getAgenda(assignmentBLL.getAllforWeek(activity.getWeek()),userBLL.getAllMaintainers());
+            return assignmentBLL.getAgenda(
+                    assignmentBLL.getAllforWeek(activity.getWeek()),
+                    userBLL.getAllMaintainers());
         } catch (SQLException ex) {
-            SwingUtilities.invokeLater(()->JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE));
+            SwingUtilities.invokeLater(()
+                    ->JOptionPane.showMessageDialog(
+                            this, ex.getMessage(), 
+                            "Error", 
+                            JOptionPane.ERROR_MESSAGE));
         }
-        return new HashMap<Maintainer, Integer[]>();
+        return new HashMap<>();
     }
     
     /**
