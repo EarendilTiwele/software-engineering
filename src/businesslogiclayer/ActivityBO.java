@@ -17,7 +17,7 @@ import dataaccesslayer.DAOFactory;
  * @author alexd
  */
 public class ActivityBO {
-    
+
     private final ActivityDAO activityDAO;
 
     public ActivityBO() {
@@ -25,32 +25,32 @@ public class ActivityBO {
         activityDAO = postgresFactory.getActivityDAO();
     }
 
-    public Activity insert(Activity activity) throws SQLException {
+    public int insert(Activity activity) throws SQLException {
         return activityDAO.insert(activity);
     }
 
-    public Activity update(Activity activity) throws SQLException {
+    public boolean update(Activity activity) throws SQLException {
         return activityDAO.update(activity);
     }
 
-    public Activity delete(int id) throws SQLException {
+    public boolean delete(int id) throws SQLException {
         return activityDAO.delete(id);
     }
-    
+
     public List<Activity> getAll() throws SQLException {
         return new ArrayList<>(activityDAO.getAll());
     }
-    
+
     public Activity get(int id) throws SQLException {
         return activityDAO.get(id);
     }
-    
+
     public List<Activity> getAllOfWeek(int week) throws SQLException {
-       return new ArrayList<>(activityDAO.getAllOfWeek(week));
+        return new ArrayList<>(activityDAO.getAllOfWeek(week));
     }
-    
-    public List<Activity> getAllPlannedOfWeek(int week) throws SQLException{
+
+    public List<Activity> getAllPlannedOfWeek(int week) throws SQLException {
         return new ArrayList<>(activityDAO.getAllPlannedOfWeek(week));
     }
-    
+
 }

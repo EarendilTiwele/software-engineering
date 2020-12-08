@@ -17,67 +17,63 @@ import java.util.Set;
 public interface ActivityDAO {
 
     /**
-     * Insert an activity
+     * Insert an <code>activity</code> in the database
      *
      * @param activity
-     * @return the version of the activity presents after the insert operation.
+     * @return the id of activity if the activity is inserted correctly;
+     * otherwise - 1 if the insert operation is failed
+     * @throws SQLException
      */
-    public Activity insert(Activity activity) throws SQLException;
+    public int insert(Activity activity);
 
     /**
-     * Update an activity
+     * Update an <code>activity</code> in the database
      *
      * @param activity
-     * @return the version of the activity presents after the update operation.
+     * @return true if the activity has been updated or if there was not the
+     * activity; otherwise false in case of error.
      */
-    public Activity update(Activity activity) throws SQLException;
+    public boolean update(Activity activity);
 
     /**
-     * Delete an activity
+     * Delete an <code>activity</code> in the database
      *
      * @param id
-     * @return the version of the activity presents before the delete operation.
+     * @return true if the activity has been deleted or if there was not the
+     * activity in the database; otherwise false in case of error.
      */
-    public Activity delete(int id) throws SQLException;
+    public boolean delete(int id);
 
     /**
-     * Retrieve all activities present
+     * Return the Set of the activities present in the database
      *
-     * @return the list of activities
+     * @return the set of the activities; otherwise null in case of error.
      */
-    public Set<Activity> getAll() throws SQLException;
+    public Set<Activity> getAll();
 
     /**
-     * Retrieve the activity with a specified id
      *
      * @param id
-     * @return the activity with the specified id
-     */
-    public Activity get(int id) throws SQLException;
-
-    /**
-     * Retrieve the activities with a specified week
-     *
-     * @param week
-     * @return the activities with the specified week
-     * @throws java.sql.SQLException
-     */
-    public Set<Activity> getAllOfWeek(int week) throws SQLException;
-
-    /**
-     * Retrieve the planned activities with a specified week
-     *
-     * @param week
      * @return
-     * @throws java.sql.SQLException
      */
-    public Set<Activity> getAllPlannedOfWeek(int week) throws SQLException;
+    public Activity get(int id);
 
     /**
-     * Delete all activities
-     * @return the list of activities before the delete operation
-     * @throws java.sql.SQLException
+     * Return the Set of the activities present in the database for a specified
+     * <code>week</code>
+     *
+     * @return the set of the activities with the <code>week</code> specified;
+     * otherwise null in case of error.
      */
-    public Set<Activity> deleteAll() throws SQLException;
+    public Set<Activity> getAllOfWeek(int week);
+
+    /**
+     * Return the Set of the activities present in the database for a specified
+     * <code>week</code>
+     *
+     * @return the set of the planned activities with the <code>week</code>
+     * specified; otherwise null in case of error.
+     */
+    public Set<Activity> getAllPlannedOfWeek(int week);
 
 }
