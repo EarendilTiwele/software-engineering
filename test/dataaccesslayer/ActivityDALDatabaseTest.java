@@ -11,6 +11,7 @@ import datatransferobjects.Procedure;
 import datatransferobjects.Site;
 import datatransferobjects.Typology;
 import dataaccesslayer.postgres.PostgresActivityDAO;
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,7 +34,7 @@ public class ActivityDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         activityDALDatabase = new PostgresActivityDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
 

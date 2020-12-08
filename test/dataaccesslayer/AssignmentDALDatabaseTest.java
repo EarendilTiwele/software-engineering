@@ -9,6 +9,7 @@ import dataaccesslayer.postgres.PostgresTypologyDAO;
 import dataaccesslayer.postgres.PostgresProcedureDAO;
 import dataaccesslayer.postgres.PostgresActivityDAO;
 import dataaccesslayer.postgres.PostgresAssignmentDAO;
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import dataaccesslayer.postgres.PostgresSiteDAO;
 import datatransferobjects.Activity;
 import datatransferobjects.Assignment;
@@ -45,7 +46,7 @@ public class AssignmentDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         assignmentDAL = new PostgresAssignmentDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
     

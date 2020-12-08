@@ -5,6 +5,7 @@
  */
 package dataaccesslayer;
 
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import dataaccesslayer.postgres.PostgresProcedureSkillsDAO;
 import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
@@ -32,7 +33,7 @@ public class ProcedureHasCompetenciesDALTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         procedureHasCompetenciesDAL = new PostgresProcedureSkillsDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
 

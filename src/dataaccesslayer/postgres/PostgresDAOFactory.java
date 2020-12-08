@@ -38,6 +38,18 @@ public class PostgresDAOFactory extends DAOFactory {
     }
 
     /**
+     * Returns <code>true</code> if <code>connection</code> is closed;
+     * <code>false</code> otherwise.
+     *
+     * @return <code>true</code> if <code>connection</code> is closed;
+     * <code>false</code> otherwise
+     * @throws SQLException if a database access error occurs
+     */
+    public static boolean connectionIsClosed() throws SQLException {
+        return connection == null || connection.isClosed();
+    }
+
+    /**
      * Returns the connection to the Postgres Database.
      *
      * @return the connection to the Postgres Database

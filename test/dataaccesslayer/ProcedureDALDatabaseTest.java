@@ -5,6 +5,7 @@
  */
 package dataaccesslayer;
 
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import dataaccesslayer.postgres.PostgresProcedureDAO;
 import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
@@ -34,7 +35,7 @@ public class ProcedureDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         procedureDALDatabase = new PostgresProcedureDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
 

@@ -6,6 +6,7 @@
 package dataaccesslayer;
 
 import dataaccesslayer.postgres.PostgresCompetencyDAO;
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import datatransferobjects.Competency;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ public class CompetencyDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         competencyDAL = new PostgresCompetencyDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
         Statement stm = conn.createStatement();
         stm.executeUpdate("delete from competency where true;");
