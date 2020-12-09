@@ -21,8 +21,18 @@ import java.util.logging.Logger;
 public class PostgresMaintainerSkillsDAO
         extends PostgresAbstractDAO<Competency> implements MaintainerSkillsDAO {
 
+    /**
+     * Returns the <code>Competency</code> object builded on the current row of
+     * the ResultSet <code>rs</code>.
+     *
+     * @param rs the ResultSet with which to build the <code>Competency</code>
+     * object
+     * @return the <code>Competency</code> object builded on the current row of
+     * the ResultSet <code>rs</code>
+     * @throws SQLException if a database access error occurs
+     */
     @Override
-    public Competency convertToEntity(ResultSet rs) throws SQLException {
+    Competency convertToEntity(ResultSet rs) throws SQLException {
         Competency dbCompetency = new Competency(rs.getInt("id"),
                 rs.getString("description"));
         return dbCompetency;

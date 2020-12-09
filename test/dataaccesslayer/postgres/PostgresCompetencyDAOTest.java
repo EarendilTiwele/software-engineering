@@ -8,7 +8,6 @@ package dataaccesslayer.postgres;
 import datatransferobjects.Competency;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.junit.After;
 import org.junit.AfterClass;
