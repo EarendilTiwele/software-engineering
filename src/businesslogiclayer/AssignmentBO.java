@@ -65,7 +65,29 @@ public class AssignmentBO {
     }
 
     public boolean validate(Assignment assignment, Integer[] dailyAgenda) {
-        return true;
+        try {
+            int hour = assignment.getHour();
+            int hourIndex = hourToIndex(hour);
+            int availableTime = dailyAgenda[hourIndex];
+            int interventionTime = assignment.getActivity().getInterventionTime();
+            interventionTime -= availableTime;
+            int numberOfOtherHour = interventionTime / MINUTES_PER_HOUR;
+            for (int i = 0; i < numberOfOtherHour; i++) {
+                hourIndex += 1;
+                if (dailyAgenda[hourIndex] != MINUTES_PER_HOUR) {
+                    return false;
+                }
+            }
+            hourIndex += 1;
+            interventionTime -= (numberOfOtherHour * MINUTES_PER_HOUR);
+            if (interventionTime <= dailyAgenda[hourIndex]) {
+                return true;
+            }
+
+        } catch (IndexOutOfBoundsException ex) {
+        }
+        return false;
+
     }
 
     /**
