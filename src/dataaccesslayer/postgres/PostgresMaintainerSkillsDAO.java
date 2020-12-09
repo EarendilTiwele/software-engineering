@@ -11,34 +11,47 @@ import dataaccesslayer.MaintainerSkillsDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author alexd
  */
-public class PostgresMaintainerSkillsDAO 
-    extends PostgresAbstractDAO<Competency> implements MaintainerSkillsDAO {
+public class PostgresMaintainerSkillsDAO
+        extends PostgresAbstractDAO<Competency> implements MaintainerSkillsDAO {
 
     @Override
     public Competency convertToEntity(ResultSet rs) throws SQLException {
         Competency dbCompetency = new Competency(rs.getInt("id"),
-                                                 rs.getString("description"));
+                rs.getString("description"));
         return dbCompetency;
     }
-    
+
     /**
-     * Retrieve all the competencies associated to a maintainer from a database
+     * Retrieves a <code>Set</code> of <code>Competency</code> objects
+     * associated to a <code>maintainer</code> from the Postgres Database.
+     * Returns the <code>Set</code> of <code>Competency</code> objects
+     * associated to the <code>maintainer</code> if the operation is successful;
+     * <code>null</code> otherwise.
+     *
      * @param maintainer the maintainer with the associated competencies
-     * @return the set of the competencies retrieved
-     * @throws java.sql.SQLException
+     * @return the <code>Set</code> of <code>Competency</code> objects
+     * associated to the <code>maintainer</code> if the operation is successful;
+     * <code>null</code> otherwise
      */
     @Override
-    public Set<Competency> getAllCompetencies(Maintainer maintainer) throws SQLException {
+    public Set<Competency> getAllCompetencies(Maintainer maintainer) {
         String query = String.format("select * from competency where id in "
-                                   + "(select competencyId from "
-                                   + "maintainerhascompetencies where "
-                                   + "maintainerId = %d);", maintainer.getId());
-        return executeSetQuery(query);
+                + "(select competencyId from "
+                + "maintainerhascompetencies where "
+                + "maintainerId = %d);", maintainer.getId());
+        try {
+            return executeSetQuery(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresMaintainerSkillsDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
-    
+
 }

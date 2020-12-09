@@ -89,24 +89,20 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
      */
     private void initCreateGUI() {
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        // Removed try-catch
         Runnable loader = (() -> {
-            try {
-                SiteBO siteBLL = new SiteBO();
-                List<Site> listSites = siteBLL.getAll();
-                TypologyBO typologyBLL = new TypologyBO();
-                List<Typology> listTypologies = typologyBLL.getAll();
-                ProcedureBO procedureBLL = new ProcedureBO();
-                List<Procedure> listProcedure = procedureBLL.getAll();
-                
-                SwingUtilities.invokeLater(() -> {
-                    addListToComboBox(listSites, siteComboBox);
-                    addListToComboBox(listTypologies, typologyComboBox);
-                    addListToComboBox(listProcedure, procedureComboBox);
-                    this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                });
-            } catch (SQLException ex) {
-                Logger.getLogger(ActivityEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            SiteBO siteBLL = new SiteBO();
+            List<Site> listSites = siteBLL.getAll();
+            TypologyBO typologyBLL = new TypologyBO();
+            List<Typology> listTypologies = typologyBLL.getAll();
+            ProcedureBO procedureBLL = new ProcedureBO();
+            List<Procedure> listProcedure = procedureBLL.getAll();
+            SwingUtilities.invokeLater(() -> {
+                addListToComboBox(listSites, siteComboBox);
+                addListToComboBox(listTypologies, typologyComboBox);
+                addListToComboBox(listProcedure, procedureComboBox);
+                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            });
         });
 
         new Thread(loader).start();
@@ -132,7 +128,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
                     procedure, workspaceNotes);
 
             new Thread(() -> {
-                /*-----------------------------------------*/ 
+                /*-----------------------------------------*/
                 try {
                     saveActivity(newPlannedActivity);
                 } catch (SQLException ex) {
@@ -149,7 +145,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     }
 
     private void saveActivity(Activity activity) throws SQLException {
-        // cath exception if necessary 
+        // cath exception if necessary
         activityBLL.insert(activity);
 
     }
@@ -421,7 +417,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     private void descriptionTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descriptionTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_descriptionTextFieldActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descriptionLabel;
