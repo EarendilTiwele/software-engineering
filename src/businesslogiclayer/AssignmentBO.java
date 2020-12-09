@@ -56,7 +56,7 @@ public class AssignmentBO {
         assignmentDAO = postgresFactory.getAssignmentDAO();
     }
 
-    public Set<Assignment> getAllforWeek(int week) throws SQLException {
+    public Set<Assignment> getAllforWeek(int week) {
         return assignmentDAO.getAllForWeek(week);
     }
 

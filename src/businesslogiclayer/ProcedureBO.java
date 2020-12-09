@@ -5,11 +5,9 @@
  */
 package businesslogiclayer;
 
-import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
 import dataaccesslayer.DAOFactory;
 import dataaccesslayer.postgres.PostgresProcedureSkillsDAO;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import dataaccesslayer.ProcedureDAO;
@@ -28,36 +26,38 @@ public class ProcedureBO {
         procedureDAO = postgresFactory.getProcedureDAO();
     }
 
-    public Procedure insert(Procedure procedure) throws SQLException {
+    public int insert(Procedure procedure) {
         return procedureDAO.insert(procedure);
     }
 
-    public Procedure update(Procedure procedure) throws SQLException {
+    public boolean update(Procedure procedure) {
         return procedureDAO.update(procedure);
     }
 
-    public Procedure delete(int id) throws SQLException {
+    public boolean delete(int id) {
         return procedureDAO.delete(id);
     }
 
-    public List<Procedure> getAll() throws SQLException {
+    public List<Procedure> getAll() {
         List<Procedure> listProcedure = new ArrayList<>();
         ProcedureSkillsDAO procedureHasCompetencies = new PostgresProcedureSkillsDAO();
-        for (Procedure procedure : procedureDAO.getAll()) {
-            for (Competency competency : procedureHasCompetencies.getAllCompetencies(procedure)) {
+        procedureDAO.getAll().stream().map((procedure) -> {
+            procedureHasCompetencies.getAllCompetencies(procedure).forEach((competency) -> {
                 procedure.addCompetency(competency);
-            }
+            });
+            return procedure;
+        }).forEachOrdered((procedure) -> {
             listProcedure.add(procedure);
-        }
+        });
         return listProcedure;
     }
 
-    public Procedure get(int id) throws SQLException {
+    public Procedure get(int id) {
         Procedure procedure = procedureDAO.get(id);
         ProcedureSkillsDAO procedureHasCompetencies = new PostgresProcedureSkillsDAO();
-        for (Competency competency : procedureHasCompetencies.getAllCompetencies(procedure)) {
+        procedureHasCompetencies.getAllCompetencies(procedure).forEach((competency) -> {
             procedure.addCompetency(competency);
-        }
+        });
         return procedure;
     }
 

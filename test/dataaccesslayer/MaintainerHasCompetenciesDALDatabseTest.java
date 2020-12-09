@@ -5,6 +5,7 @@
  */
 package dataaccesslayer;
 
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import dataaccesslayer.postgres.PostgresMaintainerSkillsDAO;
 import datatransferobjects.Competency;
 import datatransferobjects.Maintainer;
@@ -35,7 +36,7 @@ public class MaintainerHasCompetenciesDALDatabseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         mhcDAL = new PostgresMaintainerSkillsDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
         Statement stm = conn.createStatement();
         stm.executeUpdate("delete from competency where true;");

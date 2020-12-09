@@ -6,7 +6,6 @@
 package dataaccesslayer;
 
 import datatransferobjects.Assignment;
-import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -14,10 +13,12 @@ import java.util.Set;
  * @author avall
  */
 public interface AssignmentDAO {
+
     /**
      * Get all Assignment with a specific week
+     *
      * @param week
-     * @return 
+     * @return
      */
-    public Set<Assignment> getAllForWeek(int week) throws SQLException;
+    public Set<Assignment> getAllForWeek(int week);
 }

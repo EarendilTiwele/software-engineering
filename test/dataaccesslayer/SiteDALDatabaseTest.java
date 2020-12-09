@@ -6,6 +6,7 @@
 package dataaccesslayer;
 
 import dataaccesslayer.postgres.PostgresActivityDAO;
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import dataaccesslayer.postgres.PostgresSiteDAO;
 import datatransferobjects.Site;
 import java.sql.Connection;
@@ -32,7 +33,7 @@ public class SiteDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         siteDAL = new PostgresSiteDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
     

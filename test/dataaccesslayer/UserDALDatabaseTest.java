@@ -5,6 +5,7 @@
  */
 package dataaccesslayer;
 
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import dataaccesslayer.postgres.PostgresUserDAO;
 import datatransferobjects.Maintainer;
 import datatransferobjects.User;
@@ -37,7 +38,7 @@ public class UserDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         userDAL = new PostgresUserDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
         Statement stm = conn.createStatement();
         stm.executeUpdate("delete from users where true;");

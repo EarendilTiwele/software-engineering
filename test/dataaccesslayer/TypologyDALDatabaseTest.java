@@ -7,6 +7,7 @@ package dataaccesslayer;
 
 import dataaccesslayer.postgres.PostgresTypologyDAO;
 import dataaccesslayer.postgres.PostgresActivityDAO;
+import dataaccesslayer.postgres.PostgresDAOFactory;
 import datatransferobjects.Typology;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ public class TypologyDALDatabaseTest {
     @BeforeClass
     public static void setUpClass() throws SQLException {
         typologyDAL = new PostgresTypologyDAO();
-        conn = DatabaseConnection.getConnection();
+        conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
     
