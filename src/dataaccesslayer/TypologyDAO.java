@@ -6,7 +6,6 @@
 package dataaccesslayer;
 
 import datatransferobjects.Typology;
-import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -14,51 +13,73 @@ import java.util.Set;
  * @author alexd
  */
 public interface TypologyDAO {
-    
+
     /**
-     * Insert a typology in a persistent storage
-     * @param typology the typology to insert
-     * @return the inserted typology
-     * @throws java.sql.SQLException
+     * Inserts a <code>Typology</code> object in a persistent storage. Returns
+     * the id of the inserted <code>typology</code> if the operation is
+     * successful; -1 otherwise.
+     *
+     * @param typology the <code>Typology</code> object to insert
+     * @return the id of the inserted <code>typology</code> if the operation is
+     * successful; -1 otherwise
      */
-    public Typology insert (Typology typology) throws SQLException;
-    
+    public int insert(Typology typology);
+
     /**
-     * Update a typology in a persistent storage
-     * @param typology the typology to update
-     * @return the updated typology
-     * @throws java.sql.SQLException
+     * Updates a <code>Typology</code> object in a persistent storage, if the
+     * <code>typology</code> is not present in the persistent storage it is not
+     * created. Returns <code>true</code> if the operation is successful, that
+     * is both when the <code>typology</code> is updated and when the
+     * <code>typology</code> doesn't exist in the persistent storage;
+     * <code>false</code> otherwise.
+     *
+     * @param typology the <code>Typology</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the typology is updated and when the typology doesn't exist in the
+     * persistent storage; <code>false</code> otherwise
      */
-    public Typology update (Typology typology) throws SQLException;
-    
+    public boolean update(Typology typology);
+
     /**
-     * Delete a typology with given id from a persistent storage
-     * @param id the id which identifies the typology
-     * @return the deleted typology
-     * @throws java.sql.SQLException
+     * Deletes the typology with given <code>id</code> from a persistent
+     * storage. Returns <code>true</code> if the operation is successful, that
+     * is both when the typology with given <code>id</code> is deleted and when
+     * the typology with given <code>id</code> doesn't exist in the persistent
+     * storage; <code>false</code> otherwise.
+     *
+     * @param id the <code>id</code> which identifies the typology
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the typology with given <code>id</code> is deleted and when the
+     * typology with given <code>id</code> doesn't exist in the persistent
+     * storage; <code>false</code> otherwise
      */
-    public Typology delete (int id) throws SQLException;
-    
+    public boolean delete(int id);
+
     /**
-     * Delete all typologies in a persistent storage
-     * @return the set of deleted typologies
-     * @throws java.sql.SQLException
+     * Retrieves the <code>Typology</code> object with given <code>id</code>
+     * from a persistent storage. Returns the <code>Typology</code> object with
+     * given <code>id</code> if it exists in the persistent storage;
+     * <code>null</code> if the <code>Typology</code> object with given
+     * <code>id</code> doesn't exist in the persistent storage or if the
+     * operation fails.
+     *
+     * @param id the id which identifies the site
+     * @return the <code>Typology</code> object with given <code>id</code> if it
+     * exists in the persistent storage, returns <code>null</code> if the
+     * <code>Typology</code> object with given <code>id</code> doesn't exist in
+     * the persistent storage or if the operation fails
      */
-    public Set<Typology> deleteAll () throws SQLException;
-    
-    /** 
-     * Retrieve a typology with given id from a persistent storage
-     * @param id the id which identifies the typology
-     * @return the typology retrieved
-     * @throws java.sql.SQLException
-     */
-    public Typology get(int id) throws SQLException;
-    
+    public Typology get(int id);
+
     /**
-     * Retrieve all the typologies from a persistent storage
-     * @return the set of the typologies retrieved
-     * @throws java.sql.SQLException
+     * Retrieves a <code>Set</code> of <code>Typology</code> objects from a
+     * persistent storage. Returns the <code>Set</code> of <code>Typology</code>
+     * objects if the operation is successful; <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>Typology</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
      */
-    public Set<Typology> getAll() throws SQLException;
-    
+    public Set<Typology> getAll();
+
 }
