@@ -23,7 +23,6 @@ import java.util.logging.Logger;
  */
 public class PostgresProcedureSkillsDAO extends PostgresAbstractDAO<Competency> implements ProcedureSkillsDAO {
 
-
     @Override
     public Competency convertToEntity(ResultSet rs) throws SQLException {
         return new Competency(rs.getInt("CompetencyId"), rs.getString("CompetencyDescription"));
@@ -36,14 +35,19 @@ public class PostgresProcedureSkillsDAO extends PostgresAbstractDAO<Competency> 
      * @return the competencies of the procedure
      */
     @Override
-    public Set<Competency> getAllCompetencies(Procedure procedure) throws SQLException {
+    public Set<Competency> getAllCompetencies(Procedure procedure) {
         String query = String.format("select tb1.id as ProcedureId, tb1.name as ProcedureName, tb1.smp as ProcedureSmp,\n"
                 + "competency.id as CompetencyId, competency.description as CompetencyDescription "
                 + "from (procedure inner join procedurehascompetencies on "
                 + "procedure.id = procedurehascompetencies.procedureid) as tb1 "
                 + "inner join competency on tb1.competencyid = competency.id "
                 + "where ProcedureId = %d; ", procedure.getId());
-        return executeSetQuery(query);
+        try {
+            return executeSetQuery(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresProcedureSkillsDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
 }

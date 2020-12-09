@@ -15,11 +15,13 @@ import java.util.Set;
  * @author avall
  */
 public interface ProcedureSkillsDAO {
+
     /**
      * Get all competencies associated with a specific procedure
+     *
      * @param procedure
      * @return the competencies of the procedure
      * @throws java.sql.SQLException
      */
-    public Set<Competency> getAllCompetencies(Procedure procedure) throws SQLException;
+    public Set<Competency> getAllCompetencies(Procedure procedure);
 }
