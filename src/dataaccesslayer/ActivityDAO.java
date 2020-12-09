@@ -17,17 +17,16 @@ import java.util.Set;
 public interface ActivityDAO {
 
     /**
-     * Insert an <code>activity</code> in the database
+     * Inserts an <code>activity</code> in the database
      *
      * @param activity
      * @return the id of activity if the activity is inserted correctly;
      * otherwise - 1 if the insert operation is failed
-     * @throws SQLException
      */
     public int insert(Activity activity);
 
     /**
-     * Update an <code>activity</code> in the database
+     * Updates an <code>activity</code> in the database
      *
      * @param activity
      * @return true if the activity has been updated or if there was not the
@@ -36,7 +35,7 @@ public interface ActivityDAO {
     public boolean update(Activity activity);
 
     /**
-     * Delete an <code>activity</code> in the database
+     * Deletes an <code>activity</code> in the database
      *
      * @param id
      * @return true if the activity has been deleted or if there was not the
@@ -45,21 +44,22 @@ public interface ActivityDAO {
     public boolean delete(int id);
 
     /**
-     * Return the Set of the activities present in the database
+     * Returns the Set of the activities present in the database
      *
      * @return the set of the activities; otherwise null in case of error.
      */
     public Set<Activity> getAll();
 
     /**
+     * Returns an activity with the specified <code>id</code>
      *
      * @param id
-     * @return
+     * @return an activity with the specified <code>id</code>
      */
     public Activity get(int id);
 
     /**
-     * Return the Set of the activities present in the database for a specified
+     * Returns the Set of the activities present in the database for a specified
      * <code>week</code>
      *
      * @return the set of the activities with the <code>week</code> specified;
@@ -68,7 +68,7 @@ public interface ActivityDAO {
     public Set<Activity> getAllOfWeek(int week);
 
     /**
-     * Return the Set of the activities present in the database for a specified
+     * Returns the Set of the activities present in the database for a specified
      * <code>week</code>
      *
      * @return the set of the planned activities with the <code>week</code>
