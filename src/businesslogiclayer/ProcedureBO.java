@@ -28,15 +28,15 @@ public class ProcedureBO {
         procedureDAO = postgresFactory.getProcedureDAO();
     }
 
-    public Procedure insert(Procedure procedure) throws SQLException {
+    public int insert(Procedure procedure) throws SQLException {
         return procedureDAO.insert(procedure);
     }
 
-    public Procedure update(Procedure procedure) throws SQLException {
+    public boolean update(Procedure procedure) throws SQLException {
         return procedureDAO.update(procedure);
     }
 
-    public Procedure delete(int id) throws SQLException {
+    public boolean delete(int id) throws SQLException {
         return procedureDAO.delete(id);
     }
 
