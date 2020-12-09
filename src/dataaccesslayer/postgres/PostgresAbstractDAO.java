@@ -26,11 +26,11 @@ public abstract class PostgresAbstractDAO<T> {
      * row of the ResultSet <code>rs</code>.
      *
      * @param rs the ResultSet with which to build the entity
-     * @return Return the entity of generic type <code>T</code> builded on the
-     * current row of the ResultSet <code>rs</code>
+     * @return the entity of generic type <code>T</code> builded on the current
+     * row of the ResultSet <code>rs</code>
      * @throws SQLException if a database access error occurs
      */
-    public abstract T convertToEntity(ResultSet rs) throws SQLException;
+    abstract T convertToEntity(ResultSet rs) throws SQLException;
 
     /**
      * Creates connection with a Postgres Database and returns a
