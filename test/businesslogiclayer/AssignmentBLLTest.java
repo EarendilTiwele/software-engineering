@@ -425,7 +425,7 @@ public class AssignmentBLLTest {
      */
     @Test
     public void testValidateValidAssignment() {
-        int interventionTime = 120;
+        int interventionTime = 180;
         int hour = 8;
 
         Assignment assignment = createFakeAssignment(interventionTime, hour);
@@ -434,17 +434,70 @@ public class AssignmentBLLTest {
         //case 1: fully avaible daily agenda
         assertTrue(assignmentBO.validate(assignment, dailyAgenda));
 
-        //modified daily avaiblity such that the maintainer has free 20 minutes
-        //at 8 o'clock and has 40 free minutes at 10 o'clock.
+        //modified daily avaibility such that the maintainer has free 20 minutes
+        //at 8 o'clock and has 40 free minutes at 11 o'clock.
         int busyTimeH8 = 40;
-        int busyTimeH10 = 20;
+        int busyTimeH11 = 20;
 
         dailyAgenda[H8] -= busyTimeH8;
-        dailyAgenda[H10] -= busyTimeH10;
+        dailyAgenda[H11] -= busyTimeH11;
 
         //Case 2: the assignment is valid since the activiy must not be interrupted
         // to solve  other activities already assigned in those hours
         assertTrue(assignmentBO.validate(assignment, dailyAgenda));
+    }
+
+    /**
+     * Test of validate, of class AssignmentBO. Test case: Validate an assigment
+     * to a such maintainer that has initialy already activities that are in
+     * conflicts whith the new assignment. Then try to assign an activity in an
+     * hour which maintainer is fully busy.
+     */
+    @Test
+    public void testValidateUnvalidAssignment() {
+        int interventionTime = 190;
+        int hour = 8;
+        Assignment assignment = createFakeAssignment(interventionTime, hour);
+
+        Integer[] dailyAgenda = getFullAvailableDailyAgenda();
+
+        //modified daily avaibility such that the maintainer has free 20 minutes
+        //at 8 o'clock and has 40 free minutes at 11 o'clock.
+        int busyTimeH8 = 40;
+        int busyTimeH11 = 20;
+
+        dailyAgenda[H8] -= busyTimeH8;
+        dailyAgenda[H11] -= busyTimeH11;
+
+        //Case 1: the assignment is unvalid since the activiy must not be interrupted
+        // to solve  other activities already assigned in those hours
+        assertFalse(assignmentBO.validate(assignment, dailyAgenda));
+
+        //modified daily avaibility such that the maintainer is fully busy at
+        // 8 o'clock
+        int freeTime = 0;
+        dailyAgenda[H8] = freeTime;
+
+        //Case 2: the assignment is unvalid since the maintainer is not available
+        //at assignment's hour
+        assertFalse(assignmentBO.validate(assignment, dailyAgenda));
+        System.out.println("Test unvalid");
+    }
+
+    /**
+     * Test of validate, of class AssignmentBO. Test case: a maintainer doesn't
+     * work extra in a day. *
+     */
+    @Test
+    public void testValidateUnvalidExtraAssignment() {
+        int extraTime = 10;
+        int interventionTime = WORKING_MINUTES_PER_DAY + extraTime;
+        int hour = 8;
+        Assignment assignment = createFakeAssignment(interventionTime, hour);
+
+        Integer[] dailyAgenda = getFullAvailableDailyAgenda();
+
+        assertFalse(assignmentBO.validate(assignment, dailyAgenda));
 
     }
 
