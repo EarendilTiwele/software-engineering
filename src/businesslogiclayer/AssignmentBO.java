@@ -56,7 +56,7 @@ public class AssignmentBO {
         assignmentDAO = postgresFactory.getAssignmentDAO();
     }
 
-    public Set<Assignment> getAllforWeek(int week) throws SQLException {
+    public Set<Assignment> getAllforWeek(int week) {
         return assignmentDAO.getAllForWeek(week);
     }
 
@@ -75,7 +75,7 @@ public class AssignmentBO {
         Map<Maintainer, Integer[]> agenda = new HashMap<>();
 
         // associates at each maintainer the array of availabilities, initially all
-        // maintainers have all days free 
+        // maintainers have all days free
         for (Maintainer maintainer : maintainers) {
             Integer[] availabilities = new Integer[WORKING_DAYS_PER_WEEK];
             Arrays.fill(availabilities, WORKING_MINUTES_PER_DAY);
