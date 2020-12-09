@@ -399,4 +399,53 @@ public class AssignmentBLLTest {
 
     }
 
+    /**
+     * Returns a fake assignments with an activity scheduled for week 1 and
+     * specified interventio time. This activity is assigned to a fake
+     * maintainer for <code>MONDAY</code> at specified hour.
+     *
+     * @param interventionTime the activity's intervention time
+     * @param hour the assigment's hour
+     * @return the fake assignment
+     */
+    private Assignment createFakeAssignment(int interventionTime, int hour) {
+        Maintainer maintainer = createMaintainer("Francesco");
+        int id = 0;
+        int week = 1;
+        Activity activity = createFakeActivity(id, week, interventionTime);
+        String day = MONDAY;
+        return new Assignment(maintainer, activity, day, hour);
+    }
+
+    /**
+     * Test of validate, of class AssignmentBO. Test case: Validate an assigment
+     * to a such maintainer that has initialy a fully avaible daily agenda and
+     * then has some activities already assigned in the hours involved. The
+     * assignament is correct since there are no conflicts.
+     */
+    @Test
+    public void testValidateValidAssignment() {
+        int interventionTime = 120;
+        int hour = 8;
+
+        Assignment assignment = createFakeAssignment(interventionTime, hour);
+        Integer[] dailyAgenda = getFullAvailableDailyAgenda();
+
+        //case 1: fully avaible daily agenda
+        assertTrue(assignmentBO.validate(assignment, dailyAgenda));
+
+        //modified daily avaiblity such that the maintainer has free 20 minutes
+        //at 8 o'clock and has 40 free minutes at 10 o'clock.
+        int busyTimeH8 = 40;
+        int busyTimeH10 = 20;
+
+        dailyAgenda[H8] -= busyTimeH8;
+        dailyAgenda[H10] -= busyTimeH10;
+
+        //Case 2: the assignment is valid since the activiy must not be interrupted
+        // to solve  other activities already assigned in those hours
+        assertTrue(assignmentBO.validate(assignment, dailyAgenda));
+
+    }
+
 }

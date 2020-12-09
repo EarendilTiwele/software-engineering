@@ -171,7 +171,13 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         // Convert the filterderActivities to a matrix suitable for CustomTableModel
         Object[][] data = convertToObjectMatrix(activities, BUTTON_TEXT);
 
-        TableModel model = new CustomTableModel(tableColumnNames, data);
+        TableModel model = new CustomTableModel(tableColumnNames, data) {
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                //this is a non-editable table
+                return columnIndex == getColumnCount() - 1;
+            }
+        };
         scheduledActivitiesTable.setModel(model);
 
         // Set the button renderer for the last column of the table

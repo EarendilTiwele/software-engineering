@@ -60,6 +60,14 @@ public class AssignmentBO {
         return assignmentDAO.getAllForWeek(week);
     }
 
+    public boolean insert(Assignment assignment) {
+        return true;
+    }
+
+    public boolean validate(Assignment assignment, Integer[] dailyAgenda) {
+        return true;
+    }
+
     /**
      * Returns in a map the percentage of daily availability of each maintainer
      * depending on the assignments.
@@ -75,7 +83,7 @@ public class AssignmentBO {
         Map<Maintainer, Integer[]> agenda = new HashMap<>();
 
         // associates at each maintainer the array of availabilities, initially all
-        // maintainers have all days free 
+        // maintainers have all days free
         for (Maintainer maintainer : maintainers) {
             Integer[] availabilities = new Integer[WORKING_DAYS_PER_WEEK];
             Arrays.fill(availabilities, WORKING_MINUTES_PER_DAY);
