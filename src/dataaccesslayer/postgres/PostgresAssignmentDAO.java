@@ -12,11 +12,8 @@ import datatransferobjects.Maintainer;
 import datatransferobjects.User;
 import dataaccesslayer.ActivityDAO;
 import dataaccesslayer.AssignmentDAO;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,18 +42,17 @@ public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> imple
         return assignment;
     }
 
-    /**
-     * Get all Assignment with a specific week
-     *
-     * @param week
-     * @return
-     */
     @Override
-    public Set<Assignment> getAllForWeek(int week) throws SQLException {
-            String query = String.format("select idmaintainer, idactivity, day,hour from"
-                    + " assignment inner join activity on idactivity = activity.id"
-                    + " where week = %d;", week);
+    public Set<Assignment> getAllForWeek(int week) {
+        String query = String.format("select idmaintainer, idactivity, day,hour from"
+                + " assignment inner join activity on idactivity = activity.id"
+                + " where week = %d;", week);
+        try {
             return executeSetQuery(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresAssignmentDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
 }
