@@ -5,10 +5,6 @@
  */
 package dataaccesslayer.postgres;
 
-import dataaccesslayer.ActivityDAO;
-import dataaccesslayer.ProcedureDAO;
-import dataaccesslayer.SiteDAO;
-import dataaccesslayer.TypologyDAO;
 import datatransferobjects.Activity;
 import datatransferobjects.Assignment;
 import datatransferobjects.Competency;

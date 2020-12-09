@@ -64,6 +64,18 @@ public class PostgresProcedureDAOTest {
     public void tearDown() {
     }
 
+    private int insertProcedure(Procedure procedure) throws SQLException {
+        String query = String.format("insert into Procedure (name, smp) values ('%s','%s') returning *;",
+                procedure.getName(), procedure.getSmp());
+        PreparedStatement prepareStatement = conn.prepareStatement(query);
+        ResultSet rs = prepareStatement.executeQuery();
+        int idProcedure = -1;
+        while (rs.next()) {
+            idProcedure = rs.getInt("id");
+        }
+        return idProcedure;
+    }
+
     private Procedure retrieveProcedure(int idProcedure) throws SQLException {
         Procedure procedure = null;
         Statement stm = conn.createStatement();
@@ -83,7 +95,7 @@ public class PostgresProcedureDAOTest {
     @Test
     public void testInsert() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
-        int idProcedure = postgresProcedureDAO.insert(procedure);
+        int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
         assertNotNull(procedure);
     }
@@ -99,7 +111,7 @@ public class PostgresProcedureDAOTest {
     @Test
     public void testUpdate() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
-        int idProcedure = postgresProcedureDAO.insert(procedure);
+        int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
         assertNotNull(procedure);
         procedure = new Procedure(procedure.getId(), "moto maintenance", "./moto.pdf");
@@ -119,7 +131,7 @@ public class PostgresProcedureDAOTest {
     @Test
     public void testDelete() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
-        int idProcedure = postgresProcedureDAO.insert(procedure);
+        int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
         assertNotNull(procedure);
         assertTrue(postgresProcedureDAO.delete(procedure.getId()));
@@ -175,11 +187,11 @@ public class PostgresProcedureDAOTest {
         prepareStatement = conn.prepareStatement("insert into procedurehascompetencies VALUES(?,1)");
         prepareStatement.setInt(1, procedure.getId());
         prepareStatement.execute();
-        int idProcedure = postgresProcedureDAO.insert(procedure);
+        int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
         assertNotNull(procedure);
         Procedure procedure2 = postgresProcedureDAO.get(procedure.getId());
         assertEquals(procedure, procedure2);
     }
-
+    
 }

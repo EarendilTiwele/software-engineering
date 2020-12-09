@@ -11,6 +11,7 @@ import datatransferobjects.Procedure;
 import datatransferobjects.Site;
 import datatransferobjects.Typology;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -132,6 +133,23 @@ public class PostgresActivityDAOTest {
 
     }
 
+    private int insertActivity(Activity activity) throws SQLException {
+        String query = String.format("insert into Activity "
+                + "(id, site, type, description, interventiontime, interruptible, week, "
+                + "workspacenotes, procedure) "
+                + "VALUES (%d,%d,%d,'%s',%d,%b,%d,'%s',%d) returning *;",
+                activity.getId(), activity.getSite().getId(), activity.getTipology().getId(),
+                activity.getDescription(), activity.getInterventionTime(), activity.isInterruptible(),
+                activity.getWeek(), activity.getWorkspaceNotes(), activity.getProcedure().getId());
+        PreparedStatement prepareStatement = conn.prepareStatement(query);
+        ResultSet rs = prepareStatement.executeQuery();
+        int idActivity = -1;
+        while (rs.next()) {
+            idActivity = rs.getInt("id");
+        }
+        return idActivity;
+    }
+
     /**
      * Test of insert method, of class PostgresActivityDAO. Create a sample of
      * activity Insert it in the database and retrieve it back Compare the two
@@ -140,7 +158,7 @@ public class PostgresActivityDAOTest {
     @Test
     public void testInsert() throws SQLException {
         Activity activity = sampleListActivity().get(0);
-        int idActivity = postgresActivityDAO.insert(activity);
+        int idActivity = insertActivity(activity);
         Statement stm = conn.createStatement();
         ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
         Activity activity2 = null;
@@ -162,7 +180,7 @@ public class PostgresActivityDAOTest {
     public void testUpdate() throws SQLException {
         List<Activity> activityList = sampleListActivity();
         Activity activity = activityList.get(0);
-        int idActivity = postgresActivityDAO.insert(activity);
+        int idActivity = insertActivity(activity);
         Statement stm = conn.createStatement();
         ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
         activity = null;
@@ -206,7 +224,7 @@ public class PostgresActivityDAOTest {
     @Test
     public void testDelete() throws SQLException {
         Activity activity = sampleListActivity().get(0);
-        int idActivity = postgresActivityDAO.insert(activity);
+        int idActivity = insertActivity(activity);
         Statement stm = conn.createStatement();
         ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
         while (rs.next()) {
@@ -233,7 +251,7 @@ public class PostgresActivityDAOTest {
         Set<Activity> resultActivitySet = new HashSet<>();
         Activity resultActivity;
         for (Activity activity : activityList) {
-            int idActivity = postgresActivityDAO.insert(activity);
+            int idActivity = insertActivity(activity);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
             resultActivity = null;
@@ -257,7 +275,7 @@ public class PostgresActivityDAOTest {
     @Test
     public void testGet() throws SQLException {
         Activity activity = sampleListActivity().get(0);
-        int idActivity = postgresActivityDAO.insert(activity);
+        int idActivity = insertActivity(activity);
         Statement stm = conn.createStatement();
         ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
         while (rs.next()) {
@@ -285,7 +303,7 @@ public class PostgresActivityDAOTest {
         int week = 9;
         Activity resultActivity = null;
         for (Activity activity : activityList) {
-            int idActivity = postgresActivityDAO.insert(activity);
+            int idActivity = insertActivity(activity);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
             while (rs.next()) {
@@ -317,7 +335,7 @@ public class PostgresActivityDAOTest {
         int week = 9;
         Activity resultActivity = null;
         for (Activity activity : activityList) {
-            int idActivity = postgresActivityDAO.insert(activity);
+            int idActivity = insertActivity(activity);
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
             while (rs.next()) {
