@@ -94,7 +94,8 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
                 activity.getInterventionTime(), activity.isInterruptible(), activity.getWeek(),
                 activity.getWorkspaceNotes(), activity.getProcedure().getId(), activity.getId());
         try {
-            return executeUpdate(query) == 1;
+            executeUpdate(query);
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(PostgresActivityDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -105,7 +106,8 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
     public boolean delete(int id) {
         String query = String.format("DELETE FROM activity WHERE id=%d; ", id);
         try {
-            return executeUpdate(query) == 1;
+            executeUpdate(query);
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(PostgresActivityDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;

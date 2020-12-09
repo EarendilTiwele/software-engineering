@@ -44,7 +44,8 @@ public class PostgresProcedureDAO extends PostgresAbstractDAO<Procedure> impleme
                 + "where id = %d", procedure.getName(),
                 procedure.getSmp(), procedure.getId());
         try {
-            return executeUpdate(query) == 1;
+            executeUpdate(query);
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(PostgresProcedureDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
@@ -56,7 +57,8 @@ public class PostgresProcedureDAO extends PostgresAbstractDAO<Procedure> impleme
         String query = String.format("delete from procedure "
                 + "where id = %d;", id);
         try {
-            return executeUpdate(query) == 1;
+            executeUpdate(query);
+            return true;
         } catch (SQLException ex) {
             Logger.getLogger(PostgresProcedureDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
