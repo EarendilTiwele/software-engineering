@@ -299,6 +299,10 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Adds mouse listener to hour's column such that complete the assignment in
+     * that hour.
+     */
     private void initDailyAgendaTableMouseListener() {
         dailyAgendaTable.addMouseListener(new MouseAdapter() {
             @Override
