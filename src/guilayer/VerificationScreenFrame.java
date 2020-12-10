@@ -98,7 +98,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         assignationPanel.setVisible(false);
         initInformationPanel();
 
-        //initialize the header of the frame 
+        //initialize the header of the frame
         weekNumberLabel.setText(activity.getWeek() + "");
         String activityString
                 = activity.getId() + " - "
@@ -153,8 +153,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         refreshLabels();
     }
 
-    
-
     /**
      * Initialize components for 'assignation screen'.
      *
@@ -167,7 +165,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         workspaceNotesAssignationScreenPane.setText(activity.getWorkspaceNotes());
         maintainerNameLabel.setText(maintainer.toString());
         percentageLabel.setOpaque(true);
-        percentageLabel.setBackground(convertColor(percentage/100.0));
+        percentageLabel.setBackground(convertColor(percentage / 100.0));
         percentageLabel.setText(percentage + " %");
         selectedDayLabel.setText(selectedDay);
         showAssignationScreen();
@@ -182,7 +180,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         setTitle("Assignation screen activity: " + activity.getId());
         refreshLabels();
     }
-    
+
     /**
      * Workaround to change the opacity of labels.
      */
@@ -416,19 +414,19 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      */
     private Map<Maintainer, Integer[]> getAgenda() {
         UserBO userBLL = new UserBO();
-        try {
-            assignments = assignmentBO.getAllforWeek(activity.getWeek());
-            return assignmentBO.getAgenda(
-                    assignments,
-                    userBLL.getAllMaintainers());
-        } catch (SQLException ex) {
-            SwingUtilities.invokeLater(()
-                    -> JOptionPane.showMessageDialog(
-                            this, ex.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE));
-        }
-        return new HashMap<>();
+//        try {
+        assignments = assignmentBO.getAllforWeek(activity.getWeek());
+        return assignmentBO.getAgenda(
+                assignments,
+                userBLL.getAllMaintainers());
+//        } catch (SQLException ex) {
+//            SwingUtilities.invokeLater(()
+//                    -> JOptionPane.showMessageDialog(
+//                            this, ex.getMessage(),
+//                            "Error",
+//                            JOptionPane.ERROR_MESSAGE));
+//        }
+//        return new HashMap<>();
     }
 
     /**
