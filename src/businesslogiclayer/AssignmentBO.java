@@ -8,7 +8,6 @@ package businesslogiclayer;
 import datatransferobjects.Assignment;
 import datatransferobjects.Activity;
 import datatransferobjects.Maintainer;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -64,20 +63,44 @@ public class AssignmentBO {
         return true;
     }
 
+    /**
+     * Validates the assignment according to specified daily agenda. Returns
+     * <code>false</code> if the hour of the specified assignment conflicts with
+     * other actvities already assigned in the involved hours or the assignment
+     * involves extra work, otherwise returns <code>true</code>.
+     *
+     * NOTE: There is a conflict when a maintainer should stop the assignment's
+     * activity to complete other activities already assigned in involved hours.
+     *
+     * @param assignment the assignment
+     * @param dailyAgenda the daily agenda
+     * @return <code>true</code> if the assignment is valid, otherwise
+     * <code>false</code>
+     */
     public boolean validate(Assignment assignment, Integer[] dailyAgenda) {
         try {
             int hour = assignment.getHour();
             int hourIndex = hourToIndex(hour);
             int availableTime = dailyAgenda[hourIndex];
             int interventionTime = assignment.getActivity().getInterventionTime();
+
+            // no availability in assignment's hour
+            if (availableTime == 0) {
+                return false;
+            }
+
             interventionTime -= availableTime;
             int numberOfOtherHour = interventionTime / MINUTES_PER_HOUR;
+
+            //check the existance of conflicts with other activities in the next
+            //involved hours
             for (int i = 0; i < numberOfOtherHour; i++) {
                 hourIndex += 1;
                 if (dailyAgenda[hourIndex] != MINUTES_PER_HOUR) {
                     return false;
                 }
             }
+
             hourIndex += 1;
             interventionTime -= (numberOfOtherHour * MINUTES_PER_HOUR);
             if (interventionTime <= dailyAgenda[hourIndex]) {

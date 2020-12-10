@@ -27,21 +27,25 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     //list of scheduled activities
     private List<Activity> activities = null;
 
-    // columns headers (the last element in tableColumnNames is used for button column)
+    private ActivityBO activityBO = new ActivityBO();
+
+    // columns headers (the last two element in tableColumnNames is used for button column)
     private static final String ID_COLUMN_NAME = "ID";
     private static final String AREA_COLUMN_NAME = "AREA";
     private static final String TYPE_COLUMN_NAME = "TYPE";
     private static final String TIME_COLUMN_NAME = "Estimated intervention time[min]";
-    private static final String BUTTON_COLUMN_NAME = "";
+    private static final String SELECT_COLUMN_NAME = "";
+    private static final String DELETE_COLUMN_NAME = "";
 
     private final String[] tableColumnNames = new String[]{
         ID_COLUMN_NAME,
         AREA_COLUMN_NAME, TYPE_COLUMN_NAME,
-        TIME_COLUMN_NAME, BUTTON_COLUMN_NAME
+        TIME_COLUMN_NAME, SELECT_COLUMN_NAME, DELETE_COLUMN_NAME
     };
 
     //text of the buttons
-    private static final String BUTTON_TEXT = "Select";
+    private static final String SELECT_BUTTON_TEXT = "Select";
+    private static final String DELETE_BUTTON_TEXT = "Delete";
 
     // First week that the user view in this form
     private static final int FIRST_WEEK = 1;
@@ -89,7 +93,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @param week the week of interest
      */
     private void setUpTable(int week) {
-        // Cursor indicates to user the wait needed to load activities from 
+        // Cursor indicates to user the wait needed to load activities from
         // the database and to update the table.
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = () -> {
@@ -133,10 +137,12 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * Convert a list of activities to a matrix of Object.
      *
      * @param activities list of activities to be converted
-     * @param buttonText text displays on the button
+     * @param selectButtonText text displays on the select button
+     * @param deleteButtonText text displays on the delete button
      * @return the matrix of Object
      */
-    private Object[][] convertToObjectMatrix(List<Activity> activities, String buttonText) {
+    private Object[][] convertToObjectMatrix(List<Activity> activities,
+            String selectButtonText, String deleteButtonText) {
         int numRow = activities.size();
         int numCol = tableColumnNames.length;
         List<String> columnsAsList = Arrays.asList(tableColumnNames);
@@ -153,8 +159,10 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                     = activity.getTipology().toString();
             matrix[i][columnsAsList.indexOf(TIME_COLUMN_NAME)]
                     = activity.getInterventionTime();
-            matrix[i][columnsAsList.indexOf(BUTTON_COLUMN_NAME)]
-                    = buttonText;
+            matrix[i][columnsAsList.indexOf(SELECT_COLUMN_NAME)]
+                    = selectButtonText;
+            matrix[i][columnsAsList.indexOf(DELETE_COLUMN_NAME) + 1] //soluzione momentanea si aspetta discussione
+                    = deleteButtonText;
 
             i++;
         }
@@ -169,21 +177,16 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      */
     private void updateTable() {
         // Convert the filterderActivities to a matrix suitable for CustomTableModel
-        Object[][] data = convertToObjectMatrix(activities, BUTTON_TEXT);
+        Object[][] data = convertToObjectMatrix(activities, SELECT_BUTTON_TEXT, DELETE_BUTTON_TEXT);
 
         TableModel model = new CustomTableModel(tableColumnNames, data) {
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 //this is a non-editable table
-                return columnIndex == getColumnCount() - 1;
+                return columnIndex >= getColumnCount() - 2;
             }
         };
         scheduledActivitiesTable.setModel(model);
-
-        // Set the button renderer for the last column of the table
-        scheduledActivitiesTable.getColumnModel()
-                .getColumn(model.getColumnCount() - 1)
-                .setCellRenderer(new ButtonRenderer());
 
         // ActionListener for showing the verification screen
         ActionListener showVerificationScreen = e -> {
@@ -192,21 +195,55 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
             new VerificationScreenFrame(activityToAssign).setVisible(true);
         };
 
+        // ActionListener for delete activity and update view
+        ActionListener deleteActivity = e -> {
+            int row = scheduledActivitiesTable.getSelectedRow();
+            Activity activityToDelete = activities.get(row);
+            int week = activityToDelete.getWeek();
+            Runnable updater = () -> {
+                activityBO.delete(activityToDelete.getId());
+                SwingUtilities.invokeLater(() -> {
+                    setUpTable(week);
+                });
+
+            };
+            new Thread(updater).start();
+        };
+
+        int selectedButtonColumn = model.getColumnCount() - 2;
+        int deleteButtonColumn = model.getColumnCount() - 1;
+
+        setColumnButton(selectedButtonColumn, showVerificationScreen);
+        setColumnButton(deleteButtonColumn, deleteActivity);
+
+    }
+
+    /**
+     * Adds a button to specified column of the scheduledActivitiesTable and
+     * adds to it a specified action listener.
+     *
+     * @param column the column of the table
+     * @param actionListener the action listener
+     */
+    private void setColumnButton(int column, ActionListener actionListener) {
+        // Set the button renderer for the last column of the table
+        scheduledActivitiesTable.getColumnModel()
+                .getColumn(column)
+                .setCellRenderer(new ButtonRenderer());
         // Set the button editor for the last column of the table to react to users click
         scheduledActivitiesTable.getColumnModel()
-                .getColumn(model.getColumnCount() - 1)
-                .setCellEditor(new ButtonEditor(showVerificationScreen));
+                .getColumn(column)
+                .setCellEditor(new ButtonEditor(actionListener));
     }
 
     /**
      * Load the whole list of activities scheduled for specificied week.
      *
      * @param week the week of the scheduled activities needed to load
-     * @return
+     * @return the list of scheduled activities
      */
     private List<Activity> loadAllActivitiesOfWeek(int week) throws SQLException {
-        ActivityBO activityBLL = new ActivityBO();
-        return activityBLL.getAllOfWeek(week);
+        return activityBO.getAllOfWeek(week);
 
     }
 
@@ -303,7 +340,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

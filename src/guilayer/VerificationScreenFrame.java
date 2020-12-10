@@ -98,7 +98,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         assignationPanel.setVisible(false);
         initInformationPanel();
 
-        //initialize the header of the frame 
+        //initialize the header of the frame
         weekNumberLabel.setText(activity.getWeek() + "");
         String activityString
                 = activity.getId() + " - "
@@ -153,8 +153,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         refreshLabels();
     }
 
-    
-
     /**
      * Initialize components for 'assignation screen'.
      *
@@ -167,7 +165,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         workspaceNotesAssignationScreenPane.setText(activity.getWorkspaceNotes());
         maintainerNameLabel.setText(maintainer.toString());
         percentageLabel.setOpaque(true);
-        percentageLabel.setBackground(convertColor(percentage/100.0));
+        percentageLabel.setBackground(convertColor(percentage / 100.0));
         percentageLabel.setText(percentage + " %");
         selectedDayLabel.setText(selectedDay);
         showAssignationScreen();
@@ -182,7 +180,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         setTitle("Assignation screen activity: " + activity.getId());
         refreshLabels();
     }
-    
+
     /**
      * Workaround to change the opacity of labels.
      */
@@ -301,6 +299,10 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Adds mouse listener to hour's column such that complete the assignment in
+     * that hour.
+     */
     private void initDailyAgendaTableMouseListener() {
         dailyAgendaTable.addMouseListener(new MouseAdapter() {
             @Override

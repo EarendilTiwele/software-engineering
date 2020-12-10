@@ -474,9 +474,11 @@ public class AssignmentBLLTest {
         assertFalse(assignmentBO.validate(assignment, dailyAgenda));
 
         //modified daily avaibility such that the maintainer is fully busy at
-        // 8 o'clock
-        int freeTime = 0;
-        dailyAgenda[H8] = freeTime;
+        // 8 o'clock and fully available at 11 o'clock
+        int freeTimeH8 = 0;
+        int freeTimeH11 = 60;
+        dailyAgenda[H8] = freeTimeH8;
+        dailyAgenda[H11] = freeTimeH11;
 
         //Case 2: the assignment is unvalid since the maintainer is not available
         //at assignment's hour
