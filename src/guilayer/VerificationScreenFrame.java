@@ -261,11 +261,16 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = (() -> {
             agenda = getAgenda();
-            Object[][] data = convertAgendaToObjectMatrix(agenda);
-            SwingUtilities.invokeLater(() -> {
-                setTableData(agendaTable, AGENDA_HEADER, data);
-                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
+            SwingUtilities.invokeLater(() -> {
+                if (agenda == null) {
+                    //Error loading agenda
+                    agendaLoadingError();
+                } else {
+                    Object[][] data = convertAgendaToObjectMatrix(agenda);
+                    setTableData(agendaTable, AGENDA_HEADER, data);
+                }
+                this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             });
         });
         new Thread(loader).start();
@@ -322,31 +327,33 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Stores the assignment if it is valid according to the specified
+     * dailyAgenda.
+     *
+     * @param assignment the assignment to store
+     * @param dailyAgenda the daily agenda to validate the assignment
+     */
     private void insertAssignment(Assignment assignment, Integer[] dailyAgenda) {
 
         if (assignmentBO.validate(assignment, dailyAgenda)) {
             Runnable saver = () -> {
                 boolean inserted = assignmentBO.insert(assignment);
-                if (!inserted) {
-                    SwingUtilities.invokeLater(() -> {
-                        String msg = "Insert assignment failed";
-                        showErrorMessage(msg);
-                    });
-                } else {
 
-                    SwingUtilities.invokeLater(() -> {
-                        String msg = "Assignment correctly inserted";
-                        String title = "Success";
-                        JOptionPane.showMessageDialog(this, msg, title, JOptionPane.INFORMATION_MESSAGE);
+                SwingUtilities.invokeLater(() -> {
+                    if (!inserted) {
+                        assignmentInsertError();
+                    } else {
+                        assignmentInsertSuccess();
                         dispose();
-                    });
-                }
+                    }
+                });
+
             };
 
             new Thread(saver).start();
         } else {
-            String msg = "Invalid assignment";
-            showErrorMessage(msg);
+            invalidAssignmentError(assignment.getMaintainer());
         }
 
     }
@@ -389,6 +396,14 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Converts a daily agenda into a matrix suitable for the table model.
+     *
+     * @param dailyAgenda the daily agenda
+     * @param maintainer the selected maintaner
+     * @param compliance the compliance of the selected maintainer
+     * @return the matrix of data
+     */
     private Object[][] convertDailyAgendaToMatrix(String[] dailyAgenda,
             Maintainer maintainer, String compliance) {
 
@@ -417,24 +432,19 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * @return the agenda of the maintainers
      */
     private Map<Maintainer, Integer[]> getAgenda() {
-        UserBO userBLL = new UserBO();
-//        try {
-        assignments = assignmentBO.getAllforWeek(activity.getWeek());
-        return assignmentBO.getAgenda(
-                assignments,
-                userBLL.getAllMaintainers());
-//        } catch (SQLException ex) {
-//            SwingUtilities.invokeLater(()
-//                    -> JOptionPane.showMessageDialog(
-//                            this, ex.getMessage(),
-//                            "Error",
-//                            JOptionPane.ERROR_MESSAGE));
-//        }
-//        return new HashMap<>();
+        UserBO userBO = new UserBO();
+        assignments = assignmentBO.getAllForWeek(activity.getWeek());
+        Set<Maintainer> maintainers = userBO.getAllMaintainers();
+        if (assignments == null || maintainers == null) {
+            return null;
+        } else {
+            return assignmentBO.getAgenda(assignments, maintainers);
+        }
+
     }
 
     /**
-     * Convert an agenda into a matrix suitable for the table model.
+     * Converts an agenda into a matrix suitable for the table model.
      *
      * @param agenda the agenda
      * @return the matrix representing the agenda
@@ -504,16 +514,35 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         return Color.getHSBColor((float) H, (float) S, (float) B);
     }
 
-    private double convertToPercent(String value, String substringToRemove, int fraction) {
+    /**
+     * Converts the numeric part of a string to a number and fractionates it.
+     * NOTE: the string must consist of a numeric part and at most equal
+     * substrings
+     *
+     * @param value the value string
+     * @param substringToRemove the no numeric part of value to remove
+     * @param fraction the fraction
+     * @return the fractionated number
+     */
+    private double convertToFraction(String value, String substringToRemove, int fraction) {
         String number = value.replace(substringToRemove, "");
         return Double.valueOf(number) / fraction;
 
     }
 
+    /**
+     * Gets the color converter able to remove the specified substring from a
+     * string and fractioned, trough the specified fraction, the numberic part
+     * of that and so associated a color to the fracionated number.
+     *
+     * @param substringToRemove the no numeric part of value to remove
+     * @param fraction the fraction
+     * @return the color converter
+     */
     private Function<Object, Color> getColorConverter(String substringToRemove, int fraction) {
         Function<Object, Color> colorConverter = (value) -> {
             String val = value.toString();
-            double percent = convertToPercent(val, substringToRemove, fraction);
+            double percent = convertToFraction(val, substringToRemove, fraction);
             return convertColor(percent);
 
         };
@@ -536,6 +565,21 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Paints the <code>Component</code> under the event location. If
+     * cellPrecicate test on the specified <code>row</code> and <code>col</code>
+     * is <code>true</code> the component is painted according the value at
+     * (row,column), of specified table, using the specified color converter,
+     * otherwise a default coulor is used.
+     *
+     * @param table the table to be colored
+     * @param comp the compomponet under the event location
+     * @param row the row of the cell to paint, where 0 is the first row
+     * @param col the column of the cell to paint, where 0 is the first column
+     * @param colorConverter the color converted
+     * @param cellPredicate the cell predicate
+     * @return the <code>Component</code> under the event location
+     */
     private Component tableChangeColor(JTable table, Component comp, int row, int col, Function<Object, Color> colorConverter, BiPredicate<Integer, Integer> cellPredicate) {
         Object value = table.getModel().getValueAt(row, col);
         if (cellPredicate.test(row, col)) {
@@ -545,6 +589,43 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         }
         return comp;
 
+    }
+
+    /*----------------------------User Messages------------------------------*/
+    private void agendaLoadingError() {
+        String msg = "Error while loading agenda";
+        String title = "Loading error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void activityUpdateError() {
+        String msg = "Error while updating activity";
+        String title = "Update error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void assignmentInsertError() {
+        String msg = "Error while assigning the activity to the maintainer";
+        String title = "Insert error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void assignmentInsertSuccess() {
+        String msg = "Activity is assignes successfully to the maintainer";
+        String title = "Insert success";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void invalidAssignmentError(Maintainer maintainer) {
+        String msg = "This assignment is not compatible with " + maintainer + "'s "
+                + "daily agenda";
+        String title = "Invalid assigment";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -1023,7 +1104,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
                 boolean success = activityBO.update(activity);
                 SwingUtilities.invokeLater(() -> {
                     if (!success) {
-                        showErrorMessage("Error updating the workspace notes");
+                        activityUpdateError();
+                        //showErrorMessage("Error updating the workspace notes");
                         activity.setWorkspaceNotes(oldWorkspaceNotes);
                     } else {
                         forwardActivity();

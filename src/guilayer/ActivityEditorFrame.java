@@ -32,7 +32,7 @@ import javax.swing.SwingUtilities;
 public class ActivityEditorFrame extends javax.swing.JFrame {
 
     private Activity activity;
-    private final ActivityBO activityBLL = new ActivityBO();
+    private final ActivityBO activityBO = new ActivityBO();
 
     /**
      * Creates new form ActivityEditorFrame
@@ -55,13 +55,15 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
             initUpdateGUI();
             okButton.addActionListener((event) -> {
                 Runnable saver = (() -> {
-                    /*----------------------*/
-                    try {
-                        updateActivity(this.activity);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ActivityEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    SwingUtilities.invokeLater(() -> dispose());
+                    boolean success = updateActivity(this.activity);
+                    SwingUtilities.invokeLater(() -> {
+                        if (success) {
+                            updateActivitySuccess();
+                            dispose();
+                        } else {
+                            updateActivityError();
+                        }
+                    });
                 });
                 new Thread(saver).start();
             });
@@ -91,13 +93,17 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         // Removed try-catch
         Runnable loader = (() -> {
-            SiteBO siteBLL = new SiteBO();
-            List<Site> listSites = siteBLL.getAll();
-            TypologyBO typologyBLL = new TypologyBO();
-            List<Typology> listTypologies = typologyBLL.getAll();
-            ProcedureBO procedureBLL = new ProcedureBO();
-            List<Procedure> listProcedure = procedureBLL.getAll();
+            SiteBO siteBO = new SiteBO();
+            List<Site> listSites = siteBO.getAll();
+            TypologyBO typologyBO = new TypologyBO();
+            List<Typology> listTypologies = typologyBO.getAll();
+            ProcedureBO procedureBO = new ProcedureBO();
+            List<Procedure> listProcedure = procedureBO.getAll();
             SwingUtilities.invokeLater(() -> {
+                if (listSites == null || listProcedure == null
+                        || listTypologies == null) {
+                    dataLoadingError();
+                }
                 addListToComboBox(listSites, siteComboBox);
                 addListToComboBox(listTypologies, typologyComboBox);
                 addListToComboBox(listProcedure, procedureComboBox);
@@ -113,7 +119,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
      */
     private void createActivity() {
         try {
-            int id = new Integer(idTextField.getText());
+
             Site site = (Site) siteComboBox.getSelectedItem();
             Typology typology = (Typology) typologyComboBox.getSelectedItem();
             String description = descriptionTextField.getText();
@@ -123,18 +129,22 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
             Procedure procedure = (Procedure) procedureComboBox.getSelectedItem();
             String workspaceNotes = workspaceNotesArea.getText();
 
-            Activity newPlannedActivity = new PlannedActivity(id, site, typology,
+            Activity newPlannedActivity = new PlannedActivity(site, typology,
                     description, interventionTime, interruptible, week,
                     procedure, workspaceNotes);
 
-            new Thread(() -> {
-                /*-----------------------------------------*/
-                try {
-                    saveActivity(newPlannedActivity);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ActivityEditorFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }).start();
+            Runnable saver = () -> {
+                int newID = activityBO.insert(newPlannedActivity);
+                SwingUtilities.invokeLater(() -> {
+                    if (newID == -1) {
+                        insertActivityError();
+                    } else {
+                        insertActivitySuccess(newID);
+                    }
+                });
+
+            };
+            new Thread(saver).start();
 
         } catch (NumberFormatException e) {
             showErrorMessage("Error in specified parameters");
@@ -144,15 +154,9 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
     }
 
-    private void saveActivity(Activity activity) throws SQLException {
-        // cath exception if necessary
-        activityBLL.insert(activity);
-
-    }
-
-    private void updateActivity(Activity activity) throws SQLException {
+    private boolean updateActivity(Activity activity) {
         activity.setWorkspaceNotes(workspaceNotesArea.getText());
-        activityBLL.update(activity);
+        return activityBO.update(activity);
     }
 
     /**
@@ -170,7 +174,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     private void cleanFrame() {
         String cleanString = "";
         boolean resetCheckBox = false;
-        idTextField.setText(cleanString);
+
         descriptionTextField.setText(cleanString);
         weekTextField.setText(cleanString);
         interruptibleCheckBox.setSelected(resetCheckBox);
@@ -180,7 +184,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     }
 
     private void initUpdateGUI() {
-        idTextField.setText(activity.getId() + "");
+
         siteComboBox.addItem(activity.getSite());
         typologyComboBox.addItem(activity.getTipology());
         descriptionTextField.setText(activity.getDescription());
@@ -190,7 +194,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         //da aggiungere materiali
         procedureComboBox.addItem(activity.getProcedure());
         workspaceNotesArea.setText(activity.getWorkspaceNotes());
-        JComponent[] components = new JComponent[]{idTextField, siteComboBox,
+        JComponent[] components = new JComponent[]{siteComboBox,
             typologyComboBox, descriptionTextField, interventionTimeTextField,
             interruptibleCheckBox, weekTextField, procedureComboBox, materialsTable};
         disableComponents(components);
@@ -203,6 +207,42 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         }
     }
 
+    /*------------------------------User Messages-----------------------------*/
+    private void dataLoadingError() {
+        String msg = "Error while loading required data ";
+        String title = "Loading error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void insertActivityError() {
+        String msg = "Error while creating the new activity ";
+        String title = "Creation error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void insertActivitySuccess(int id) {
+        String msg = "Activity correctily created";
+        String title = "Success";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void updateActivitySuccess() {
+        String msg = "Activity correctily updated";
+        String title = "Success";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void updateActivityError() {
+        String msg = "Error while updating the new activity ";
+        String title = "Update error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -212,7 +252,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        idLabel = new javax.swing.JLabel();
         siteLabel = new javax.swing.JLabel();
         typologyLabel = new javax.swing.JLabel();
         descriptionLabel = new javax.swing.JLabel();
@@ -221,7 +260,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         materialsLabel = new javax.swing.JLabel();
         weekLabel = new javax.swing.JLabel();
         workspaceNotesLabel = new javax.swing.JLabel();
-        idTextField = new javax.swing.JTextField();
         siteComboBox = new javax.swing.JComboBox<>();
         typologyComboBox = new javax.swing.JComboBox<>();
         descriptionTextField = new javax.swing.JTextField();
@@ -238,8 +276,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        idLabel.setText("ID");
-
         siteLabel.setText("Site");
 
         typologyLabel.setText("Typology");
@@ -255,12 +291,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
         weekLabel.setText("Week");
 
         workspaceNotesLabel.setText("Workspace notes");
-
-        idTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                idTextFieldActionPerformed(evt);
-            }
-        });
 
         siteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new Site[] { }));
 
@@ -320,56 +350,62 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(okButton)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(procedureLabel)
+                                .addGap(371, 371, 371))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(siteLabel)
+                                    .addComponent(typologyLabel)
+                                    .addComponent(descriptionLabel)
+                                    .addComponent(interventionTimeLabel)
+                                    .addComponent(interruptibleLabel)
+                                    .addComponent(weekLabel))
+                                .addGap(82, 82, 82)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(procedureComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(idLabel)
-                                        .addGap(154, 154, 154)
-                                        .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(siteLabel)
-                                            .addComponent(typologyLabel)
-                                            .addComponent(descriptionLabel)
-                                            .addComponent(interventionTimeLabel)
-                                            .addComponent(interruptibleLabel)
-                                            .addComponent(weekLabel))
-                                        .addGap(82, 82, 82)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(weekTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(interruptibleCheckBox)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(siteComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(typologyComboBox, 0, 205, Short.MAX_VALUE)
-                                                .addComponent(descriptionTextField)
-                                                .addComponent(interventionTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(procedureComboBox, 0, 205, Short.MAX_VALUE))))
-                                .addGap(50, 50, 50))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(procedureLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                            .addComponent(typologyComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(descriptionTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+                                            .addComponent(interventionTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(siteComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(50, 50, 50)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(workspaceNotesLabel)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(materialsLabel)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE))))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(idLabel)
-                            .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(materialsLabel))
-                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(siteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(siteLabel))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addComponent(materialsLabel)
+                                .addGap(187, 187, 187))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)))
+                        .addComponent(workspaceNotesLabel)
+                        .addGap(11, 11, 11)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(okButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(siteLabel)
+                            .addComponent(siteComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(17, 17, 17)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(typologyLabel)
@@ -385,34 +421,20 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(interruptibleLabel)
-                            .addComponent(interruptibleCheckBox)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(workspaceNotesLabel)
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                            .addComponent(interruptibleCheckBox))
+                        .addGap(43, 43, 43)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(weekLabel)
                             .addComponent(weekTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(procedureLabel)
-                            .addComponent(procedureComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(okButton)
-                .addContainerGap(25, Short.MAX_VALUE))
+                            .addComponent(procedureComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void idTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_idTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_idTextFieldActionPerformed
 
     private void descriptionTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_descriptionTextFieldActionPerformed
         // TODO add your handling code here:
@@ -421,8 +443,6 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descriptionLabel;
     private javax.swing.JTextField descriptionTextField;
-    private javax.swing.JLabel idLabel;
-    private javax.swing.JTextField idTextField;
     private javax.swing.JCheckBox interruptibleCheckBox;
     private javax.swing.JLabel interruptibleLabel;
     private javax.swing.JLabel interventionTimeLabel;

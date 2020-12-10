@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import dataaccesslayer.ActivityDAO;
 import dataaccesslayer.DAOFactory;
+import datatransferobjects.Assignment;
+import java.util.Set;
 
 /**
  *
@@ -19,10 +21,12 @@ import dataaccesslayer.DAOFactory;
 public class ActivityBO {
 
     private final ActivityDAO activityDAO;
+    private final AssignmentBO assignmentBO;
 
     public ActivityBO() {
         DAOFactory postgresFactory = DAOFactory.getDAOFactory(DAOFactory.POSTGRES);
         activityDAO = postgresFactory.getActivityDAO();
+        assignmentBO = new AssignmentBO();
     }
 
     public int insert(Activity activity) {
@@ -46,7 +50,22 @@ public class ActivityBO {
     }
 
     public List<Activity> getAllOfWeek(int week) {
-        return new ArrayList<>(activityDAO.getAllOfWeek(week));
+        Set<Activity> activities = activityDAO.getAllOfWeek(week);
+        //error while loading activities
+        if (activities == null) {
+            return null;
+        }
+
+        Set<Assignment> assignments = assignmentBO.getAllForWeek(week);
+        //error while loading assignments
+        if (assignments == null) {
+            return null;
+        }
+
+        for (Assignment assignment : assignments) {
+            activities.remove(assignment.getActivity());
+        }
+        return new ArrayList<>(activities);
     }
 
     public List<Activity> getAllPlannedOfWeek(int week) {

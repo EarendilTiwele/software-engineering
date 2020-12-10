@@ -55,7 +55,7 @@ public class AssignmentBO {
         assignmentDAO = postgresFactory.getAssignmentDAO();
     }
 
-    public Set<Assignment> getAllforWeek(int week) {
+    public Set<Assignment> getAllForWeek(int week) {
         return assignmentDAO.getAllForWeek(week);
     }
 
@@ -194,6 +194,14 @@ public class AssignmentBO {
             int interventionTime = assignment.getActivity().getInterventionTime();
             int index = hourToIndex(hour);
 
+            while (interventionTime > 0) {
+                int availableTime = Math.min(interventionTime, dailyAgenda[index]);
+                dailyAgenda[index] -= availableTime;
+                interventionTime -= availableTime;
+                index++;
+
+            }
+            /*
             //set fully busy hours to zero available minutes
             for (int i = 0; i < interventionTime / MINUTES_PER_HOUR; i++) {
                 dailyAgenda[index + i] = 0;
@@ -204,7 +212,9 @@ public class AssignmentBO {
                 dailyAgenda[index + interventionTime / MINUTES_PER_HOUR]
                         -= interventionTime % MINUTES_PER_HOUR;
             }
+             */
         });
+
         return dailyAgenda;
     }
 

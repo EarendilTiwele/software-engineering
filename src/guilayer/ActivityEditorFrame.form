@@ -28,42 +28,36 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="okButton" min="-2" max="-2" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="procedureLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="371" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="siteLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="typologyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="descriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="interventionTimeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="interruptibleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="weekLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="procedureComboBox" alignment="0" max="32767" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="idLabel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="154" max="-2" attributes="0"/>
-                                      <Component id="idTextField" min="-2" pref="26" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="siteLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="typologyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="descriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="interventionTimeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="interruptibleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="weekLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace min="-2" pref="82" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="weekTextField" min="-2" pref="29" max="-2" attributes="0"/>
                                           <Component id="interruptibleCheckBox" min="-2" max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                              <Component id="siteComboBox" max="32767" attributes="0"/>
-                                              <Component id="typologyComboBox" pref="205" max="32767" attributes="0"/>
-                                              <Component id="descriptionTextField" max="32767" attributes="0"/>
-                                              <Component id="interventionTimeTextField" alignment="0" min="-2" pref="32" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="procedureComboBox" alignment="0" pref="205" max="32767" attributes="0"/>
+                                          <Component id="typologyComboBox" max="32767" attributes="0"/>
+                                          <Component id="descriptionTextField" pref="205" max="32767" attributes="0"/>
+                                          <Component id="interventionTimeTextField" alignment="0" min="-2" pref="32" max="-2" attributes="0"/>
+                                          <Component id="siteComboBox" alignment="0" max="32767" attributes="0"/>
                                       </Group>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="procedureLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -74,25 +68,38 @@
                       </Group>
                   </Group>
               </Group>
-              <EmptySpace pref="24" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="idLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="idTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="materialsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="siteComboBox" alignment="0" min="-2" pref="20" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                              <Component id="materialsLabel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="187" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane1" min="-2" pref="163" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Component id="workspaceNotesLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                      <Component id="jScrollPane2" min="-2" pref="107" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="okButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="siteLabel" min="-2" max="-2" attributes="0"/>
+                          <Component id="siteComboBox" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -114,17 +121,7 @@
                           <Component id="interruptibleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="interruptibleCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                  </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" min="-2" pref="163" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="workspaceNotesLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                      <EmptySpace min="43" pref="43" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="weekLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="weekTextField" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -135,21 +132,13 @@
                           <Component id="procedureComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="jScrollPane2" alignment="0" min="-2" pref="107" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="okButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="25" max="32767" attributes="0"/>
+              <EmptySpace pref="28" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="idLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="ID"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="siteLabel">
       <Properties>
         <Property name="text" type="java.lang.String" value="Site"/>
@@ -189,11 +178,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Workspace notes"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="idTextField">
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="idTextFieldActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="siteComboBox">
       <Properties>

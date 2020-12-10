@@ -74,10 +74,10 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
     @Override
     public int insert(Activity activity) {
         String query = String.format("insert into Activity "
-                + "(id, site, type, description, interventiontime, interruptible, week, "
+                + "( site, type, description, interventiontime, interruptible, week, "
                 + "workspacenotes, procedure) "
-                + "VALUES (%d,%d,%d,'%s',%d,%b,%d,'%s',%d)   RETURNING *;",
-                activity.getId(), activity.getSite().getId(), activity.getTipology().getId(),
+                + "VALUES (%d,%d,'%s',%d,%b,%d,'%s',%d)   RETURNING *;",
+                activity.getSite().getId(), activity.getTipology().getId(),
                 activity.getDescription(), activity.getInterventionTime(), activity.isInterruptible(),
                 activity.getWeek(), activity.getWorkspaceNotes(), activity.getProcedure().getId());
         try {

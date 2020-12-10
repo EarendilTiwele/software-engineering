@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
@@ -97,21 +98,20 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         // the database and to update the table.
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Runnable loader = () -> {
-            /*-----------------------*/
-            try {
-                // Load all the scheduled activities for the week
-                activities = loadAllActivitiesOfWeek(week);
-            } catch (SQLException ex) {
-                Logger.getLogger(ScheduledActivitiesFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+            // Load all the scheduled activities for the week
+            activities = loadAllActivitiesOfWeek(week);
             SwingUtilities.invokeLater(() -> {
-                updateTable();
+                if (activities == null) {
+                    //Error while loading activities
+                    loadingActivityError();
+
+                } else {
+                    updateTable();
+                }
                 this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             });
         };
         new Thread(loader).start();
-
     }
 
     /**
@@ -161,7 +161,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                     = activity.getInterventionTime();
             matrix[i][columnsAsList.indexOf(SELECT_COLUMN_NAME)]
                     = selectButtonText;
-            matrix[i][columnsAsList.indexOf(DELETE_COLUMN_NAME) + 1] //soluzione momentanea si aspetta discussione
+            matrix[i][columnsAsList.lastIndexOf(DELETE_COLUMN_NAME)]
                     = deleteButtonText;
 
             i++;
@@ -189,33 +189,55 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         scheduledActivitiesTable.setModel(model);
 
         // ActionListener for showing the verification screen
-        ActionListener showVerificationScreen = e -> {
-            int row = scheduledActivitiesTable.getSelectedRow();
-            Activity activityToAssign = activities.get(row);
-            new VerificationScreenFrame(activityToAssign).setVisible(true);
-        };
-
         // ActionListener for delete activity and update view
-        ActionListener deleteActivity = e -> {
-            int row = scheduledActivitiesTable.getSelectedRow();
-            Activity activityToDelete = activities.get(row);
-            int week = activityToDelete.getWeek();
-            Runnable updater = () -> {
-                activityBO.delete(activityToDelete.getId());
-                SwingUtilities.invokeLater(() -> {
-                    setUpTable(week);
-                });
-
-            };
-            new Thread(updater).start();
-        };
-
         int selectedButtonColumn = model.getColumnCount() - 2;
         int deleteButtonColumn = model.getColumnCount() - 1;
 
-        setColumnButton(selectedButtonColumn, showVerificationScreen);
-        setColumnButton(deleteButtonColumn, deleteActivity);
+        setColumnButton(selectedButtonColumn, e -> showVerificationScreen());
+        setColumnButton(deleteButtonColumn, e -> deleteActivity());
 
+    }
+
+    /**
+     * Show the verification screen of the activity selected in the table.
+     */
+    private void showVerificationScreen() {
+        int row = scheduledActivitiesTable.getSelectedRow();
+        Activity activityToAssign = activities.get(row);
+        new VerificationScreenFrame(activityToAssign).setVisible(true);
+    }
+
+    /**
+     * Delete the activity chosen showing a confirm dialog
+     */
+    private void deleteActivity() {
+        int row = scheduledActivitiesTable.getSelectedRow();
+        Activity activityToDelete = activities.get(row);
+        int week = activityToDelete.getWeek();
+        int id = activityToDelete.getId();
+
+        String msg = "Are you sure you wanto to delete the activity with id: "
+                + id;
+        String title = "Delete activity: " + id;
+        int selection = JOptionPane.showConfirmDialog(this, msg, title,
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        if (selection == JOptionPane.YES_OPTION) {
+            //start thread to delete activity
+            Runnable updater = () -> {
+                boolean success = activityBO.delete(activityToDelete.getId());
+
+                SwingUtilities.invokeLater(() -> {
+                    if (success) {
+                        deleteActivitySuccess(id);
+                        setUpTable(week);
+                    } else {
+                        deleteActivityError(id);
+                    }
+                });
+            };
+            new Thread(updater).start();
+        }
     }
 
     /**
@@ -242,9 +264,31 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @param week the week of the scheduled activities needed to load
      * @return the list of scheduled activities
      */
-    private List<Activity> loadAllActivitiesOfWeek(int week) throws SQLException {
+    private List<Activity> loadAllActivitiesOfWeek(int week) {
         return activityBO.getAllOfWeek(week);
+    }
 
+    /*-------------------------------User Messages----------------------------*/
+    private void deleteActivityError(int id) {
+        String errorMessage = "Error deleting activity with id: " + id;
+        String errorTitle = "Deletion error";
+        JOptionPane.showMessageDialog(this, errorMessage, errorTitle,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void deleteActivitySuccess(int id) {
+        String infoMessage = "Activity id " + id + " correctly deleted";
+        String infoTitle = "Info message";
+        JOptionPane.showMessageDialog(this, infoMessage, infoTitle,
+                JOptionPane.INFORMATION_MESSAGE);
+
+    }
+
+    private void loadingActivityError() {
+        String msg = "Error while loading activities";
+        String title = "Loading error";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
     }
 
     /**
