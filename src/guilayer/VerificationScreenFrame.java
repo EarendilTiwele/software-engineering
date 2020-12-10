@@ -418,19 +418,19 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      */
     private Map<Maintainer, Integer[]> getAgenda() {
         UserBO userBLL = new UserBO();
-        try {
-            assignments = assignmentBO.getAllforWeek(activity.getWeek());
-            return assignmentBO.getAgenda(
-                    assignments,
-                    userBLL.getAllMaintainers());
-        } catch (SQLException ex) {
-            SwingUtilities.invokeLater(()
-                    -> JOptionPane.showMessageDialog(
-                            this, ex.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE));
-        }
-        return new HashMap<>();
+//        try {
+        assignments = assignmentBO.getAllforWeek(activity.getWeek());
+        return assignmentBO.getAgenda(
+                assignments,
+                userBLL.getAllMaintainers());
+//        } catch (SQLException ex) {
+//            SwingUtilities.invokeLater(()
+//                    -> JOptionPane.showMessageDialog(
+//                            this, ex.getMessage(),
+//                            "Error",
+//                            JOptionPane.ERROR_MESSAGE));
+//        }
+//        return new HashMap<>();
     }
 
     /**

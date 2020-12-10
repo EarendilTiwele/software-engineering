@@ -24,6 +24,16 @@ import java.util.logging.Logger;
  */
 public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> implements AssignmentDAO {
 
+    /**
+     * Returns the <code>Assignment</code> object builded on the current row of
+     * the ResultSet <code>rs</code>.
+     *
+     * @param rs the ResultSet with which to build the <code>Assignment</code>
+     * object
+     * @return the <code>Assignment</code> object builded on the current row of
+     * the ResultSet <code>rs</code>
+     * @throws SQLException if a database access error occurs
+     */
     @Override
     public Assignment convertToEntity(ResultSet rs) throws SQLException {
         ActivityDAO activityDAL = new PostgresActivityDAO();
@@ -42,6 +52,17 @@ public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> imple
         return assignment;
     }
 
+    /**
+     * Gets all Assignment with a specific <code>week</code> from the Postgres
+     * Database. Returns the set of the assignments in the Postgres Database;
+     * otherwise null.
+     *
+     * @param week
+     * @return the <code>Set</code> of <code>Assignment</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
+     *
+     */
     @Override
     public Set<Assignment> getAllForWeek(int week) {
         String query = String.format("select idmaintainer, idactivity, day,hour from"
@@ -52,6 +73,29 @@ public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> imple
         } catch (SQLException ex) {
             Logger.getLogger(PostgresAssignmentDAO.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        }
+    }
+
+    /**
+     * Inserts a <code>Assignment</code> object in the Postgres Database.
+     * Returns <code>true</code> if the operation is successful;
+     * <code>false</code> otherwise.
+     *
+     * @param assignment the <code>Assignment</code> object to insert.
+     * @return <code>true</code> if the operation is successful;
+     * <code>false</code> otherwise.
+     */
+    @Override
+    public boolean insert(Assignment assignment) {
+        String query = String.format("Insert into assignment values (%d, %d, '%s', %d);",
+                assignment.getMaintainer().getId(), assignment.getActivity().getId(),
+                assignment.getDay(), assignment.getHour());
+        try {
+            executeUpdate(query);
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresAssignmentDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
 

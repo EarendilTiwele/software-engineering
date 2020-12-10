@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.After;
@@ -47,10 +46,10 @@ public class PostgresSiteDAOTest {
 
     @Before
     public void setUp() throws SQLException {
-        PreparedStatement prepareStatement = connection.prepareStatement("delete from activity;");
-        prepareStatement.execute();
-        prepareStatement = connection.prepareStatement("delete from site;");
-        prepareStatement.execute();
+        PreparedStatement preparedStatement = connection.prepareStatement("delete from activity;");
+        preparedStatement.execute();
+        preparedStatement = connection.prepareStatement("delete from site;");
+        preparedStatement.execute();
     }
 
     @After
@@ -60,16 +59,17 @@ public class PostgresSiteDAOTest {
     }
 
     private void insertSite(int id, String factory, String area) throws SQLException {
-        PreparedStatement prepareStatement = connection.prepareStatement("insert into site values (?, ?, ?);");
-        prepareStatement.setInt(1, id);
-        prepareStatement.setString(2, factory);
-        prepareStatement.setString(3, area);
-        prepareStatement.execute();
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into site values (?, ?, ?);");
+        preparedStatement.setInt(1, id);
+        preparedStatement.setString(2, factory);
+        preparedStatement.setString(3, area);
+        preparedStatement.execute();
     }
 
     private Site retrieveSite(int id) throws SQLException {
-        Statement stm = connection.createStatement();
-        ResultSet rs = stm.executeQuery(String.format("select * from site where id = %d;", id));
+        PreparedStatement preparedStatement = connection.prepareStatement("select * from site where id = ?;");
+        preparedStatement.setInt(1, id);
+        ResultSet rs = preparedStatement.executeQuery();
         Site site = null;
         while (rs.next()) {
             site = postgresSiteDAO.convertToEntity(rs);
@@ -113,8 +113,7 @@ public class PostgresSiteDAOTest {
      */
     @Test
     public void testUpdate() throws SQLException {
-        PreparedStatement prepareStatement = connection.prepareStatement("insert into site values (1, 'test', 'test');");
-        prepareStatement.execute();
+        insertSite(1, "test", "test");
         Site localSite = new Site(1, "updated", "updated");
         assertTrue(postgresSiteDAO.update(localSite));
         assertEquals(localSite, retrieveSite(1));

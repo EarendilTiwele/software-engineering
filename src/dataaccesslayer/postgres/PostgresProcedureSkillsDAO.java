@@ -8,11 +8,8 @@ package dataaccesslayer.postgres;
 import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
 import dataaccesslayer.ProcedureSkillsDAO;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +20,16 @@ import java.util.logging.Logger;
  */
 public class PostgresProcedureSkillsDAO extends PostgresAbstractDAO<Competency> implements ProcedureSkillsDAO {
 
+    /**
+     * Returns the <code>Competency</code> object builded on the current row of
+     * the ResultSet <code>rs</code>.
+     *
+     * @param rs the ResultSet with which to build the <code>Competency</code>
+     * object
+     * @return the <code>Competency</code> object builded on the current row of
+     * the ResultSet <code>rs</code>
+     * @throws SQLException if a database access error occurs
+     */
     @Override
     public Competency convertToEntity(ResultSet rs) throws SQLException {
         return new Competency(rs.getInt("CompetencyId"), rs.getString("CompetencyDescription"));

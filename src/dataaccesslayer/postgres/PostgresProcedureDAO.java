@@ -19,6 +19,16 @@ import java.util.logging.Logger;
  */
 public class PostgresProcedureDAO extends PostgresAbstractDAO<Procedure> implements ProcedureDAO {
 
+    /**
+     * Returns the <code>Procedure</code> object builded on the current row of
+     * the ResultSet <code>rs</code>.
+     *
+     * @param rs the ResultSet with which to build the <code>Procedure</code>
+     * object
+     * @return the <code>Procedure</code> object builded on the current row of
+     * the ResultSet <code>rs</code>
+     * @throws SQLException if a database access error occurs
+     */
     @Override
     public Procedure convertToEntity(ResultSet rs) throws SQLException {
         Procedure procedure = new Procedure(rs.getInt("id"), rs.getString("name"), rs.getString("smp"));

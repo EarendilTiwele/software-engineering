@@ -15,10 +15,26 @@ import java.util.Set;
 public interface AssignmentDAO {
 
     /**
-     * Get all Assignment with a specific week
+     * Gets all Assignment with a specific <code>week</code> from the persistent
+     * storage. Returns the set of the assignments in the persistent storage;
+     * otherwise null.
      *
      * @param week
-     * @return
+     * @return the <code>Set</code> of <code>Assignment</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
+     *
      */
     public Set<Assignment> getAllForWeek(int week);
+
+    /**
+     * Inserts a <code>Assignment</code> object in the persistent storage.
+     * Returns <code>true</code> if the operation is successful;
+     * <code>false</code> otherwise.
+     *
+     * @param assignment the <code>Assignment</code> object to insert.
+     * @return <code>true</code> if the operation is successful;
+     * <code>false</code> otherwise.
+     */
+    public boolean insert(Assignment assignment);
 }

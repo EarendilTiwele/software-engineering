@@ -60,7 +60,7 @@ public class AssignmentBO {
     }
 
     public boolean insert(Assignment assignment) {
-        return true;
+        return assignmentDAO.insert(assignment);
     }
 
     /**

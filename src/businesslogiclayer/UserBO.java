@@ -10,7 +10,6 @@ import datatransferobjects.Maintainer;
 import datatransferobjects.User;
 import dataaccesslayer.DAOFactory;
 import dataaccesslayer.UserDAO;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,33 +18,55 @@ import java.util.Set;
  * @author alexd
  */
 public class UserBO {
-    
+
     private final UserDAO userDAO;
-    private final MaintainerSkillsBO mhcBLL;
-    
+    private final MaintainerSkillsBO mhcBO;
+
     public UserBO() {
         DAOFactory postgresFactory = DAOFactory.getDAOFactory(DAOFactory.POSTGRES);
         userDAO = postgresFactory.getUserDAO();
-        mhcBLL = new MaintainerSkillsBO();
+        mhcBO = new MaintainerSkillsBO();
     }
-    
-    public User get(int id) throws SQLException {
+
+    /**
+     * Retrieves the <code>User</code> object with given <code>id</code> from a
+     * persistent storage. Returns the <code>User</code> object with given
+     * <code>id</code> if it exists in the persistent storage; <code>null</code>
+     * if the <code>User</code> object with given <code>id</code> doesn't exist
+     * in the persistent storage or if the operation fails.
+     *
+     * @param id the id which identifies the site
+     * @return the <code>User</code> object with given <code>id</code> if it
+     * exists in the persistent storage, returns <code>null</code> if the
+     * <code>User</code> object with given <code>id</code> doesn't exist in the
+     * persistent storage or if the operation fails
+     */
+    public User get(int id) {
         return userDAO.get(id);
     }
-    
-    public Set<Maintainer> getAllMaintainers() throws SQLException {
+
+    /**
+     * Retrieves a <code>Set</code> of <code>User</code> objects with maintainer
+     * role from a persistent storage. Returns the <code>Set</code> of
+     * <code>User</code> objects with maintainer role if the operation is
+     * successful; <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>User</code> objects with maintainer
+     * role from the persistent storage if the operation is successful;
+     * <code>null</code> otherwise
+     */
+    public Set<Maintainer> getAllMaintainers() {
         Set<Maintainer> maintainers = new HashSet<>();
-        for (User user: userDAO.getAllMaintainers()) {
-            Maintainer maintainer = new Maintainer(user.getId(), 
-                                    user.getUsername(), user.getPassword());
-            Set<Competency> competencies = mhcBLL.getAllCompetencies(maintainer);
-            for (Competency competency: competencies) {
+        for (User user : userDAO.getAllMaintainers()) {
+            Maintainer maintainer = new Maintainer(user.getId(),
+                    user.getUsername(), user.getPassword());
+            Set<Competency> competencies = mhcBO.getAllCompetencies(maintainer);
+            for (Competency competency : competencies) {
                 maintainer.addCompetency(competency);
             }
             maintainers.add(maintainer);
         }
         return maintainers;
     }
-    
-    
+
 }

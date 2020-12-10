@@ -6,20 +6,27 @@
 package dataaccesslayer;
 
 import datatransferobjects.Competency;
-import java.sql.SQLException;
 
 /**
  *
  * @author alexd
  */
 public interface CompetencyDAO {
-    
-    /** 
-     * Retrieve a competency with given id from a persistent storage
-     * @param id the id which identifies the competency
-     * @return the competency retrieved
-     * @throws java.sql.SQLException
+
+    /**
+     * Retrieves the <code>Competency</code> object with given <code>id</code>
+     * from a persistent storage. Returns the <code>Competency</code> object
+     * with given <code>id</code> if it exists in the persistent storage;
+     * <code>null</code> if the <code>Competency</code> object with given
+     * <code>id</code> doesn't exist in the persistent storage or if the
+     * operation fails.
+     *
+     * @param id the id which identifies the site
+     * @return the <code>Competency</code> object with given <code>id</code> if
+     * it exists in the persistent storage, returns <code>null</code> if the
+     * <code>Competency</code> object with given <code>id</code> doesn't exist
+     * in the persistent storage or if the operation fails
      */
-    public Competency get(int id) throws SQLException;
-    
+    public Competency get(int id);
+
 }
