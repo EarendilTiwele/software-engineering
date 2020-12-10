@@ -61,7 +61,7 @@ public class AssignmentBO {
     }
 
     public boolean insert(Assignment assignment) {
-        return true;
+        return assignmentDAO.insert(assignment);
     }
 
     public boolean validate(Assignment assignment, Integer[] dailyAgenda) {

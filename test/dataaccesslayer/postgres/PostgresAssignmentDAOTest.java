@@ -77,6 +77,23 @@ public class PostgresAssignmentDAOTest {
     public void tearDown() {
     }
 
+    @Test
+    public void testInsert() throws SQLException {
+        List<Assignment> assignmentSet = new ArrayList<>(sampleSetAssignment());
+        Assignment assignment = assignmentSet.get(0);
+        boolean result = postgresAssignmentDAO.insert(assignment);
+        assertTrue(result);
+        PreparedStatement preparedStatement = conn.prepareStatement(String.format("Select * "
+                + "from assignment where idmaintainer = %d and idactivity=%d",
+                assignment.getMaintainer().getId(), assignment.getActivity().getId()));
+        ResultSet rs = preparedStatement.executeQuery();
+        Assignment assignment2 = null;
+        while (rs.next()) {
+            assignment2 = postgresAssignmentDAO.convertToEntity(rs);
+        }
+        assertEquals(assignment, assignment2);
+    }
+
     /**
      * Test of getAllForWeek method, of class PostgresAssignmentDAO. Create
      * assignments samples. Insert them in the database. Get the assignments
