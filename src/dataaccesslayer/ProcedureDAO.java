@@ -15,44 +15,71 @@ import java.util.Set;
 public interface ProcedureDAO {
 
     /**
-     * Inserts an <code>procedure</code> in the database
+     * Inserts a <code>Procedure</code> object in a persistent storage. Returns
+     * the id of the inserted <code>procedure</code> if the operation is
+     * successful; -1 otherwise.
      *
-     * @param procedure
-     * @return the id of procedure if the procedure is inserted correctly;
-     * otherwise - 1 if the insert operation is failed
+     * @param procedure the <code>Procedure</code> object to insert
+     * @return the id of the inserted <code>procedure</code> if the operation is
+     * successful; -1 otherwise
      */
     public int insert(Procedure procedure);
 
     /**
-     * Updates an <code>procedure</code> in the database
+     * Updates a <code>Procedure</code> object in a persistent storage, if the
+     * <code>procedure</code> is not present in the persistent storage it is not
+     * created. Returns <code>true</code> if the operation is successful, that
+     * is both when the <code>procedure</code> is updated and when the
+     * <code>procedure</code> doesn't exist in the persistent storage;
+     * <code>false</code> otherwise.
      *
-     * @param procedure
-     * @return true if the procedure has been updated or if there was not the
-     * procedure; otherwise false in case of error.
+     * @param procedure the <code>Procedure</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the procedure is updated and when the procedure doesn't exist in the
+     * persistent storage; <code>false</code> otherwise
      */
     public boolean update(Procedure procedure);
 
     /**
-     * Deletes an <code>procedure</code> in the database
+     * Deletes the procedure with given <code>id</code> from a persistent
+     * storage. Returns <code>true</code> if the operation is successful, that
+     * is both when the procedure with given <code>id</code> is deleted and when
+     * the procedure with given <code>id</code> doesn't exist in the persistent
+     * storage; <code>false</code> otherwise.
      *
-     * @param id
-     * @return true if the procedure has been deleted or if there was not the
-     * procedure in the database; otherwise false in case of error.
+     * @param id the <code>id</code> which identifies the procedure
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the procedure with given <code>id</code> is deleted and when the
+     * procedure with given <code>id</code> doesn't exist in the persistent
+     * storage; <code>false</code> otherwise
      */
     public boolean delete(int id);
 
     /**
-     * Returns the Set of the procedures present in the database
+     * Retrieves a <code>Set</code> of <code>Procedure</code> objects from a
+     * persistent storage. Returns the <code>Set</code> of
+     * <code>Procedure</code> objects if the operation is successful;
+     * <code>null</code> otherwise.
      *
-     * @return the set of the procedures; otherwise null in case of error.
+     * @return the <code>Set</code> of <code>Procedure</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
      */
     public Set<Procedure> getAll();
 
     /**
-     * Returns a procedure with the specified <code>id</code>
+     * Retrieves the <code>Procedure</code> object with given <code>id</code>
+     * from a persistent storage. Returns the <code>Procedure</code> object with
+     * given <code>id</code> if it exists in the persistent storage;
+     * <code>null</code> if the <code>Procedure</code> object with given
+     * <code>id</code> doesn't exist in the persistent storage or if the
+     * operation fails.
      *
-     * @param id
-     * @return a procedure with the specified <code>id</code>
+     * @param id the id which identifies the procedure
+     * @return the <code>Procedure</code> object with given <code>id</code> if
+     * it exists in the persistent storage, returns <code>null</code> if the
+     * <code>Procedure</code> object with given <code>id</code> doesn't exist in
+     * the persistent storage or if the operation fails
      */
     public Procedure get(int id);
 }

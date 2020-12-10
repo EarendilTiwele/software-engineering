@@ -7,7 +7,6 @@ package dataaccesslayer;
 
 import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
-import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -17,11 +16,15 @@ import java.util.Set;
 public interface ProcedureSkillsDAO {
 
     /**
-     * Get all competencies associated with a specific procedure
+     * Retrieves a <code>Set</code> of <code>Competency</code>, associated with
+     * a specific <code>Procedure</code> object, from a persistent storage.
+     * Returns the <code>Set</code> of <code>Competency</code> objects if the
+     * operation is successful; <code>null</code> otherwise.
      *
      * @param procedure
-     * @return the competencies of the procedure
-     * @throws java.sql.SQLException
+     * @return the <code>Set</code> of <code>Competency</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise.
      */
     public Set<Competency> getAllCompetencies(Procedure procedure);
 }

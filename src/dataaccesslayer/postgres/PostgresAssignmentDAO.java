@@ -53,15 +53,14 @@ public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> imple
     }
 
     /**
-     * Gets all Assignment with a specific <code>week</code> from the Postgres
-     * Database. Returns the set of the assignments in the Postgres Database;
-     * otherwise null.
+     * Retrieves a <code>Set</code> of <code>Assignment</code> objects from the
+     * Postgres Database. Returns the <code>Set</code> of
+     * <code>Assignment</code> objects if the operation is successful;
+     * <code>null</code> otherwise.
      *
-     * @param week
      * @return the <code>Set</code> of <code>Assignment</code> objects from the
-     * persistent storage if the operation is successful; <code>null</code>
+     * Postgres Database if the operation is successful; <code>null</code>
      * otherwise
-     *
      */
     @Override
     public Set<Assignment> getAllForWeek(int week) {
