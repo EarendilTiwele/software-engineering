@@ -24,6 +24,16 @@ import java.util.logging.Logger;
  */
 public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> implements AssignmentDAO {
 
+    /**
+     * Returns the <code>Assignment</code> object builded on the current row of
+     * the ResultSet <code>rs</code>.
+     *
+     * @param rs the ResultSet with which to build the <code>Assignment</code>
+     * object
+     * @return the <code>Assignment</code> object builded on the current row of
+     * the ResultSet <code>rs</code>
+     * @throws SQLException if a database access error occurs
+     */
     @Override
     public Assignment convertToEntity(ResultSet rs) throws SQLException {
         ActivityDAO activityDAL = new PostgresActivityDAO();

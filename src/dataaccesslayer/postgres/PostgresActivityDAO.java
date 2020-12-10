@@ -18,13 +18,7 @@ import dataaccesslayer.SiteDAO;
 import dataaccesslayer.TypologyDAO;
 import java.sql.ResultSet;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,8 +31,18 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
 
     private Connection conn;
 
+    /**
+     * Returns the <code>Activity</code> object builded on the current row of
+     * the ResultSet <code>rs</code>.
+     *
+     * @param rs the ResultSet with which to build the <code>Activity</code>
+     * object
+     * @return the <code>Activity</code> object builded on the current row of
+     * the ResultSet <code>rs</code>
+     * @throws SQLException if a database access error occurs
+     */
     @Override
-    public Activity convertToEntity(ResultSet rs) throws SQLException {
+    Activity convertToEntity(ResultSet rs) throws SQLException {
         SiteDAO siteDAL = new PostgresSiteDAO();
         int siteId = rs.getInt("site");
         Site site = siteDAL.get(siteId);
