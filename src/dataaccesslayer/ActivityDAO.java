@@ -6,8 +6,6 @@
 package dataaccesslayer;
 
 import datatransferobjects.Activity;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Set;
 
 /**
@@ -17,62 +15,96 @@ import java.util.Set;
 public interface ActivityDAO {
 
     /**
-     * Inserts an <code>activity</code> in the database
+     * Inserts a <code>Activity</code> object in a persistent storage. Returns
+     * the id of the inserted <code>activity</code> if the operation is
+     * successful; -1 otherwise.
      *
-     * @param activity
-     * @return the id of activity if the activity is inserted correctly;
-     * otherwise - 1 if the insert operation is failed
+     * @param activity the <code>Activity</code> object to insert
+     * @return the id of the inserted <code>Activity</code> if the operation is
+     * successful; -1 otherwise
      */
     public int insert(Activity activity);
 
     /**
-     * Updates an <code>activity</code> in the database
+     * Updates a <code>Activity</code> object in a persistent storage, if the
+     * <code>Activity</code> is not present in the persistent storage it is not
+     * created. Returns <code>true</code> if the operation is successful, that
+     * is both when the <code>activity</code> is updated and when the
+     * <code>activity</code> doesn't exist in the persistent storage;
+     * <code>false</code> otherwise.
      *
-     * @param activity
-     * @return true if the activity has been updated or if there was not the
-     * activity; otherwise false in case of error.
+     * @param activity the <code>Activity</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the activity is updated and when the activity doesn't exist in the
+     * persistent storage; <code>false</code> otherwise
      */
     public boolean update(Activity activity);
 
     /**
-     * Deletes an <code>activity</code> in the database
+     * Deletes the activity with given <code>id</code> from a persistent
+     * storage. Returns <code>true</code> if the operation is successful, that
+     * is both when the activity with given <code>id</code> is deleted and when
+     * the activity with given <code>id</code> doesn't exist in the persistent
+     * storage; <code>false</code> otherwise.
      *
-     * @param id
-     * @return true if the activity has been deleted or if there was not the
-     * activity in the database; otherwise false in case of error.
+     * @param id the <code>id</code> which identifies the activity
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the activity with given <code>id</code> is deleted and when the
+     * activity with given <code>id</code> doesn't exist in the persistent
+     * storage; <code>false</code> otherwise
      */
     public boolean delete(int id);
 
     /**
-     * Returns the Set of the activities present in the database
+     * Retrieves a <code>Set</code> of <code>Activity</code> objects from a
+     * persistent storage. Returns the <code>Set</code> of <code>Activity</code>
+     * objects if the operation is successful; <code>null</code> otherwise.
      *
-     * @return the set of the activities; otherwise null in case of error.
+     * @return the <code>Set</code> of <code>Activity</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
      */
     public Set<Activity> getAll();
 
     /**
-     * Returns an activity with the specified <code>id</code>
+     * Retrieves the <code>Activity</code> object with given <code>id</code>
+     * from a persistent storage. Returns the <code>Activity</code> object with
+     * given <code>id</code> if it exists in the persistent storage;
+     * <code>null</code> if the <code>Activity</code> object with given
+     * <code>id</code> doesn't exist in the persistent storage or if the
+     * operation fails.
      *
-     * @param id
-     * @return an activity with the specified <code>id</code>
+     * @param id the id which identifies the activity
+     * @return the <code>Activity</code> object with given <code>id</code> if it
+     * exists in the persistent storage, returns <code>null</code> if the
+     * <code>Activity</code> object with given <code>id</code> doesn't exist in
+     * the persistent storage or if the operation fails
      */
     public Activity get(int id);
 
     /**
-     * Returns the Set of the activities present in the database for a specified
-     * <code>week</code>
+     * Retrieves a <code>Set</code> of <code>Activity</code> objects with a
+     * specific <code>week</code> from a persistent storage. Returns the
+     * <code>Set</code> of <code>Activity</code> objects if the operation is
+     * successful; <code>null</code> otherwise.
      *
-     * @return the set of the activities with the <code>week</code> specified;
-     * otherwise null in case of error.
+     * @param week
+     * @return the <code>Set</code> of <code>Activity</code> objects with a
+     * specific week from the persistent storage if the operation is successful;
+     * <code>null</code> otherwise
      */
     public Set<Activity> getAllOfWeek(int week);
 
     /**
-     * Returns the Set of the activities present in the database for a specified
-     * <code>week</code>
+     * Retrieves a <code>Set</code> of <code>PlannedActivity</code> objects with
+     * a specific <code>week</code> from a persistent storage. Returns the
+     * <code>Set</code> of <code>PlannedActivity</code> objects if the operation
+     * is successful; <code>null</code> otherwise.
      *
-     * @return the set of the planned activities with the <code>week</code>
-     * specified; otherwise null in case of error.
+     * @param week
+     * @return the <code>Set</code> of <code>Activity</code> objects with a
+     * specific week from the persistent storage if the operation is successful;
+     * <code>null</code> otherwise
      */
     public Set<Activity> getAllPlannedOfWeek(int week);
 

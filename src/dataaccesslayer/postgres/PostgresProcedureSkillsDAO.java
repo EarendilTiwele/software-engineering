@@ -36,10 +36,14 @@ public class PostgresProcedureSkillsDAO extends PostgresAbstractDAO<Competency> 
     }
 
     /**
-     * Get all competencies associated with a specific procedure
+     * Retrieves a <code>Set</code> of <code>Competency</code>, associated with
+     * a specific <code>Procedure</code> object, from a database. Returns the
+     * <code>Set</code> of <code>Competency</code> objects if the operation is
+     * successful; <code>null</code> otherwise.
      *
      * @param procedure
-     * @return the competencies of the procedure
+     * @return the <code>Set</code> of <code>Competency</code> objects from the
+     * database if the operation is successful; <code>null</code> otherwise
      */
     @Override
     public Set<Competency> getAllCompetencies(Procedure procedure) {

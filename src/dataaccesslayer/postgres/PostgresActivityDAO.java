@@ -71,6 +71,15 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         return activity;
     }
 
+    /**
+     * Inserts a <code>Activity</code> object in the database. Returns the id of
+     * the inserted <code>activity</code> if the operation is successful; -1
+     * otherwise.
+     *
+     * @param activity the <code>Activity</code> object to insert
+     * @return the id of the inserted <code>Activity</code> if the operation is
+     * successful; -1 otherwise
+     */
     @Override
     public int insert(Activity activity) {
         String query = String.format("insert into Activity "
@@ -88,6 +97,19 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         }
     }
 
+    /**
+     * Updates a <code>Activity</code> object in the database, if the
+     * <code>Activity</code> is not present in the database it is not created.
+     * Returns <code>true</code> if the operation is successful, that is both
+     * when the <code>activity</code> is updated and when the
+     * <code>activity</code> doesn't exist in the database; <code>false</code>
+     * otherwise.
+     *
+     * @param activity the <code>Activity</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the activity is updated and when the activity doesn't exist in the
+     * database; <code>false</code> otherwise
+     */
     @Override
     public boolean update(Activity activity) {
         String query = String.format("update Activity "
@@ -106,6 +128,19 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         }
     }
 
+    /**
+     * Deletes the activity with given <code>id</code> from a database. Returns
+     * <code>true</code> if the operation is successful, that is both when the
+     * activity with given <code>id</code> is deleted and when the activity with
+     * given <code>id</code> doesn't exist in the database; <code>false</code>
+     * otherwise.
+     *
+     * @param id the <code>id</code> which identifies the activity
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the activity with given <code>id</code> is deleted and when the
+     * activity with given <code>id</code> doesn't exist in the database;
+     * <code>false</code> otherwise
+     */
     @Override
     public boolean delete(int id) {
         String query = String.format("DELETE FROM activity WHERE id=%d; ", id);
@@ -118,6 +153,14 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         }
     }
 
+    /**
+     * Retrieves a <code>Set</code> of <code>Activity</code> objects from a
+     * database. Returns the <code>Set</code> of <code>Activity</code> objects
+     * if the operation is successful; <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>Activity</code> objects from the
+     * database if the operation is successful; <code>null</code> otherwise
+     */
     @Override
     public Set<Activity> getAll() {
         String query = "Select * from activity";
@@ -129,6 +172,19 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         }
     }
 
+    /**
+     * Retrieves the <code>Activity</code> object with given <code>id</code>
+     * from a database. Returns the <code>Activity</code> object with given
+     * <code>id</code> if it exists in the database; <code>null</code> if the
+     * <code>Activity</code> object with given <code>id</code> doesn't exist in
+     * the database or if the operation fails.
+     *
+     * @param id the id which identifies the activity
+     * @return the <code>Activity</code> object with given <code>id</code> if it
+     * exists in the database, returns <code>null</code> if the
+     * <code>Activity</code> object with given <code>id</code> doesn't exist in
+     * the database or if the operation fails
+     */
     @Override
     public Activity get(int id) {
         String query = String.format("Select * from activity WHERE id = %d ;", id);
@@ -140,6 +196,17 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         }
     }
 
+    /**
+     * Retrieves a <code>Set</code> of <code>Activity</code> objects with a
+     * specific <code>week</code> from a database. Returns the <code>Set</code>
+     * of <code>Activity</code> objects if the operation is successful;
+     * <code>null</code> otherwise.
+     *
+     * @param week
+     * @return the <code>Set</code> of <code>Activity</code> objects with a
+     * specific week from the database if the operation is successful;
+     * <code>null</code> otherwise
+     */
     @Override
     public Set<Activity> getAllOfWeek(int week) {
         String query = String.format("Select * from activity where week = %d;", week);
@@ -151,6 +218,17 @@ public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implement
         }
     }
 
+    /**
+     * Retrieves a <code>Set</code> of <code>PlannedActivity</code> objects with
+     * a specific <code>week</code> from a database. Returns the
+     * <code>Set</code> of <code>PlannedActivity</code> objects if the operation
+     * is successful; <code>null</code> otherwise.
+     *
+     * @param week
+     * @return the <code>Set</code> of <code>Activity</code> objects with a
+     * specific week from the database if the operation is successful;
+     * <code>null</code> otherwise
+     */
     @Override
     public Set<Activity> getAllPlannedOfWeek(int week) {
         return getAllOfWeek(week);
