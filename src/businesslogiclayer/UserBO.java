@@ -11,6 +11,7 @@ import datatransferobjects.User;
 import dataaccesslayer.DAOFactory;
 import dataaccesslayer.UserDAO;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,6 +29,14 @@ public class UserBO {
         mhcBO = new MaintainerSkillsBO();
     }
 
+    public int insert(User user) {
+        return -1;
+    }
+
+    public boolean update(User user) {
+        return false;
+    }
+
     /**
      * Retrieves the <code>User</code> object with given <code>id</code> from a
      * persistent storage. Returns the <code>User</code> object with given
@@ -43,6 +52,10 @@ public class UserBO {
      */
     public User get(int id) {
         return userDAO.get(id);
+    }
+
+    public List<User> getAll() {
+        return null;
     }
 
     /**
