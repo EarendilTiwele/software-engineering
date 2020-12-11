@@ -10,6 +10,7 @@ import dataaccesslayer.DAOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import dataaccesslayer.TypologyDAO;
+import java.util.Set;
 
 /**
  *
@@ -100,7 +101,8 @@ public class TypologyBO {
      * otherwise
      */
     public List<Typology> getAll() {
-        return new ArrayList<>(typologyDAO.getAll());
+        Set<Typology> typologies = typologyDAO.getAll();
+        return typologies != null ? new ArrayList<>(typologies) : null;
     }
 
 }

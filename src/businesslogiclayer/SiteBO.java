@@ -10,6 +10,7 @@ import dataaccesslayer.DAOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import dataaccesslayer.SiteDAO;
+import java.util.Set;
 
 /**
  *
@@ -98,7 +99,8 @@ public class SiteBO {
      * otherwise
      */
     public List<Site> getAll() {
-        return new ArrayList<>(siteDAO.getAll());
+        Set<Site> sites = siteDAO.getAll();
+        return sites != null ? new ArrayList<>(sites) : null;
     }
 
 }
