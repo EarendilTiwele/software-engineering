@@ -25,12 +25,34 @@ public class CompetencyBO {
         competencyDAO = postgresFactory.getCompetencyDAO();
     }
 
+    /**
+     * Inserts a <code>Competency</code> object in a persistent storage. Returns
+     * the id of the inserted <code>competency</code> if the operation is
+     * successful; -1 otherwise.
+     *
+     * @param competency the <code>Competency</code> object to insert
+     * @return the id of the inserted <code>competency</code> if the operation
+     * is successful; -1 otherwise
+     */
     public int insert(Competency competency) {
-        return -1;
+        return competencyDAO.insert(competency);
     }
 
+    /**
+     * Updates a <code>Competency</code> object in a persistent storage, if the
+     * <code>competency</code> is not present in the persistent storage it is
+     * not created. Returns <code>true</code> if the operation is successful,
+     * that is both when the <code>competency</code> is updated and when the
+     * <code>competency</code> doesn't exist in the persistent storage;
+     * <code>false</code> otherwise.
+     *
+     * @param competency the <code>Competency</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the competency is updated and when the competency doesn't exist in
+     * the persistent storage; <code>false</code> otherwise
+     */
     public boolean update(Competency competency) {
-        return false;
+        return competencyDAO.update(competency);
     }
 
     /**
