@@ -80,7 +80,7 @@ public class TypologyBO {
      * <code>id</code> doesn't exist in the persistent storage or if the
      * operation fails.
      *
-     * @param id the id which identifies the site
+     * @param id the id which identifies the typology
      * @return the <code>Typology</code> object with given <code>id</code> if it
      * exists in the persistent storage, returns <code>null</code> if the
      * <code>Typology</code> object with given <code>id</code> doesn't exist in
