@@ -9,8 +9,11 @@ import datatransferobjects.Activity;
 import businesslogiclayer.ActivityBO;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
@@ -76,7 +79,15 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 int idCol = 0;
                 if (row >= 0 && col == idCol) {
                     Activity activity = activities.get(row);
-                    new ActivityEditorFrame(activity).setVisible(true);
+                    JFrame activityEditorFrame = new ActivityEditorFrame(activity);
+                    activityEditorFrame.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent windowsEvent) {
+                            setUpTable(activity.getWeek());
+                        }
+                    });
+
+                    activityEditorFrame.setVisible(true);
 
                 }
             }
@@ -206,7 +217,14 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     private void showVerificationScreen() {
         int row = scheduledActivitiesTable.getSelectedRow();
         Activity activityToAssign = activities.get(row);
-        new VerificationScreenFrame(activityToAssign).setVisible(true);
+        JFrame verificationScreenFrame = new VerificationScreenFrame(activityToAssign);
+        verificationScreenFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent windowsEvent) {
+                setUpTable(activityToAssign.getWeek());
+            }
+        });
+        verificationScreenFrame.setVisible(true);
     }
 
     /**
@@ -376,7 +394,17 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
-        new ActivityEditorFrame(null).setVisible(true);
+        String week = (String) weekComboBox.getSelectedItem();
+        int currentWeek = Integer.valueOf(week);
+        JFrame activityEditorFrame = new ActivityEditorFrame(null);
+        activityEditorFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent windowsEvent) {
+                setUpTable(currentWeek);
+            }
+        });
+        activityEditorFrame.setVisible(true);
+        //new ActivityEditorFrame(null).setVisible(true);
     }//GEN-LAST:event_createButtonActionPerformed
 
     /**
