@@ -9,6 +9,8 @@ import datatransferobjects.Competency;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -80,6 +82,57 @@ public class PostgresCompetencyDAOTest {
         Competency localCompetency = new Competency(1, "test");
         assertEquals(postgresCompetencyDAO.get(1), localCompetency);
         assertNull(postgresCompetencyDAO.get(2));
+    }
+
+    /**
+     * Test of getAll method, of class PostgresCompetencyDAO. Test case: no
+     * competencies in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllEmpty() throws SQLException {
+        assertTrue(postgresCompetencyDAO.getAll().isEmpty());
+    }
+
+    /**
+     * Test of getAll method, of class PostgresCompetencyDAO. Test case: only
+     * one competency in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllOneCompetency() throws SQLException {
+        insertCompetency(1, "test");
+        Set<Competency> localCompetencies = new HashSet<>();
+        localCompetencies.add(new Competency(1, "test"));
+        assertEquals(localCompetencies, postgresCompetencyDAO.getAll());
+    }
+
+    /**
+     * Test of getAll method, of class PostgresCompetencyDAO. Test case: more
+     * than one (three) competency in the database.
+     * <ul>
+     * <li>Insert three competencies in the database with
+     * <code>id = 1, 2, 3</code></li>
+     * <li>Create a local set of competencies adding the same competencies
+     * inserted before</li>
+     * <li>Check if the set of competencies retrieved from the database is
+     * equals to the local set of competencies</li>
+     * </ul>
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void testGetAll() throws SQLException {
+        insertCompetency(1, "test");
+        insertCompetency(2, "test2");
+        insertCompetency(3, "test3");
+        Set<Competency> localCompetencies = new HashSet<>();
+        localCompetencies.add(new Competency(1, "test"));
+        localCompetencies.add(new Competency(2, "test2"));
+        localCompetencies.add(new Competency(3, "test3"));
+        assertEquals(localCompetencies, postgresCompetencyDAO.getAll());
     }
 
 }

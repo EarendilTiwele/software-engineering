@@ -8,6 +8,8 @@ package businesslogiclayer;
 import datatransferobjects.Competency;
 import dataaccesslayer.CompetencyDAO;
 import dataaccesslayer.DAOFactory;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public class CompetencyBO {
      * <code>id</code> doesn't exist in the persistent storage or if the
      * operation fails.
      *
-     * @param id the id which identifies the site
+     * @param id the id which identifies the competency
      * @return the <code>Competency</code> object with given <code>id</code> if
      * it exists in the persistent storage, returns <code>null</code> if the
      * <code>Competency</code> object with given <code>id</code> doesn't exist
@@ -49,7 +51,18 @@ public class CompetencyBO {
         return competencyDAO.get(id);
     }
 
+    /**
+     * Retrieves a <code>List</code> of <code>Competency</code> objects from a
+     * persistent storage. Returns the <code>List</code> of
+     * <code>Competency</code> objects if the operation is successful;
+     * <code>null</code> otherwise.
+     *
+     * @return the <code>List</code> of <code>Competency</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
+     */
     public List<Competency> getAll() {
-        return null;
+        Set<Competency> competencies = competencyDAO.getAll();
+        return competencies != null ? new ArrayList<>(competencies) : null;
     }
 }

@@ -6,6 +6,7 @@
 package dataaccesslayer;
 
 import datatransferobjects.Competency;
+import java.util.Set;
 
 /**
  *
@@ -21,12 +22,24 @@ public interface CompetencyDAO {
      * <code>id</code> doesn't exist in the persistent storage or if the
      * operation fails.
      *
-     * @param id the id which identifies the site
+     * @param id the id which identifies the competency
      * @return the <code>Competency</code> object with given <code>id</code> if
      * it exists in the persistent storage, returns <code>null</code> if the
      * <code>Competency</code> object with given <code>id</code> doesn't exist
      * in the persistent storage or if the operation fails
      */
     public Competency get(int id);
+
+    /**
+     * Retrieves a <code>Set</code> of <code>Competency</code> objects from a
+     * persistent storage. Returns the <code>Set</code> of
+     * <code>Competency</code> objects if the operation is successful;
+     * <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>Competency</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
+     */
+    public Set<Competency> getAll();
 
 }

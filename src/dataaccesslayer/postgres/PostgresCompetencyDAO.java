@@ -9,6 +9,7 @@ import datatransferobjects.Competency;
 import dataaccesslayer.CompetencyDAO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,6 +56,27 @@ public class PostgresCompetencyDAO extends PostgresAbstractDAO<Competency> imple
                 + "where id = %d;", id);
         try {
             return executeQuery(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresCompetencyDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves a <code>Set</code> of <code>Competency</code> objects from the
+     * Postgres Database. Returns the <code>Set</code> of
+     * <code>Competency</code> objects if the operation is successful;
+     * <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>Competency</code> objects from the
+     * Postgres Database if the operation is successful; <code>null</code>
+     * otherwise
+     */
+    @Override
+    public Set<Competency> getAll() {
+        String query = "select * from competency;";
+        try {
+            return executeSetQuery(query);
         } catch (SQLException ex) {
             Logger.getLogger(PostgresCompetencyDAO.class.getName()).log(Level.SEVERE, null, ex);
             return null;
