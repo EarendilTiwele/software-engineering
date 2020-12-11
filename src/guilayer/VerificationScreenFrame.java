@@ -14,16 +14,13 @@ import businesslogiclayer.UserBO;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.table.TableCellRenderer;
 import static businesslogiclayer.AssignmentBO.*;
 import datatransferobjects.Assignment;
 import java.awt.Desktop;
@@ -34,8 +31,6 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTable;
 
 /**
@@ -239,7 +234,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Open the browser and go to the specified url.
+     * Opens the browser and go to the specified url.
      *
      * @param url the url
      */
@@ -252,7 +247,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Load the agenda in a new thread and complete the agenda table.
+     * Loads the agenda in a new thread and complete the agenda table.
      */
     private void initAgendaTable() {
         initAgendaTableMouseListener();
@@ -516,8 +511,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
 
     /**
      * Converts the numeric part of a string to a number and fractionates it.
-     * NOTE: the string must consist of a numeric part and at most equal
-     * substrings
+     * NOTE: the string must consist of a numeric part and at most could have
+     * one or more equal substrings
      *
      * @param value the value string
      * @param substringToRemove the no numeric part of value to remove
@@ -532,8 +527,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
 
     /**
      * Gets the color converter able to remove the specified substring from a
-     * string and fractioned, trough the specified fraction, the numberic part
-     * of that and so associated a color to the fracionated number.
+     * string and fractioned, trough the specified fraction, the numeric part of
+     * that and so associated a color to the fractionated number.
      *
      * @param substringToRemove the no numeric part of value to remove
      * @param fraction the fraction
@@ -544,11 +539,23 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
             String val = value.toString();
             double percent = convertToFraction(val, substringToRemove, fraction);
             return convertColor(percent);
-
         };
         return colorConverter;
     }
 
+    /**
+     * Defines the algorithm needed to paint the specified table and returns the
+     * <code>Component</code> under the event location.
+     *
+     * NOTE: the table's cells must have values like those defined for the
+     * agenda table.
+     *
+     * @param table the table similar to the agenda table
+     * @param comp the compomponet under the event location
+     * @param row the row of the cell to paint, where 0 is the first row
+     * @param col the column of the cell to paint, where 0 is the first column
+     * @return the colored Component under the event location
+     */
     private Component agendaChangeColor(JTable table, Component comp, int row, int col) {
         Function<Object, Color> colorConverter = getColorConverter("%", 100);
         int mondayIndex = Arrays.asList(AGENDA_HEADER).indexOf(MONDAY);
@@ -557,6 +564,19 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Defines the algorithm needed to paint the specified table and returns the
+     * <code>Component</code> under the event location.
+     *
+     * NOTE: the table's cells must have values like those defined for the daily
+     * agenda table.
+     *
+     * @param table the table similar to the daily agenda table
+     * @param comp the compomponet under the event location
+     * @param row the row of the cell to paint, where 0 is the first row
+     * @param col the column of the cell to paint, where 0 is the first column
+     * @return the colored Component under the event location
+     */
     private Component dailyAgendaChangeColor(JTable table, Component comp, int row, int col) {
         Function<Object, Color> colorConverter = getColorConverter(" min", 60);
         int eightIndex = Arrays.asList(DAILY_AGENDA_HEADER).indexOf(H8_COLUMN);
@@ -569,8 +589,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * Paints the <code>Component</code> under the event location. If
      * cellPrecicate test on the specified <code>row</code> and <code>col</code>
      * is <code>true</code> the component is painted according the value at
-     * (row,column), of specified table, using the specified color converter,
-     * otherwise a default coulor is used.
+     * (row,column), of the specified table, using the specified color
+     * converter, otherwise a default light grey color used.
      *
      * @param table the table to be colored
      * @param comp the compomponet under the event location
@@ -578,7 +598,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * @param col the column of the cell to paint, where 0 is the first column
      * @param colorConverter the color converted
      * @param cellPredicate the cell predicate
-     * @return the <code>Component</code> under the event location
+     * @return the colored Component under the event location
      */
     private Component tableChangeColor(JTable table, Component comp, int row, int col, Function<Object, Color> colorConverter, BiPredicate<Integer, Integer> cellPredicate) {
         Object value = table.getModel().getValueAt(row, col);

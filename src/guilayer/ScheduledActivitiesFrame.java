@@ -9,11 +9,8 @@ import datatransferobjects.Activity;
 import businesslogiclayer.ActivityBO;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
@@ -63,6 +60,14 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         setComponentsNames();
         this.setTitle("Scheduled activities");
         initializeWeekComboBox(FIRST_WEEK);
+        initScheduledActivitiesTableMouseListener();
+    }
+
+    /**
+     * Adds the mouse listener to the ID column in order to update the activity
+     * corresponding to selected ID.
+     */
+    private void initScheduledActivitiesTableMouseListener() {
         scheduledActivitiesTable.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -121,7 +126,6 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
      * @param week the initial week of the combo box
      */
     private void initializeWeekComboBox(int week) {
-
         // Specify the listener to update the content of the table when a
         // different week is selected from the weekComboBox
         weekComboBox.addActionListener(
@@ -188,8 +192,6 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         };
         scheduledActivitiesTable.setModel(model);
 
-        // ActionListener for showing the verification screen
-        // ActionListener for delete activity and update view
         int selectedButtonColumn = model.getColumnCount() - 2;
         int deleteButtonColumn = model.getColumnCount() - 1;
 

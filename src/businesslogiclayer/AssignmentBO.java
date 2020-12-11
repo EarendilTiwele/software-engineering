@@ -55,10 +55,28 @@ public class AssignmentBO {
         assignmentDAO = postgresFactory.getAssignmentDAO();
     }
 
+    /**
+     * Retrieves a <code>Set</code> of <code>Assignment</code> objects assigned
+     * for the specified week from a persistent storage.
+     *
+     *
+     * @param week the assignments' week
+     * @return Returns the <code>Set</code> of <code>Assignment</code> objects
+     * if the operation is successful; <code>null</code> otherwise.
+     */
     public Set<Assignment> getAllForWeek(int week) {
         return assignmentDAO.getAllForWeek(week);
     }
 
+    /**
+     * Inserts a <code>Assignment</code> object in a persistent storage. Returns
+     * <code>true</code> if the operation is successful; <code>false</code>
+     * otherwise.
+     *
+     * @param assignment the <code>Assignment</code> object to insert
+     * @return <code>true</code> if the operation is successful;
+     * <code>false</code> otherwise.
+     */
     public boolean insert(Assignment assignment) {
         return assignmentDAO.insert(assignment);
     }
