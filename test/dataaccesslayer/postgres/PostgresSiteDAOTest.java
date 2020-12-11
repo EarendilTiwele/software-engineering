@@ -164,6 +164,31 @@ public class PostgresSiteDAOTest {
     }
 
     /**
+     * Test of getAll method, of class PostgresSiteDAO. Test case: no sites in
+     * the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllEmpty() throws SQLException {
+        assertTrue(postgresSiteDAO.getAll().isEmpty());
+    }
+
+    /**
+     * Test of getAll method, of class PostgresSiteDAO. Test case: only one site
+     * in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllOneSite() throws SQLException {
+        insertSite(1, "test", "test");
+        Set<Site> localCompetencies = new HashSet<>();
+        localCompetencies.add(new Site(1, "test", "test"));
+        assertEquals(localCompetencies, postgresSiteDAO.getAll());
+    }
+
+    /**
      * Test of getAll method, of class PostgresSiteDAO.
      * <ul>
      * <li>Insert three sites in the database with

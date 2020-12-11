@@ -70,7 +70,11 @@ public class UserBO {
      */
     public Set<Maintainer> getAllMaintainers() {
         Set<Maintainer> maintainers = new HashSet<>();
-        for (User user : userDAO.getAllMaintainers()) {
+        Set<User> users = userDAO.getAllMaintainers();
+        if (users == null) {
+            return null;
+        }
+        for (User user : users) {
             Maintainer maintainer = new Maintainer(user.getId(),
                     user.getUsername(), user.getPassword());
             Set<Competency> competencies = mhcBO.getAllCompetencies(maintainer);

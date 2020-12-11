@@ -164,6 +164,31 @@ public class PostgresTypologyDAOTest {
     }
 
     /**
+     * Test of getAll method, of class PostgresTypologyDAO. Test case: no
+     * typologies in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllEmpty() throws SQLException {
+        assertTrue(postgresTypologyDAO.getAll().isEmpty());
+    }
+
+    /**
+     * Test of getAll method, of class PostgresTypologyDAO. Test case: only one
+     * typology in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllOneTypology() throws SQLException {
+        insertTypology(1, "test");
+        Set<Typology> localCompetencies = new HashSet<>();
+        localCompetencies.add(new Typology(1, "test"));
+        assertEquals(localCompetencies, postgresTypologyDAO.getAll());
+    }
+
+    /**
      * Test of getAll method, of class PostgresTypologyDAO.
      * <ul>
      * <li>Insert three typologies in the database with

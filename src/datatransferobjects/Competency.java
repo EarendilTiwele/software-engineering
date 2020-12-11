@@ -8,23 +8,25 @@ package datatransferobjects;
 import java.util.Objects;
 
 /**
- * Competency related to a specific task required to perform the maintenance activity.
- * 
+ * Competency related to a specific task required to perform the maintenance
+ * activity.
+ *
  * @author carbo
  */
 public class Competency {
-    private final int id;
+
+    private int id;
     private final String description;
     private static final int DEFAULT_ID = -1;
 
     /**
      * Constructs the competency with the specified id and description.
-     * 
-     * @param id            the id of this competency
-     * @param description   the description of this competency
+     *
+     * @param id the id of this competency
+     * @param description the description of this competency
      */
     public Competency(int id, String description) {
-        if (description == null){
+        if (description == null) {
             throw new NullPointerException("Competency description must not be null");
         }
         this.id = id;
@@ -32,19 +34,19 @@ public class Competency {
     }
 
     /**
-     * Constructs the competency with the specified description.
-     * The id associated with this competency will not be significant.
-     * 
-     * @param description   the description of this competency
+     * Constructs the competency with the specified description. The id
+     * associated with this competency will not be significant.
+     *
+     * @param description the description of this competency
      */
     public Competency(String description) {
         this(DEFAULT_ID, description);
     }
 
     /**
-     * Returns the hash code for this competency.
-     * The hash code is computed based on the description only.
-     * 
+     * Returns the hash code for this competency. The hash code is computed
+     * based on the description only.
+     *
      * @return a hash code value for this object
      */
     @Override
@@ -55,14 +57,15 @@ public class Competency {
     }
 
     /**
-     * Compares this competency to the specified object.
-     * The result is <code>true</code> if and only if the argument is not <code>null</code>
+     * Compares this competency to the specified object. The result is
+     * <code>true</code> if and only if the argument is not <code>null</code>
      * and is a <code>Competency</code> object that represents a competency with
      * the same description as this object.
-     * 
+     *
      * @param obj the object to compare this <code>Competency</code> against
-     * @return <code>true</code> if the given object represents a <code>Competency</code>
-     *         equivalent to this competency, <code>false</code> otherwise
+     * @return <code>true</code> if the given object represents a
+     * <code>Competency</code> equivalent to this competency, <code>false</code>
+     * otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -82,7 +85,6 @@ public class Competency {
         return true;
     }
 
-    
     /**
      * Returns the id associated with this competency.
      *
@@ -100,7 +102,7 @@ public class Competency {
     public String getDescription() {
         return description;
     }
-    
+
     /**
      * Returns a string representation of this competency. The string
      * representation consists of the description.
@@ -110,5 +112,14 @@ public class Competency {
     @Override
     public String toString() {
         return getDescription().toString();
+    }
+
+    /**
+     * Set the id of this competency.
+     *
+     * @param id the id
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 }

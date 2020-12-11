@@ -75,6 +75,34 @@ public class PostgresMaintainerSkillsDAOTest {
     }
 
     /**
+     * Test of getAll method, of class PostgresMaintainerSkillsDAO. Test case:
+     * no competencies associated to a maintainer in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllEmpty() throws SQLException {
+        Maintainer maintainer = new Maintainer(1, "test", "test");
+        assertTrue(postgresMaintainerSkillsDAO.getAllCompetencies(maintainer).isEmpty());
+    }
+
+    /**
+     * Test of getAll method, of class PostgresMaintainerSkillsDAO. Test case:
+     * only one competency associated to a maintainer in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllOneCompetency() throws SQLException {
+        insertCompetency(1, "test");
+        insertMaintainerSkills(1, 1);
+        Set<Competency> localCompetencies = new HashSet<>();
+        localCompetencies.add(new Competency(1, "test"));
+        Maintainer maintainer = new Maintainer(1, "test", "test");
+        assertEquals(localCompetencies, postgresMaintainerSkillsDAO.getAllCompetencies(maintainer));
+    }
+
+    /**
      * Test of getAllCompetencies method, of class PostgresMaintainerSkillsDAO.
      * <ul>
      * <li>Insert three competencies in the database with
