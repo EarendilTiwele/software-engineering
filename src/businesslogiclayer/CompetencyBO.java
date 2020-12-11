@@ -8,6 +8,7 @@ package businesslogiclayer;
 import datatransferobjects.Competency;
 import dataaccesslayer.CompetencyDAO;
 import dataaccesslayer.DAOFactory;
+import java.util.List;
 
 /**
  *
@@ -20,6 +21,14 @@ public class CompetencyBO {
     public CompetencyBO() {
         DAOFactory postgresFactory = DAOFactory.getDAOFactory(DAOFactory.POSTGRES);
         competencyDAO = postgresFactory.getCompetencyDAO();
+    }
+
+    public int insert(Competency competency) {
+        return -1;
+    }
+
+    public boolean update(Competency competency) {
+        return false;
     }
 
     /**
@@ -40,4 +49,7 @@ public class CompetencyBO {
         return competencyDAO.get(id);
     }
 
+    public List<Competency> getAll() {
+        return null;
+    }
 }
