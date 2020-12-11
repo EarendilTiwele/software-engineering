@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import dataaccesslayer.ProcedureDAO;
 import dataaccesslayer.ProcedureSkillsDAO;
+import datatransferobjects.Competency;
+import java.util.Set;
 
 /**
  *
@@ -40,15 +42,21 @@ public class ProcedureBO {
 
     public List<Procedure> getAll() {
         List<Procedure> listProcedure = new ArrayList<>();
-        ProcedureSkillsDAO procedureHasCompetencies = new PostgresProcedureSkillsDAO();
-        procedureDAO.getAll().stream().map((procedure) -> {
-            procedureHasCompetencies.getAllCompetencies(procedure).forEach((competency) -> {
+        ProcedureSkillsDAO procedureSkills = new PostgresProcedureSkillsDAO();
+        Set<Procedure> setProcedure = procedureDAO.getAll();
+        if (setProcedure == null) {
+            return null;
+        }
+        for (Procedure procedure : setProcedure) {
+            Set<Competency> setCompetency = procedureSkills.getAllCompetencies(procedure);
+            if (setCompetency == null) {
+                return null;
+            }
+            for (Competency competency : setCompetency) {
                 procedure.addCompetency(competency);
-            });
-            return procedure;
-        }).forEachOrdered((procedure) -> {
+            }
             listProcedure.add(procedure);
-        });
+        }
         return listProcedure;
     }
 

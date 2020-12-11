@@ -42,7 +42,8 @@ public class ActivityBO {
     }
 
     public List<Activity> getAll() {
-        return new ArrayList<>(activityDAO.getAll());
+        Set<Activity> activities = activityDAO.getAll();
+        return activities != null ? new ArrayList<>(activities) : null;
     }
 
     public Activity get(int id) {
@@ -69,7 +70,8 @@ public class ActivityBO {
     }
 
     public List<Activity> getAllPlannedOfWeek(int week) {
-        return new ArrayList<>(activityDAO.getAllPlannedOfWeek(week));
+        Set<Activity> activities = activityDAO.getAllPlannedOfWeek(week);
+        return activities != null ? new ArrayList<>(activities) : null;
     }
 
 }
