@@ -8,6 +8,7 @@ package dataaccesslayer.postgres;
 import datatransferobjects.Maintainer;
 import datatransferobjects.User;
 import dataaccesslayer.UserDAO;
+import datatransferobjects.Planner;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
@@ -31,9 +32,15 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
      */
     @Override
     User convertToEntity(ResultSet rs) throws SQLException {
-        // rs.getString("role") to control which user to return
-        User dbUser = new Maintainer(rs.getInt("id"), rs.getString("username"),
-                rs.getString("password"));
+        String role = rs.getString("role");
+        User dbUser = null;
+        if ("planner".equals(role)) {
+            dbUser = new Planner(rs.getInt("id"), rs.getString("username"),
+                    rs.getString("password"));
+        } else if ("maintainer".equals(role)) {
+            dbUser = new Maintainer(rs.getInt("id"), rs.getString("username"),
+                    rs.getString("password"));
+        }
         return dbUser;
     }
 
@@ -44,7 +51,7 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
      * if the <code>User</code> object with given <code>id</code> doesn't exist
      * in the Postgres Database or if the operation fails.
      *
-     * @param id the id which identifies the site
+     * @param id the id which identifies the user
      * @return the <code>User</code> object with given <code>id</code> if it
      * exists in the Postgres Database, returns <code>null</code> if the
      * <code>User</code> object with given <code>id</code> doesn't exist in the
@@ -75,6 +82,26 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
     @Override
     public Set<User> getAllMaintainers() {
         String query = "select * from users where role = 'maintainer';";
+        try {
+            return executeSetQuery(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresUserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves a <code>Set</code> of <code>User</code> objects from the
+     * Postgres Database. Returns the <code>Set</code> of <code>User</code>
+     * objects if the operation is successful; <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>User</code> objects from the
+     * Postgres Database if the operation is successful; <code>null</code>
+     * otherwise
+     */
+    @Override
+    public Set<User> getAll() {
+        String query = "select * from users;";
         try {
             return executeSetQuery(query);
         } catch (SQLException ex) {

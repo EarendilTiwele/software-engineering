@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- *
+ * Maintainer class for a maintainer in the system.
+ * 
  * @author carbo
  */
 public class Maintainer extends User{

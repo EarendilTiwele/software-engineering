@@ -21,7 +21,7 @@ public interface UserDAO {
      * if the <code>User</code> object with given <code>id</code> doesn't exist
      * in the persistent storage or if the operation fails.
      *
-     * @param id the id which identifies the site
+     * @param id the id which identifies the user
      * @return the <code>User</code> object with given <code>id</code> if it
      * exists in the persistent storage, returns <code>null</code> if the
      * <code>User</code> object with given <code>id</code> doesn't exist in the
@@ -41,4 +41,14 @@ public interface UserDAO {
      */
     public Set<User> getAllMaintainers();
 
+    /**
+     * Retrieves a <code>Set</code> of <code>User</code> objects from a
+     * persistent storage. Returns the <code>Set</code> of <code>User</code>
+     * objects if the operation is successful; <code>null</code> otherwise.
+     *
+     * @return the <code>Set</code> of <code>User</code> objects from the
+     * persistent storage if the operation is successful; <code>null</code>
+     * otherwise
+     */
+    public Set<User> getAll();
 }
