@@ -44,7 +44,6 @@ public class PostgresProcedureDAOTest {
 
     @AfterClass
     public static void tearDownClass() throws SQLException {
-        conn.rollback();
         conn.close();
     }
 
@@ -61,7 +60,8 @@ public class PostgresProcedureDAOTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        conn.rollback();
     }
 
     private int insertProcedure(Procedure procedure) throws SQLException {
@@ -193,5 +193,5 @@ public class PostgresProcedureDAOTest {
         Procedure procedure2 = postgresProcedureDAO.get(procedure.getId());
         assertEquals(procedure, procedure2);
     }
-    
+
 }

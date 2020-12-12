@@ -59,7 +59,8 @@ public class PostgresProcedureSkillsDAOTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        conn.rollback();
     }
 
     /**

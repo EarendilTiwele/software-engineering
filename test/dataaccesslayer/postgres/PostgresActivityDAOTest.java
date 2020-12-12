@@ -60,6 +60,11 @@ public class PostgresActivityDAOTest {
         stm.executeUpdate("delete from site where true");
     }
 
+    @After
+    public void tearDown() throws SQLException {
+        conn.rollback();
+    }
+
     public List<Activity> sampleListActivity() throws SQLException {
         List<Activity> activityList = new ArrayList<>();
         Statement stm = conn.createStatement();
@@ -126,11 +131,6 @@ public class PostgresActivityDAOTest {
                 interruptible, week, procedure, workspaceNotes));
 
         return activityList;
-    }
-
-    @After
-    public void tearDown() {
-
     }
 
     private int insertActivity(Activity activity) throws SQLException {

@@ -49,7 +49,6 @@ public class PostgresAssignmentDAOTest {
 
     @AfterClass
     public static void tearDownClass() throws SQLException {
-        conn.rollback();
         conn.close();
     }
 
@@ -74,7 +73,8 @@ public class PostgresAssignmentDAOTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws SQLException {
+        conn.rollback();
     }
 
     @Test
