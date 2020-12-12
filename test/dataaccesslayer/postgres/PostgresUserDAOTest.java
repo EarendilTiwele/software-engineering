@@ -10,6 +10,7 @@ import datatransferobjects.Planner;
 import datatransferobjects.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -53,8 +54,9 @@ public class PostgresUserDAOTest {
 
     @After
     public void tearDown() throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("delete from users;");
-        preparedStatement.execute();
+        connection.rollback();
+        //PreparedStatement preparedStatement = connection.prepareStatement("delete from users;");
+        //preparedStatement.execute();
     }
 
     private void insertUser(int id, String username, String password, String role) throws SQLException {
@@ -73,6 +75,18 @@ public class PostgresUserDAOTest {
 
     private void insertPlanner(int id, String username, String password) throws SQLException {
         insertUser(id, username, password, "planner");
+    }
+
+    private User retrieveUser(int id) throws SQLException {
+        PreparedStatement preparedStatement
+                = connection.prepareStatement("select * from users where id = ?;");
+        preparedStatement.setInt(1, id);
+        ResultSet rs = preparedStatement.executeQuery();
+        User user = null;
+        while (rs.next()) {
+            user = postgresUserDAO.convertToEntity(rs);
+        }
+        return user;
     }
 
     /**
@@ -232,8 +246,7 @@ public class PostgresUserDAOTest {
 
     /**
      * Test of getAll method, of class PostgresUserDAO. Test case: one planner
-     * in the database with id=1, username="username",
-     * password="password".
+     * in the database with id=1, username="username", password="password".
      *
      * @throws SQLException
      */
@@ -273,4 +286,146 @@ public class PostgresUserDAOTest {
         assertEquals(expectedUsers, actualUsers);
     }
 
+    /**
+     * Inserts a user in the database and asserts that the retrived one is equal
+     * to the inserted one.
+     *
+     * @param user the user to insert
+     * @throws SQLException
+     */
+    private void insertUserSuccess(User user) throws SQLException {
+        int id = postgresUserDAO.insert(user);
+        user.setId(id);
+        User dbUser = retrieveUser(id);
+        assertEquals(user, dbUser);
+    }
+
+    /**
+     * Test of insert method, of class PostgresUserDAO. Test case: insert a
+     * maintainer with username='username', password='password'. The id will be
+     * automatically generated. The user retrieved from the database sould be
+     * equal to the inserted user.
+     */
+    @Test
+    public void testInsertMaintainerSuccess() throws SQLException {
+        User user = new Maintainer("username", "password");
+        insertUserSuccess(user);
+    }
+
+    /**
+     * Test of insert method, of class PostgresUserDAO. Test case: insert a
+     * planner with username='username', password='password'. The id will be
+     * automatically generated. The user retrieved from the database sould be
+     * equal to the inserted user.
+     * 
+     * @throws SQLException
+     */
+    @Test
+    public void testInsertPlannerSuccess() throws SQLException {
+        User user = new Planner("username", "password");
+        insertUserSuccess(user);
+    }
+
+    /**
+     * Test of insert method, of class PostgresUserDAO. Test case: insert a
+     * planner with username='username', password='password' and auto generated
+     * id twice. Inserting two users with the same username, the second insert
+     * operation should return -1.
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void testInsertPlannerFailure() throws SQLException {
+        User user = new Planner("username", "password");
+        int id = postgresUserDAO.insert(user);
+        assertNotEquals(-1, id);
+        id = postgresUserDAO.insert(user);
+        assertEquals(-1, id);
+    }
+
+    /**
+     * Test of insert method, of class PostgresUserDAO. Test case: insert a
+     * maintainer with username='username', password='password' and auto
+     * generated id twice. Inserting two users with the same username, the
+     * second insert operation should return -1.
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void testInsertMaintainerFailure() throws SQLException {
+        User user = new Maintainer("username", "password");
+        int id = postgresUserDAO.insert(user);
+        assertNotEquals(-1, id);
+        id = postgresUserDAO.insert(user);
+        assertEquals(-1, id);
+    }
+
+    /**
+     * Test of update method, of class PostgresUserDAO. Test case: empty
+     * database, update maintainer with id=1, username="name",password="pass".
+     * The update operation should return true.
+     */
+    @Test
+    public void testUpdateEmpty() {
+        boolean success
+                = postgresUserDAO.update(new Maintainer(1, "name", "pass"));
+        assertTrue(success);
+    }
+
+    /**
+     * Test of update method, of class PostgresUserDAO. Test case: non empty
+     * database, update maintainer with id=1, username="name",password="pass"
+     * that does not exist in the database. The update operation should return
+     * true.
+     * 
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateNonEmptyNoMatch() throws SQLException {
+        insertMaintainer(2, "username", "password");
+        boolean success
+                = postgresUserDAO.update(new Maintainer(1, "name", "pass"));
+        assertTrue(success);
+    }
+
+    /**
+     * Test of update method, of class PostgresUserDAO. Test case: non empty
+     * database, update maintainer with id=1, username="name",password="pass"
+     * that exist in the database, changing the name="name2" and the
+     * password="pass2". The update operation should return true and the user
+     * should be correctly updated.
+     * 
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateSuccess() throws SQLException {
+        int id = 1;
+        insertMaintainer(id, "name", "pass");
+        User newUser = new Maintainer(id, "name2", "pass2");
+        boolean success
+                = postgresUserDAO.update(newUser);
+        assertTrue(success);
+        User dbUser = retrieveUser(id);
+        assertEquals(dbUser, newUser);
+    }
+
+    /**
+     * Test of update method, of class PostgresUserDAO. Test case: non empty
+     * database, update maintainer with id=1, username="name",password="pass"
+     * that exist in the database, changing the name="name2" and the
+     * password="pass2" when there is another user with this name. The update
+     * operation should return false.
+     * 
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateFailure() throws SQLException {
+        int id = 1;
+        insertMaintainer(id, "name", "pass");
+        insertMaintainer(id+1, "name2", "pass");
+        User newUser = new Maintainer(id, "name2", "pass2");
+        boolean success
+                = postgresUserDAO.update(newUser);
+        assertFalse(success);
+    }
 }

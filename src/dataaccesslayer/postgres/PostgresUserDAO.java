@@ -45,6 +45,58 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
     }
 
     /**
+     * Inserts a <code>User</code> object in the Postgres Database. Returns the
+     * id of the inserted <code>user</code> if the operation is successful; -1
+     * otherwise.
+     *
+     * @param user the <code>User</code> object to insert
+     * @return the id of the inserted <code>user</code> if the operation is
+     * successful; -1 otherwise
+     */
+    @Override
+    public int insert(User user) {
+        String query = String.format("insert into users "
+                + "(username, password, role)"
+                + "values ('%s', '%s', '%s') returning *;",
+                user.getUsername(), user.getPassword(),
+                user.getRole().toString().toLowerCase());
+        try {
+            return executeQuery(query).getId();
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresUserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
+    }
+
+    /**
+     * Updates a <code>User</code> object in the Postgres Database, if the
+     * <code>user</code> is not present in the Postgres Database it is not
+     * created. Returns <code>true</code> if the operation is successful, that
+     * is both when the <code>user</code> is updated and when the
+     * <code>user</code> doesn't exist in the Postgres Database;
+     * <code>false</code> otherwise.
+     *
+     * @param user the <code>User</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the user is updated and when the user doesn't exist in the Postgres
+     * Database; <code>false</code> otherwise
+     */
+    @Override
+    public boolean update(User user) {
+        String query = String.format("update users "
+                + "set username = '%s', password = '%s'"
+                + "where id = %d;",
+                user.getUsername(), user.getPassword(), user.getId());
+        try {
+            executeUpdate(query);
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(PostgresUserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    /**
      * Retrieves the <code>User</code> object with given <code>id</code> from
      * the Postgres Database. Returns the <code>User</code> object with given
      * <code>id</code> if it exists in the Postgres Database; <code>null</code>

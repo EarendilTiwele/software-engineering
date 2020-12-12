@@ -15,6 +15,32 @@ import java.util.Set;
 public interface UserDAO {
 
     /**
+     * Inserts a <code>User</code> object in a persistent storage. Returns the
+     * id of the inserted <code>user</code> if the operation is successful; -1
+     * otherwise.
+     *
+     * @param user the <code>User</code> object to insert
+     * @return the id of the inserted <code>user</code> if the operation is
+     * successful; -1 otherwise
+     */
+    public int insert(User user);
+    
+    /**
+     * Updates a <code>User</code> object in a persistent storage, if the
+     * <code>user</code> is not present in the persistent storage it is not
+     * created. Returns <code>true</code> if the operation is successful, that
+     * is both when the <code>user</code> is updated and when the
+     * <code>user</code> doesn't exist in the persistent storage;
+     * <code>false</code> otherwise.
+     *
+     * @param user the <code>User</code> object to update
+     * @return <code>true</code> if the operation is successful, that is both
+     * when the user is updated and when the user doesn't exist in the
+     * persistent storage; <code>false</code> otherwise
+     */
+    public boolean update(User user);
+    
+    /**
      * Retrieves the <code>User</code> object with given <code>id</code> from a
      * persistent storage. Returns the <code>User</code> object with given
      * <code>id</code> if it exists in the persistent storage; <code>null</code>
@@ -51,4 +77,6 @@ public interface UserDAO {
      * otherwise
      */
     public Set<User> getAll();
+    
+    
 }

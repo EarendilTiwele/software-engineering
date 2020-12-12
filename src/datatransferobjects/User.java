@@ -156,10 +156,13 @@ public abstract class User {
     public String toString() {
         return username;
     }
-    
-    
-    
-    
-    
-    
+
+    /**
+     * Sets the id of this user.
+     * 
+     * @param id the id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
 }
