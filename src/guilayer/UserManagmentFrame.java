@@ -25,7 +25,7 @@ import javax.swing.table.TableModel;
  *
  * @author Alfonso
  */
-public class SystemAdministratorFrame extends javax.swing.JFrame {
+public class UserManagmentFrame extends javax.swing.JFrame {
 
     private List<User> users;
 
@@ -47,35 +47,35 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
     /**
      * Creates new form SystemAdministratorFrame
      */
-    public SystemAdministratorFrame() {
+    public UserManagmentFrame() {
         initComponents();
-        initSystemAdministratorTabbedPane();
+        initUserManagmentTabbedPane();
         setUpTable();
         getContentPane().setBackground(mainPanel.getBackground());
 
     }
 
-    private void initSystemAdministratorTabbedPane() {
-        systemAdministratorTabbedPane.addChangeListener((e) -> {
-            Component currentPanel = systemAdministratorTabbedPane.getSelectedComponent();
+    private void initUserManagmentTabbedPane() {
+        userManagmentTabbedPane.addChangeListener((e) -> {
+            Component currentPanel = userManagmentTabbedPane.getSelectedComponent();
 
             if (currentPanel.equals(updateUserPanel)) {
                 int row = usersTable.getSelectedRow();
                 if (row == -1) {
-                    systemAdministratorTabbedPane.setSelectedIndex(0);
+                    userManagmentTabbedPane.setSelectedIndex(0);
                     unselectedTableRowError();
                 } else {
                     User user = users.get(row);
-                    idLabel.setVisible(true);
-                    idTextField.setVisible(true);
+                    idUserLabel.setVisible(true);
+                    idUserTextField.setVisible(true);
                     moveComponents(insertUserPanel, updateUserPanel);
                     setUpdatePanel(user);
 
                 }
 
             } else if (currentPanel.equals(insertUserPanel)) {
-                idLabel.setVisible(false);
-                idTextField.setVisible(false);
+                idUserLabel.setVisible(false);
+                idUserTextField.setVisible(false);
                 moveComponents(updateUserPanel, insertUserPanel);
                 cleanPanelComponent();
             } else if (currentPanel.equals(viewUsersPanel)) {
@@ -166,38 +166,33 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
     private void cleanPanelComponent() {
         usernameTextField.setText("");
         passwordField.setText("");
-        idTextField.setText("");
+        idUserTextField.setText("");
     }
 
     private void setUpdatePanel(User user) {
         usernameTextField.setText(user.getUsername());
         passwordField.setText(user.getPassword());
         roleComboBox.setSelectedItem(user.getRole().toString());
-        idTextField.setText(String.valueOf(user.getId()));
+        idUserTextField.setText(String.valueOf(user.getId()));
     }
 
     private void checkInsert(int result) {
-        SwingUtilities.invokeLater(() -> {
-            if (result == -1) {
-                userInsertError();
-            } else {
-                userInsertSuccess();
-                cleanPanelComponent();
-            }
-
-        });
+        if (result == -1) {
+            userInsertError();
+        } else {
+            userInsertSuccess();
+            cleanPanelComponent();
+        }
 
     }
 
     private void checkUpdate(boolean success, int userID) {
-        SwingUtilities.invokeLater(() -> {
-            if (!success) {
-                userUpdateError(userID);
-            } else {
-                userUpdateSuccess(userID);
-                cleanPanelComponent();
-            }
-        });
+        if (!success) {
+            userUpdateError(userID);
+        } else {
+            userUpdateSuccess(userID);
+            cleanPanelComponent();
+        }
 
     }
 
@@ -250,6 +245,7 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         mainPanel = new javax.swing.JPanel();
         systemAdministratorTabbedPane = new javax.swing.JTabbedPane();
+        userManagmentTabbedPane = new javax.swing.JTabbedPane();
         viewUsersPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         usersTable = new javax.swing.JTable();
@@ -261,8 +257,8 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
         saveButton = new javax.swing.JButton();
         usernameTextField = new javax.swing.JTextField();
         passwordField = new javax.swing.JPasswordField();
-        idLabel = new javax.swing.JLabel();
-        idTextField = new javax.swing.JTextField();
+        idUserLabel = new javax.swing.JLabel();
+        idUserTextField = new javax.swing.JTextField();
         updateUserPanel = new javax.swing.JPanel();
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
@@ -279,11 +275,11 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
 
-        mainPanel.setBackground(new java.awt.Color(0, 0, 153));
+        mainPanel.setBackground(new java.awt.Color(255, 102, 51));
 
-        systemAdministratorTabbedPane.setBackground(new java.awt.Color(0, 0, 153));
-        systemAdministratorTabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
-        systemAdministratorTabbedPane.setTabPlacement(javax.swing.JTabbedPane.LEFT);
+        userManagmentTabbedPane.setBackground(new java.awt.Color(0, 0, 153));
+        userManagmentTabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
+        userManagmentTabbedPane.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 
         viewUsersPanel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -304,23 +300,26 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(usersTable);
+        if (usersTable.getColumnModel().getColumnCount() > 0) {
+            usersTable.getColumnModel().getColumn(2).setHeaderValue("Role");
+        }
 
         javax.swing.GroupLayout viewUsersPanelLayout = new javax.swing.GroupLayout(viewUsersPanel);
         viewUsersPanel.setLayout(viewUsersPanelLayout);
         viewUsersPanelLayout.setHorizontalGroup(
             viewUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 436, Short.MAX_VALUE)
+            .addGap(0, 513, Short.MAX_VALUE)
             .addGroup(viewUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE))
         );
         viewUsersPanelLayout.setVerticalGroup(
             viewUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 273, Short.MAX_VALUE)
+            .addGap(0, 298, Short.MAX_VALUE)
             .addGroup(viewUsersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE))
         );
 
-        systemAdministratorTabbedPane.addTab("Members", viewUsersPanel);
+        userManagmentTabbedPane.addTab("Members", viewUsersPanel);
 
         insertUserPanel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -350,10 +349,10 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
             }
         });
 
-        idLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        idLabel.setText("ID");
+        idUserLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        idUserLabel.setText("ID");
 
-        idTextField.setEditable(false);
+        idUserTextField.setEditable(false);
 
         javax.swing.GroupLayout insertUserPanelLayout = new javax.swing.GroupLayout(insertUserPanel);
         insertUserPanel.setLayout(insertUserPanelLayout);
@@ -370,13 +369,13 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
                             .addComponent(roleLabel)
                             .addComponent(usernameLabel)
                             .addComponent(passwordLabel)
-                            .addComponent(idLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                            .addComponent(idUserLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(insertUserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(roleComboBox, 0, 291, Short.MAX_VALUE)
                             .addComponent(usernameTextField)
                             .addComponent(passwordField)
-                            .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(idUserTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18))
         );
         insertUserPanelLayout.setVerticalGroup(
@@ -396,14 +395,14 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
                     .addComponent(roleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(insertUserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(idLabel)
-                    .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                    .addComponent(idUserLabel)
+                    .addComponent(idUserTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                 .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
         );
 
-        systemAdministratorTabbedPane.addTab("Insert User", insertUserPanel);
+        userManagmentTabbedPane.addTab("Insert User", insertUserPanel);
 
         updateUserPanel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -411,14 +410,16 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
         updateUserPanel.setLayout(updateUserPanelLayout);
         updateUserPanelLayout.setHorizontalGroup(
             updateUserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 430, Short.MAX_VALUE)
+            .addGap(0, 507, Short.MAX_VALUE)
         );
         updateUserPanelLayout.setVerticalGroup(
             updateUserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 273, Short.MAX_VALUE)
+            .addGap(0, 298, Short.MAX_VALUE)
         );
 
-        systemAdministratorTabbedPane.addTab("Update Users", updateUserPanel);
+        userManagmentTabbedPane.addTab("Update User", updateUserPanel);
+
+        systemAdministratorTabbedPane.addTab("Users managment", userManagmentTabbedPane);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -426,15 +427,12 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(systemAdministratorTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(systemAdministratorTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 593, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(systemAdministratorTabbedPane)
-                .addContainerGap())
+            .addComponent(systemAdministratorTabbedPane)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -442,7 +440,7 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(0, 0, 0)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -464,12 +462,12 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
      * @param evt the event to be processed
      */
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        Component currentPanel = systemAdministratorTabbedPane.getSelectedComponent();
+        Component currentPanel = userManagmentTabbedPane.getSelectedComponent();
 
         String username = usernameTextField.getText();
         String password = String.copyValueOf(passwordField.getPassword());
         String role = roleComboBox.getSelectedItem().toString();
-        String idText = idTextField.getText();
+        String idText = idUserTextField.getText();
         //mentre non è pronta la factory fai così
         int id = idText.isEmpty() ? -1 : Integer.valueOf(idText);
         //create a factory
@@ -478,6 +476,7 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
         if (role.equals(MAINTAINER)) {
             user = new Maintainer(id, username, password);
         } else {
+
             user = new Planner(id, username, password);
         }
 
@@ -485,11 +484,11 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
             if (currentPanel.equals(insertUserPanel)) {
 
                 int result = userBO.insert(user);
-                checkInsert(result);
+                SwingUtilities.invokeLater(() -> checkInsert(result));
 
             } else if (currentPanel.equals(updateUserPanel)) {
                 boolean success = userBO.update(user);
-                checkUpdate(success, user.getId());
+                SwingUtilities.invokeLater(() -> checkUpdate(success, user.getId()));
             }
 
         };
@@ -515,34 +514,35 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SystemAdministratorFrame.class
+            java.util.logging.Logger.getLogger(UserManagmentFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SystemAdministratorFrame.class
+            java.util.logging.Logger.getLogger(UserManagmentFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SystemAdministratorFrame.class
+            java.util.logging.Logger.getLogger(UserManagmentFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SystemAdministratorFrame.class
+            java.util.logging.Logger.getLogger(UserManagmentFrame.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SystemAdministratorFrame().setVisible(true);
+                new UserManagmentFrame().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel idLabel;
-    private javax.swing.JTextField idTextField;
+    private javax.swing.JLabel idUserLabel;
+    private javax.swing.JTextField idUserTextField;
     private javax.swing.JPanel insertUserPanel;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -554,6 +554,7 @@ public class SystemAdministratorFrame extends javax.swing.JFrame {
     private javax.swing.JButton saveButton;
     private javax.swing.JTabbedPane systemAdministratorTabbedPane;
     private javax.swing.JPanel updateUserPanel;
+    private javax.swing.JTabbedPane userManagmentTabbedPane;
     private javax.swing.JLabel usernameLabel;
     private javax.swing.JTextField usernameTextField;
     private javax.swing.JTable usersTable;
