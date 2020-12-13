@@ -22,13 +22,15 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * PostgresUserDAO class test.
+ * 
  * @author alexd
  */
 public class PostgresUserDAOTest {
 
     private static PostgresUserDAO postgresUserDAO;
     private static Connection connection;
+    private static PostgresUserUtils userUtils;
 
     public PostgresUserDAOTest() {
     }
@@ -38,6 +40,7 @@ public class PostgresUserDAOTest {
         postgresUserDAO = new PostgresUserDAO();
         connection = PostgresDAOFactory.createConnection();
         connection.setAutoCommit(false);
+        userUtils = new PostgresUserUtils(connection);
     }
 
     @AfterClass
@@ -59,34 +62,53 @@ public class PostgresUserDAOTest {
         //preparedStatement.execute();
     }
 
+    /**
+     * Inserts a user in the database.
+     *
+     * @param id the id of this user
+     * @param username the username of this user
+     * @param password the password of this user
+     * @param role the role of this user: "planner" or "maintainer"
+     * @throws SQLException if an error occurs
+     */
     private void insertUser(int id, String username, String password, String role) throws SQLException {
-        PreparedStatement preparedStatement
-                = connection.prepareStatement("insert into users values (?, ?, ?, ?);");
-        preparedStatement.setInt(1, id);
-        preparedStatement.setString(2, username);
-        preparedStatement.setString(3, password);
-        preparedStatement.setString(4, role);
-        preparedStatement.execute();
+        userUtils.insertUser(id, username, password, role);
     }
 
+    /**
+     * Insert a maintainer in the database.
+     *
+     * @param id the id of this maintainer
+     * @param username the username of this maintainer
+     * @param password the password of this maintainer
+     * @throws SQLException if an error occurs
+     */
     private void insertMaintainer(int id, String username, String password) throws SQLException {
         insertUser(id, username, password, "maintainer");
     }
 
+    /**
+     * Inserts a planner in the database.
+     *
+     * @param id the id of this planner
+     * @param username the username of this planner
+     * @param password the password of this planner
+     * @throws SQLException if an error occurs
+     */
     private void insertPlanner(int id, String username, String password) throws SQLException {
         insertUser(id, username, password, "planner");
     }
 
+    /**
+     * Returns the User in the database with the specified id or null if no user
+     * has the specified id.
+     *
+     * @param id the id of the user to retrieve
+     * @return the user, or null if no user has the specified id
+     * @throws SQLException
+     */
     private User retrieveUser(int id) throws SQLException {
-        PreparedStatement preparedStatement
-                = connection.prepareStatement("select * from users where id = ?;");
-        preparedStatement.setInt(1, id);
-        ResultSet rs = preparedStatement.executeQuery();
-        User user = null;
-        while (rs.next()) {
-            user = postgresUserDAO.convertToEntity(rs);
-        }
-        return user;
+        return userUtils.retrieveUser(id);
     }
 
     /**
@@ -131,12 +153,26 @@ public class PostgresUserDAOTest {
 
     /**
      * Test of get method, of class PostgresUserDAO. Test case: search for user
-     * whose id is 1 and the database does not contain any user with id = 1.
+     * whose id is 1 and the database contains a maintainer with id=2,
+     * name='name', password='password'. The method should return null.
      *
      * @throws SQLException
      */
     @Test
     public void testGetNoMatch() throws SQLException {
+        int id = 1;
+        insertMaintainer(2, "name", "password");
+        assertNull(postgresUserDAO.get(id));
+    }
+
+    /**
+     * Test of get method, of class PostgresUserDAO. Test case: search for user
+     * whose id is 1 and the database is empty. The method should return null.
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void testGetEmpty() throws SQLException {
         int id = 1;
         assertNull(postgresUserDAO.get(id));
     }
@@ -189,7 +225,7 @@ public class PostgresUserDAOTest {
     /**
      * Test of getAllMaintainers method, of class PostgresUserDAO.
      * <ul>
-     * <li>Insert three users and three planners in the database with
+     * <li>Insert three maintainers and three planners in the database with
      * <code>id = 1, 2, 3 - 4, 5, 6</code></li>
      * <li>Create a local set of users adding the same users inserted
      * before</li>
@@ -214,6 +250,15 @@ public class PostgresUserDAOTest {
         localMaintainers.add(new Maintainer(2, "test2", "test2"));
         localMaintainers.add(new Maintainer(3, "test3", "test3"));
         assertEquals(localMaintainers, postgresUserDAO.getAllMaintainers());
+    }
+
+    /**
+     * Test of getAllMaintainers method, of class PostgresUserDAO. Test case:
+     * database empty. The method should return an empty set.
+     */
+    @Test
+    public void testGetAllMaintainersEmpty() {
+        assertTrue(postgresUserDAO.getAllMaintainers().isEmpty());
     }
 
     /**
@@ -260,8 +305,8 @@ public class PostgresUserDAOTest {
     }
 
     /**
-     * Test of getAll method, of class PostgresUserDAO. Test case: tree planners
-     * (ids = 1, 2, 3) and three maintainers (ids = 4, 5, 6)
+     * Test of getAll method, of class PostgresUserDAO. Test case: three
+     * planners (ids = 1, 2, 3) and three maintainers (ids = 4, 5, 6)
      *
      * @throws SQLException
      */
@@ -317,7 +362,7 @@ public class PostgresUserDAOTest {
      * planner with username='username', password='password'. The id will be
      * automatically generated. The user retrieved from the database sould be
      * equal to the inserted user.
-     * 
+     *
      * @throws SQLException
      */
     @Test
@@ -363,29 +408,36 @@ public class PostgresUserDAOTest {
     /**
      * Test of update method, of class PostgresUserDAO. Test case: empty
      * database, update maintainer with id=1, username="name",password="pass".
-     * The update operation should return true.
+     * The update operation should return true and the user should not be
+     * inserted in the database.
+     *
+     * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdateEmpty() {
+    public void testUpdateEmpty() throws SQLException {
+        int id = 1;
         boolean success
-                = postgresUserDAO.update(new Maintainer(1, "name", "pass"));
+                = postgresUserDAO.update(new Maintainer(id, "name", "pass"));
         assertTrue(success);
+        assertNull(retrieveUser(id));
     }
 
     /**
      * Test of update method, of class PostgresUserDAO. Test case: non empty
      * database, update maintainer with id=1, username="name",password="pass"
      * that does not exist in the database. The update operation should return
-     * true.
-     * 
+     * true and the user should not be inserted.
+     *
      * @throws SQLException
      */
     @Test
     public void testUpdateNonEmptyNoMatch() throws SQLException {
+        int id = 1;
         insertMaintainer(2, "username", "password");
         boolean success
-                = postgresUserDAO.update(new Maintainer(1, "name", "pass"));
+                = postgresUserDAO.update(new Maintainer(id, "name", "pass"));
         assertTrue(success);
+        assertNull(retrieveUser(id));
     }
 
     /**
@@ -394,7 +446,7 @@ public class PostgresUserDAOTest {
      * that exist in the database, changing the name="name2" and the
      * password="pass2". The update operation should return true and the user
      * should be correctly updated.
-     * 
+     *
      * @throws SQLException
      */
     @Test
@@ -415,17 +467,52 @@ public class PostgresUserDAOTest {
      * that exist in the database, changing the name="name2" and the
      * password="pass2" when there is another user with this name. The update
      * operation should return false.
-     * 
+     *
      * @throws SQLException
      */
     @Test
     public void testUpdateFailure() throws SQLException {
         int id = 1;
         insertMaintainer(id, "name", "pass");
-        insertMaintainer(id+1, "name2", "pass");
+        insertMaintainer(id + 1, "name2", "pass");
         User newUser = new Maintainer(id, "name2", "pass2");
         boolean success
                 = postgresUserDAO.update(newUser);
         assertFalse(success);
+    }
+
+    /**
+     * Test of update method, of class PostgresUserDAO. Test case: change the
+     * role of a maintainer (id=1, name='name', password='pass') when he is
+     * associated to an activity. The update operation should fail.
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateFailureToPlanner() throws SQLException {
+        int id = 1;
+        insertMaintainer(id, "name", "pass");
+        assignFakeActivityToMaintainer(id);
+        Planner planner = new Planner(id, "name", "pass");
+        assertFalse(postgresUserDAO.update(planner));
+    }
+
+    /**
+     * Assign a fake activity to the maintainer with the specified id.
+     *
+     * @param maintainerId the id of the maintainer
+     *
+     * @throws SQLException if an error occurs
+     */
+    private void assignFakeActivityToMaintainer(int maintainerId) throws SQLException {
+        PreparedStatement statement
+                = connection.prepareStatement("insert into assignment values (?, ?, ?, ?);");
+        statement.setInt(1, maintainerId);
+        int activityId = 2;
+        //drop constraints if needed
+        statement.setInt(2, activityId);
+        int hour = 15;
+        statement.setInt(3, hour);
+        statement.setString(4, "Mon");
     }
 }

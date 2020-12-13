@@ -75,6 +75,9 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
      * is both when the <code>user</code> is updated and when the
      * <code>user</code> doesn't exist in the Postgres Database;
      * <code>false</code> otherwise.
+     * <strong>NOTE</strong>: the update operation will fail trying to change
+     * the role of a user from planner to maintainer if the user is associated
+     * to an activity.
      *
      * @param user the <code>User</code> object to update
      * @return <code>true</code> if the operation is successful, that is both
@@ -84,9 +87,10 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
     @Override
     public boolean update(User user) {
         String query = String.format("update users "
-                + "set username = '%s', password = '%s'"
+                + "set username = '%s', password = '%s', role = '%s'"
                 + "where id = %d;",
-                user.getUsername(), user.getPassword(), user.getId());
+                user.getUsername(), user.getPassword(),
+                user.getRole().toString().toLowerCase(), user.getId());
         try {
             executeUpdate(query);
             return true;
@@ -95,7 +99,7 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
             return false;
         }
     }
-    
+
     /**
      * Retrieves the <code>User</code> object with given <code>id</code> from
      * the Postgres Database. Returns the <code>User</code> object with given

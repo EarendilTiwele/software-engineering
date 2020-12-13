@@ -22,36 +22,36 @@ import java.util.Set;
 public class UserBO {
 
     private final UserDAO userDAO;
-    private final MaintainerSkillsBO mhcBO;
+    private final MaintainerSkillsBO maintainerSkillsBO;
     private final Cypher cypher;
 
     public UserBO() {
         DAOFactory postgresFactory = DAOFactory.getDAOFactory(DAOFactory.POSTGRES);
         userDAO = postgresFactory.getUserDAO();
-        mhcBO = new MaintainerSkillsBO();
+        maintainerSkillsBO = new MaintainerSkillsBO();
         cypher = new Cypher();
     }
-    
+
     /**
      * Encrypts the password of the specified user.
-     * 
+     *
      * @param user the user
      * @return the same user passed in
      */
-    private User encryptUser(User user){
+    private User encryptUser(User user) {
         String password = user.getPassword();
         String encodedPassword = cypher.encode(password);
         user.setPassword(encodedPassword);
         return user;
     }
-    
+
     /**
      * Decrypts the password of the specified user.
-     * 
+     *
      * @param user the user
      * @return the same user passed in
      */
-    private User decryptUser(User user){
+    private User decryptUser(User user) {
         String encodedPassword = user.getPassword();
         String password = cypher.decode(encodedPassword);
         user.setPassword(password);
@@ -137,14 +137,16 @@ public class UserBO {
     }
 
     /**
-     * Retrieves a <code>Set</code> of <code>User</code> objects with maintainer
-     * role from a persistent storage. Returns the <code>Set</code> of
-     * <code>User</code> objects with maintainer role if the operation is
-     * successful; <code>null</code> otherwise.
+     * Retrieves a <code>Set</code> of <code>Maintainer</code> objects with
+     * maintainer role from a persistent storage. Returns the <code>Set</code>
+     * of <code>Maintainer</code> objects with maintainer role if the operation
+     * is successful; <code>null</code> otherwise.
+     * <strong>NOTE</strong>: use this method to retrieve the maintainers with
+     * their competencies.
      *
-     * @return the <code>Set</code> of <code>User</code> objects with maintainer
-     * role from the persistent storage if the operation is successful;
-     * <code>null</code> otherwise
+     * @return the <code>Set</code> of <code>Maintainer</code> objects with
+     * maintainer role from the persistent storage if the operation is
+     * successful; <code>null</code> otherwise
      */
     public Set<Maintainer> getAllMaintainers() {
         Set<Maintainer> maintainers = new HashSet<>();
@@ -157,7 +159,7 @@ public class UserBO {
             Maintainer maintainer = new Maintainer(user.getId(),
                     user.getUsername(), user.getPassword());
 
-            Set<Competency> competencies = mhcBO.getAllCompetencies(maintainer);
+            Set<Competency> competencies = maintainerSkillsBO.getAllCompetencies(maintainer);
             if (competencies != null) {
                 for (Competency competency : competencies) {
                     maintainer.addCompetency(competency);

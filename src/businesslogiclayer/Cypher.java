@@ -19,7 +19,7 @@ public class Cypher {
      * @return the encoded version of the passed string
      */
     public String encode(String string) {
-        return string;
+        return new StringBuilder(string).reverse().toString();
     }
 
     /**
@@ -29,6 +29,6 @@ public class Cypher {
      * @return the decoded version of the passed string
      */
     public String decode(String string) {
-        return string;
+        return new StringBuilder(string).reverse().toString();
     }
 }
