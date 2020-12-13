@@ -24,7 +24,7 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
 
     private List<Competency> competencies;
 
-    private CompetencyBO competencyBO = new CompetencyBO();
+    private final CompetencyBO competencyBO = new CompetencyBO();
 
     // columns headers
     private static final String ID_COLUMN_NAME = "ID";
@@ -41,7 +41,6 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
         initComponents();
         initCompetencyManagmentTabbedPane();
         setUpTable();
-        //setIDComponentVisible(true);
         getContentPane().setBackground(mainPanel.getBackground());
     }
 
@@ -54,34 +53,46 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
                 if (row == -1) {
                     competenciesManagmentTabbedPane.setSelectedIndex(0);
                     unselectedTableRowError();
-
                 } else {
                     Competency competency = competencies.get(row);
-
                     moveComponents(insertCompentencyPanel, updateCompetencyPanel);
-                    setUpdatePanel(competency);
-                    setIDComponentVisible(true);
+                    setUpdateCompetencyPanel(competency);
 
+                    SwingUtilities.invokeLater(() -> setIDCompetencyComponenstVisible(true));
                 }
 
             } else if (currentPanel.equals(insertCompentencyPanel)) {
                 moveComponents(updateCompetencyPanel, insertCompentencyPanel);
-                setIDComponentVisible(false);
+
+                SwingUtilities.invokeLater(() -> setIDCompetencyComponenstVisible(false));
+
                 cleanPanelComponent();
             } else if (currentPanel.equals(viewCompetenciesPanel)) {
                 setUpTable();
-                //setIDComponentVisible(true);
-
             }
         });
 
     }
 
-    private void setIDComponentVisible(boolean visible) {
+    /**
+     * Sets the visibility of the label and the text field about the
+     * competencyID.
+     *
+     * @param visible true to make the components visible; false to make them
+     * invisible
+     */
+    private void setIDCompetencyComponenstVisible(boolean visible) {
         idCompetencyLabel.setVisible(visible);
         idCompetencyTextField.setVisible(visible);
     }
 
+    /**
+     * Move all components from specified source panel to specified destination
+     * panel.
+     *
+     * @param sourcePanel the source panel
+     * @param destPanel the destination panel
+     */
     private void moveComponents(JPanel sourcePanel, JPanel destPanel) {
         for (Component component : sourcePanel.getComponents()) {
             destPanel.add(component);
@@ -165,12 +176,24 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
         idCompetencyTextField.setText("");
     }
 
-    private void setUpdatePanel(Competency competency) {
+    /**
+     * Retrieves the information of specified competency and updates the
+     * updateCompetencyPanel according them.
+     *
+     * @param competency the competency
+     */
+    private void setUpdateCompetencyPanel(Competency competency) {
         descriptionTextArea.setText(competency.getDescription());
         idCompetencyTextField.setText(String.valueOf(competency.getId()));
     }
 
-    private void checkInsert(int result) {
+    /**
+     * Checks that the insert operation ,according with specified result, was
+     * succesful and notified that.
+     *
+     * @param result the result of insert operation
+     */
+    private void checkInsertCompetency(int result) {
         if (result == -1) {
             competencyInsertError();
         } else {
@@ -180,7 +203,14 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
 
     }
 
-    private void checkUpdate(boolean success, int competencyID) {
+    /**
+     * Checks that the update operation ,according with specified result, was
+     * succesful and notified that specifying the competency's id.
+     *
+     * @param result the result of update operation
+     * @param competencyID the competency's id
+     */
+    private void checkUpdateCompetency(boolean success, int competencyID) {
         if (!success) {
             competencyUpdateError(competencyID);
         } else {
@@ -421,13 +451,12 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
 
         Runnable saver = () -> {
             if (currentPanel.equals(insertCompentencyPanel)) {
-
                 int result = competencyBO.insert(competency);
-                SwingUtilities.invokeLater(() -> checkInsert(result));
+                SwingUtilities.invokeLater(() -> checkInsertCompetency(result));
 
             } else if (currentPanel.equals(updateCompetencyPanel)) {
                 boolean success = competencyBO.update(competency);
-                SwingUtilities.invokeLater(() -> checkUpdate(success, competency.getId()));
+                SwingUtilities.invokeLater(() -> checkUpdateCompetency(success, competency.getId()));
             }
 
         };

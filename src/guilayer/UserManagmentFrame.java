@@ -11,14 +11,11 @@ import datatransferobjects.Planner;
 import datatransferobjects.User;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.TableModel;
 
 /**
@@ -29,15 +26,15 @@ public class UserManagmentFrame extends javax.swing.JFrame {
 
     private List<User> users;
 
-    private UserBO userBO = new UserBO();
+    private final UserBO userBO = new UserBO();
 
     // columns headers
     private static final String ID_COLUMN_NAME = "ID";
     private static final String USERNAME_COLUMN_NAME = "Username";
     private static final String ROLE_COLUMN_NAME = "Role";
 
-    private static final String MAINTAINER = "Maintainer";
-    private static final String PLANNER = "Planner";
+    private static final String MAINTAINER = User.Role.MAINTAINER.toString();
+    private static final String PLANNER = User.Role.PLANNER.toString();
 
     private final String[] tableColumnNames = new String[]{
         ID_COLUMN_NAME,
@@ -55,6 +52,10 @@ public class UserManagmentFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Initializes a specific view on the selected tab of
+     * userManagmentTabbedPane.
+     */
     private void initUserManagmentTabbedPane() {
         userManagmentTabbedPane.addChangeListener((e) -> {
             Component currentPanel = userManagmentTabbedPane.getSelectedComponent();
@@ -66,16 +67,16 @@ public class UserManagmentFrame extends javax.swing.JFrame {
                     unselectedTableRowError();
                 } else {
                     User user = users.get(row);
-                    idUserLabel.setVisible(true);
-                    idUserTextField.setVisible(true);
+                    SwingUtilities.invokeLater(() -> setIDUsersComponentsVisible(true));
+
                     moveComponents(insertUserPanel, updateUserPanel);
                     setUpdatePanel(user);
 
                 }
 
             } else if (currentPanel.equals(insertUserPanel)) {
-                idUserLabel.setVisible(false);
-                idUserTextField.setVisible(false);
+                SwingUtilities.invokeLater(() -> setIDUsersComponentsVisible(false));
+
                 moveComponents(updateUserPanel, insertUserPanel);
                 cleanPanelComponent();
             } else if (currentPanel.equals(viewUsersPanel)) {
@@ -85,6 +86,24 @@ public class UserManagmentFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Sets the visibility of the label and the text field about the userID.
+     *
+     * @param visible true to make the components visible; false to make them
+     * invisible
+     */
+    private void setIDUsersComponentsVisible(boolean visible) {
+        idUserLabel.setVisible(visible);
+        idUserTextField.setVisible(visible);
+    }
+
+    /**
+     * Move all components from specified source panel to specified destination
+     * panel.
+     *
+     * @param sourcePanel the source panel
+     * @param destPanel the destination panel
+     */
     private void moveComponents(JPanel sourcePanel, JPanel destPanel) {
         for (Component component : sourcePanel.getComponents()) {
             destPanel.add(component);
@@ -169,6 +188,12 @@ public class UserManagmentFrame extends javax.swing.JFrame {
         idUserTextField.setText("");
     }
 
+    /**
+     * Retrieves the information of specified user and updates the updatePanel
+     * according them.
+     *
+     * @param user the user
+     */
     private void setUpdatePanel(User user) {
         usernameTextField.setText(user.getUsername());
         passwordField.setText(user.getPassword());
@@ -176,7 +201,13 @@ public class UserManagmentFrame extends javax.swing.JFrame {
         idUserTextField.setText(String.valueOf(user.getId()));
     }
 
-    private void checkInsert(int result) {
+    /**
+     * Checks that the insert operation ,according with specified result, was
+     * succesful and notified that.
+     *
+     * @param result the result of insert operation
+     */
+    private void checkInsertUser(int result) {
         if (result == -1) {
             userInsertError();
         } else {
@@ -186,8 +217,15 @@ public class UserManagmentFrame extends javax.swing.JFrame {
 
     }
 
-    private void checkUpdate(boolean success, int userID) {
-        if (!success) {
+    /**
+     * Checks that the update operation ,according with specified result, was
+     * succesful and notified that specifying the user's id.
+     *
+     * @param result the result of update operation
+     * @param userID the user's id
+     */
+    private void checkUpdateUser(boolean result, int userID) {
+        if (!result) {
             userUpdateError(userID);
         } else {
             userUpdateSuccess(userID);
@@ -330,7 +368,7 @@ public class UserManagmentFrame extends javax.swing.JFrame {
         passwordLabel.setText("Password");
 
         roleComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        roleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { MAINTAINER, PLANNER }));
+        roleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{MAINTAINER,PLANNER}));
 
         roleLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         roleLabel.setText("Role");
@@ -484,11 +522,11 @@ public class UserManagmentFrame extends javax.swing.JFrame {
             if (currentPanel.equals(insertUserPanel)) {
 
                 int result = userBO.insert(user);
-                SwingUtilities.invokeLater(() -> checkInsert(result));
+                SwingUtilities.invokeLater(() -> checkInsertUser(result));
 
             } else if (currentPanel.equals(updateUserPanel)) {
                 boolean success = userBO.update(user);
-                SwingUtilities.invokeLater(() -> checkUpdate(success, user.getId()));
+                SwingUtilities.invokeLater(() -> checkUpdateUser(success, user.getId()));
             }
 
         };
