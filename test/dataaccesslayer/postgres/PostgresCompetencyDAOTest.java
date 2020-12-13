@@ -40,7 +40,6 @@ public class PostgresCompetencyDAOTest {
 
     @AfterClass
     public static void tearDownClass() throws SQLException {
-        connection.rollback();
         connection.close();
     }
 
@@ -52,8 +51,7 @@ public class PostgresCompetencyDAOTest {
 
     @After
     public void tearDown() throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("delete from competency;");
-        preparedStatement.execute();
+        connection.rollback();
     }
 
     private void insertCompetency(int id, String description) throws SQLException {
@@ -81,7 +79,7 @@ public class PostgresCompetencyDAOTest {
      * <code>id</code></li>
      * <li>Retrieve from the database the competency with the mentioned
      * <code>id</code></li>
-     * <li>Compare the two competencys</li>
+     * <li>Compare the two competencies</li>
      * </ul>
      *
      * @throws java.sql.SQLException
@@ -96,50 +94,78 @@ public class PostgresCompetencyDAOTest {
     }
 
     /**
-     * Test of update method, of class PostgresCompetencyDAO.
+     * Test of update method, of class PostgresCompetencyDAO. Test case: update
+     * of an existing competency should return <code>true</code> and actually
+     * update the competency on the database.
      * <ul>
      * <li>Insert a competency in the database with <code>id = 1</code></li>
      * <li>Update the competency in the database with <code>id = 1</code> and
      * check if <code>true</code> is returned</li>
      * <li>Check if the competency in the database has actually been
      * updated</li>
-     * <li>Check if the update on a non-existing competency returns true</li>
-     * <li>Check if the competency still doesn't exist</li>
      * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdate() throws SQLException {
-        insertCompetency(1, "test");
-        Competency localCompetencies = new Competency(1, "updated");
-        assertTrue(postgresCompetencyDAO.update(localCompetencies));
-        assertEquals(localCompetencies, retrieveCompetency(1));
-        localCompetencies.setId(2);
-        assertTrue(postgresCompetencyDAO.update(localCompetencies));
-        assertNull(retrieveCompetency(localCompetencies.getId()));
+    public void testUpdateExisting() throws SQLException {
+        int id = 1;
+        insertCompetency(id, "test");
+        Competency localCompetency = new Competency(id, "updated");
+        assertTrue(postgresCompetencyDAO.update(localCompetency));
+        assertEquals(localCompetency, retrieveCompetency(id));
     }
 
     /**
-     * Test of get method, of class PostgresCompetencyDAO.
+     * Test of update method, of class PostgresCompetencyDAO. Test case: update
+     * of a non-existing competency should return <code>true</code>.
+     * <ul>
+     * <li>Update a non-existing competency in the database and check if
+     * <code>true</code> is returned</li>
+     * <li>Check if the competency still doesn't exist in the database</li>
+     * </ul>
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateNonExisting() throws SQLException {
+        int id = 1;
+        Competency localCompetency = new Competency(id, "updated");
+        assertTrue(postgresCompetencyDAO.update(localCompetency));
+        assertNull(retrieveCompetency(id));
+    }
+
+    /**
+     * Test of get method, of class PostgresCompetencyDAO. Test case: get of an
+     * existing competency.
      * <ul>
      * <li>Insert a competency in the database with <code>id = 1</code></li>
      * <li>Create a local competency with same fields of the one inserted
      * before</li>
      * <li>Check if the competency retrieved from the database with
      * <code>id = 1</code> is equals to the local competency</li>
-     * <li>Check if the competency retrieved from the database with
-     * <code>id = 2</code> is null</li>
      * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testGet() throws SQLException {
-        insertCompetency(1, "test");
-        Competency localCompetency = new Competency(1, "test");
-        assertEquals(postgresCompetencyDAO.get(1), localCompetency);
-        assertNull(postgresCompetencyDAO.get(2));
+    public void testGetExisting() throws SQLException {
+        int id = 1;
+        insertCompetency(id, "test");
+        Competency localCompetency = new Competency(id, "test");
+        assertEquals(postgresCompetencyDAO.get(id), localCompetency);
+    }
+
+    /**
+     * Test of get method, of class PostgresCompetencyDAO. Test case: get of a
+     * non-existing competency should return <code>null</code>.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(postgresCompetencyDAO.get(id));
     }
 
     /**

@@ -40,7 +40,6 @@ public class PostgresSiteDAOTest {
 
     @AfterClass
     public static void tearDownClass() throws SQLException {
-        connection.rollback();
         connection.close();
     }
 
@@ -54,8 +53,7 @@ public class PostgresSiteDAOTest {
 
     @After
     public void tearDown() throws SQLException {
-        PreparedStatement prepareStatement = connection.prepareStatement("delete from site;");
-        prepareStatement.execute();
+        connection.rollback();
     }
 
     private void insertSite(int id, String factory, String area) throws SQLException {
@@ -99,51 +97,83 @@ public class PostgresSiteDAOTest {
     }
 
     /**
-     * Test of update method, of class PostgresSiteDAO.
+     * Test of update method, of class PostgresSiteDAO. Test case: update of an
+     * existing site should return <code>true</code> and actually update the
+     * site on the database.
      * <ul>
      * <li>Insert a site in the database with <code>id = 1</code></li>
      * <li>Update the site in the database with <code>id = 1</code> and check if
      * <code>true</code> is returned</li>
      * <li>Check if the site in the database has actually been updated</li>
-     * <li>Check if the update on a non-existing site returns true</li>
+     * </ul>
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testUpdateExisting() throws SQLException {
+        int id = 1;
+        insertSite(id, "test", "test");
+        Site localSite = new Site(id, "updated", "updated");
+        assertTrue(postgresSiteDAO.update(localSite));
+        assertEquals(localSite, retrieveSite(id));
+    }
+
+    /**
+     * Test of update method, of class PostgresSiteDAO. Test case: update of a
+     * non-existing site should return <code>true</code>.
+     * <ul>
+     * <li>Update a non-existing site in the database and check if
+     * <code>true</code> is returned</li>
      * <li>Check if the site still doesn't exist</li>
      * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdate() throws SQLException {
-        insertSite(1, "test", "test");
-        Site localSite = new Site(1, "updated", "updated");
+    public void testUpdateNonExisting() throws SQLException {
+        int id = 1;
+        Site localSite = new Site(id, "updated", "updated");
         assertTrue(postgresSiteDAO.update(localSite));
-        assertEquals(localSite, retrieveSite(1));
-        localSite.setId(2);
-        assertTrue(postgresSiteDAO.update(localSite));
-        assertNull(retrieveSite(localSite.getId()));
+        assertNull(retrieveSite(id));
     }
 
     /**
-     * Test of delete method, of class PostgresSiteDAO.
+     * Test of delete method, of class PostgresSiteDAO. Test case: delete of an
+     * existing site should return <code>true</code> and actually delete the
+     * site from the database.
      * <ul>
      * <li>Insert a site in the database with <code>id = 1</code></li>
      * <li>Delete the site in the database with <code>id = 1</code> and check if
      * <code>true</code> is returned</li>
      * <li>Check if the site in the database has actually been deleted</li>
-     * <li>Check if the delete on a non-existing site returns true</li>
      * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testDelete() throws SQLException {
-        insertSite(1, "test", "test");
-        assertTrue(postgresSiteDAO.delete(1));
-        assertNull(retrieveSite(1));
-        assertTrue(postgresSiteDAO.delete(1));
+    public void testDeleteExisting() throws SQLException {
+        int id = 1;
+        insertSite(id, "test", "test");
+        assertTrue(postgresSiteDAO.delete(id));
+        assertNull(retrieveSite(id));
     }
 
     /**
-     * Test of get method, of class PostgresSiteDAO.
+     * Test of delete method, of class PostgresSiteDAO. Test case: delete of a
+     * non-existing site should return <code>true</code>.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testDeleteNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(retrieveSite(id));
+        assertTrue(postgresSiteDAO.delete(id));
+    }
+
+    /**
+     * Test of get method, of class PostgresSiteDAO. Test case: get of an
+     * existing site.
      * <ul>
      * <li>Insert a site in the database with <code>id = 1</code></li>
      * <li>Create a local site with same fields of the one inserted before</li>
@@ -156,11 +186,23 @@ public class PostgresSiteDAOTest {
      * @throws java.sql.SQLException
      */
     @Test
-    public void testGet() throws SQLException {
-        insertSite(1, "test", "test");
-        Site localSite = new Site(1, "test", "test");
-        assertEquals(postgresSiteDAO.get(1), localSite);
-        assertNull(postgresSiteDAO.get(2));
+    public void testGetExisting() throws SQLException {
+        int id = 1;
+        insertSite(id, "test", "test");
+        Site localSite = new Site(id, "test", "test");
+        assertEquals(postgresSiteDAO.get(id), localSite);
+    }
+
+    /**
+     * Test of get method, of class PostgresSiteDAO. Test case: get of a
+     * non-existing site.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(postgresSiteDAO.get(id));
     }
 
     /**

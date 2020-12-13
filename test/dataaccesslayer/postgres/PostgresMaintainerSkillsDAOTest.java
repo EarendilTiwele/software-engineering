@@ -40,7 +40,6 @@ public class PostgresMaintainerSkillsDAOTest {
 
     @AfterClass
     public static void tearDownClass() throws SQLException {
-        connection.rollback();
         connection.close();
     }
 
@@ -56,8 +55,7 @@ public class PostgresMaintainerSkillsDAOTest {
 
     @After
     public void tearDown() throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("delete from maintainerhascompetencies;");
-        preparedStatement.execute();
+        connection.rollback();
     }
 
     private void insertMaintainerSkills(int maintainerId, int competencyId) throws SQLException {
