@@ -77,12 +77,29 @@ public class PostgresAssignmentDAOTest {
         conn.rollback();
     }
 
+    /**
+     * Test of insert method, of class PostgresAssignmentDAO.
+     * <ul>
+     * <li>Insert a assignment in the database and save the returned
+     * <code>id</code></li>
+     * <li>Retrieve from the database the assignment with the mentioned
+     * <code>id</code></li>
+     * <li>Compare the two assignments</li>
+     * </ul>
+     *
+     * @throws java.sql.SQLException
+     */
     @Test
     public void testInsert() throws SQLException {
         List<Assignment> assignmentSet = new ArrayList<>(sampleSetAssignment());
         Assignment assignment = assignmentSet.get(0);
         boolean result = postgresAssignmentDAO.insert(assignment);
         assertTrue(result);
+        Assignment assignment2 = retrieveAssignment(assignment);
+        assertEquals(assignment, assignment2);
+    }
+
+    private Assignment retrieveAssignment(Assignment assignment) throws SQLException {
         PreparedStatement preparedStatement = conn.prepareStatement(String.format("Select * "
                 + "from assignment where idmaintainer = %d and idactivity=%d",
                 assignment.getMaintainer().getId(), assignment.getActivity().getId()));
@@ -91,14 +108,18 @@ public class PostgresAssignmentDAOTest {
         while (rs.next()) {
             assignment2 = postgresAssignmentDAO.convertToEntity(rs);
         }
-        assertEquals(assignment, assignment2);
+        return assignment2;
     }
 
     /**
-     * Test of getAllForWeek method, of class PostgresAssignmentDAO. Create
-     * assignments samples. Insert them in the database. Get the assignments
-     * with a specific week. Check that the local copy and the database version
-     * of the assignments are equal
+     * Test of getAllForWeek method, of class PostgresAssignmentDAO.
+     * <ul>
+     * <li> Create assignments samples. </li>
+     * <li> Insert them in the database.</li>
+     * <li> Get the assignments with a specific week. </li>
+     * <li> Check that the local copy and the database version of the
+     * assignments are equal </li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
@@ -116,6 +137,17 @@ public class PostgresAssignmentDAOTest {
         }
         Set<Assignment> assignmentSet2 = postgresAssignmentDAO.getAllForWeek(2);
         assertEquals(assignmentSet, assignmentSet2);
+    }
+
+    /**
+     * Test of getAllForWeek method, of class PostgresSiteDAO. Test case: no
+     * assignments in the database for the week 0.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllForWeekEmpty() throws SQLException {
+        assertTrue(postgresAssignmentDAO.getAllForWeek(0).isEmpty());
     }
 
     public List<Activity> sampleListActivity() throws SQLException {

@@ -47,7 +47,6 @@ public class PostgresActivityDAOTest {
 
     @AfterClass
     public static void tearDownClass() throws SQLException {
-        conn.rollback();
         conn.close();
     }
 
@@ -150,47 +149,60 @@ public class PostgresActivityDAOTest {
         return idActivity;
     }
 
+    private Activity retrieveActivity(int id) throws SQLException {
+        Statement stm = conn.createStatement();
+        ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", id));
+        Activity activity = null;
+        while (rs.next()) {
+            activity = postgresActivityDAO.convertToEntity(rs);
+        }
+        return activity;
+    }
+
     /**
-     * Test of insert method, of class PostgresActivityDAO. Create a sample of
-     * activity Insert it in the database and retrieve it back Compare the two
-     * activities
+     * Test of insert method, of class PostgresActivityDAO.
+     * <ul>
+     * <li>Insert a activity in the database and save the returned
+     * <code>id</code></li>
+     * <li>Retrieve from the database the activity with the mentioned
+     * <code>id</code></li>
+     * <li>Compare the two activities</li>
+     * </ul>
+     *
+     * @throws java.sql.SQLException
      */
     @Test
     public void testInsert() throws SQLException {
         Activity activity = sampleListActivity().get(0);
         int idActivity = insertActivity(activity);
-        Statement stm = conn.createStatement();
-        ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
-        Activity activity2 = null;
-        while (rs.next()) {
-            activity2 = postgresActivityDAO.convertToEntity(rs);
-        }
-        assertNotNull(activity2);
-        assertEquals(activity, activity2);
+        Activity dbActivity = retrieveActivity(idActivity);
+        assertNotNull(dbActivity);
+        assertEquals(activity, dbActivity);
     }
 
     /**
-     * Test of update method, of class PostgresActivityDAO. Create a sample
-     * activity Insert it in the database, retrieve, modify and reinsert it.
-     * Check that the record is updated.
+     * Test of update method, of class PostgresActivityDAO. Test case: update of
+     * an existing activity should return <code>true</code> and actually update
+     * the activity on the database.
+     * <ul>
+     * <li>Insert a activity in the database
+     * <li>Update the activity in the database with the <code>id</code>
+     * retrieved by the insert operation and check if <code>true</code> is
+     * returned</li>
+     * <li>Check if the activity in the database has actually been updated</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdate() throws SQLException {
+    public void testUpdateExisting() throws SQLException {
         List<Activity> activityList = sampleListActivity();
         Activity activity = activityList.get(0);
         int idActivity = insertActivity(activity);
-        Statement stm = conn.createStatement();
-        ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
-        activity = null;
-        while (rs.next()) {
-            activity = postgresActivityDAO.convertToEntity(rs);
-        }
+        activity = retrieveActivity(idActivity);
         assertNotNull(activity);
         Site site2 = activityList.get(1).getSite();
-        /* I didn't want to use the sampleListActivity because I need that
-        the new activity must have the same id of the previous*/
+
         Typology typology2 = activityList.get(1).getTipology();
         Procedure procedure2 = activityList.get(1).getProcedure();
         String description = "mechanical maintenance activity";
@@ -204,44 +216,74 @@ public class PostgresActivityDAOTest {
         /*--------------------------------------------------------------------------*/
         boolean result = postgresActivityDAO.update(activity);
         assertTrue(result);
-        stm = conn.createStatement();
-        rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
-        Activity activity2 = null;
-        while (rs.next()) {
-            activity2 = postgresActivityDAO.convertToEntity(rs);
-        }
-        assertNotNull(activity2);
-        assertEquals(activity, activity2);
+        Activity dbActivity = retrieveActivity(activity.getId());
+        assertNotNull(dbActivity);
+        assertEquals(activity, dbActivity);
     }
 
     /**
-     * Test of delete method, of class PostgresActivityDAO. Create a sample
-     * activity Insert it in the database, retrieve and delete it. Check that
-     * the record is deleted successfully.
+     * Test of update method, of class PostgresActivityDAO. Test case: update of
+     * a non-existing activity should return <code>true</code>.
+     * <ul>
+     * <li>Update a non-existing activity in the database and check if
+     * <code>true</code> is returned</li>
+     * <li>Check if the activity still doesn't exist</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testDelete() throws SQLException {
+    public void testUpdateNonExisting() throws SQLException {
+        int id = 1;
         Activity activity = sampleListActivity().get(0);
-        int idActivity = insertActivity(activity);
-        Statement stm = conn.createStatement();
-        ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
-        while (rs.next()) {
-            activity = postgresActivityDAO.convertToEntity(rs);
-        }
-        assertNotNull(activity);
-        boolean result = postgresActivityDAO.delete(activity.getId());
-        assertTrue(result);
-        rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
-        assertFalse(rs.next());
-        assertNull(postgresActivityDAO.get(activity.getId()));
+        assertTrue(postgresActivityDAO.update(activity));
+        assertNull(retrieveActivity(id));
     }
 
     /**
-     * Test of getAll method, of class PostgresActivityDAO. Create a sample list
-     * of activities Insert each activity in the database and retrieve all list.
-     * Check that the both lists are equals
+     * Test of delete method, of class PostgresActivityDAO. Test case: delete of
+     * an existing activity should return <code>true</code> and actually delete
+     * the activity from the database.
+     * <ul>
+     * <li>Insert a activity in the database</li>
+     * <li>Delete the site in the database with the <code>id</code> retrieved by
+     * the insert operation and check if <code>true</code> is returned</li>
+     * <li>Check if the activity in the database has actually been deleted</li>
+     * </ul>
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testDeleteExisting() throws SQLException {
+        Activity activity = sampleListActivity().get(0);
+        int idActivity = insertActivity(activity);
+        activity = retrieveActivity(idActivity);
+        assertNotNull(activity);
+        boolean result = postgresActivityDAO.delete(activity.getId());
+        assertTrue(result);
+        assertNull(retrieveActivity(idActivity));
+    }
+
+    /**
+     * Test of delete method, of class PostgresActivityDAO. Test case: delete of
+     * a non-existing activity should return <code>true</code>.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testDeleteNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(retrieveActivity(id));
+        assertTrue(postgresActivityDAO.delete(id));
+    }
+
+    /**
+     * <ul>
+     * <li> Test of getAll method, of class PostgresActivityDAO. </li>
+     * <li> Create a sample list of activities Insert each activity in the
+     * database and retrieve all list. </li>
+     * <li> Check that the both lists are equals </li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
@@ -266,21 +308,25 @@ public class PostgresActivityDAOTest {
     }
 
     /**
-     * Test of get method, of class PostgresActivityDAO. Create a sample
-     * activity Insert it in the database and retrieve it. Compare the local
-     * activity with the activity retrieve from the database
+     * Test of get method, of class PostgresActivityDAO. Test case: get of an
+     * existing activity.
+     * <ul>
+     * <li>Insert an activity in the database</li>
+     * <li> Save the id of the inserted activity returned by the insert
+     * operation</li>
+     * <li>Create a local activity with same fields of the one inserted
+     * before</li>
+     * <li>Check if the activity retrieved from the database with with the
+     * specified id is equals to the local activity</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testGet() throws SQLException {
+    public void testGetExisting() throws SQLException {
         Activity activity = sampleListActivity().get(0);
         int idActivity = insertActivity(activity);
-        Statement stm = conn.createStatement();
-        ResultSet rs = stm.executeQuery(String.format("select * from activity where id=%d", idActivity));
-        while (rs.next()) {
-            activity = postgresActivityDAO.convertToEntity(rs);
-        }
+        activity = retrieveActivity(idActivity);
         assertNotNull(activity);
         Activity activity2 = postgresActivityDAO.get(activity.getId());
         assertNotNull(activity2);
@@ -288,11 +334,37 @@ public class PostgresActivityDAOTest {
     }
 
     /**
-     * Test of getAllOfWeek method, of class PostgresActivityDAO. Create a
-     * sample list of activities Insert each activity in the database and
-     * retrieve all list Insert in the resulting list only the activity for the
-     * specified week Select from the db the activities for the specified week
-     * Create a new list of activities Check that the both lists are equals
+     * Test of get method, of class PostgresActivityDAO. Test case: get of a
+     * non-existing activity.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(postgresActivityDAO.get(id));
+    }
+
+    /**
+     * Test of getAll method, of class PostgresActivityDAO. Test case: no
+     * activities in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllEmpty() throws SQLException {
+        assertTrue(postgresActivityDAO.getAll().isEmpty());
+    }
+
+    /**
+     * Test of getAllOfWeek method, of class PostgresActivityDAO.
+     * <li> Create a sample list of activities </li>
+     * <li>Insert each activity in the database and retrieve all list </li>
+     * <li> Insert in the resulting list only the activity for the specified
+     * week </li>
+     * <li> Select from the db the activities for the specified week </li>
+     * <li> Create a new list of activities </li>
+     * <li> Check that the both lists are equals </li>
      *
      * @throws java.sql.SQLException
      */
@@ -319,12 +391,14 @@ public class PostgresActivityDAOTest {
     }
 
     /**
-     * Test of getAllPlannedOfWeek method, of class PostgresActivityDAO. Create
-     * a sample list of activities Insert each activity in the database and
-     * retrieve all list Insert in the resulting list only the activity for the
-     * specified week Select from the db the activities for the specified week
-     * Create a new list of planned activities Check that the both lists are
-     * equals
+     * Test of getAllPlannedOfWeek method, of class PostgresActivityDAO.
+     * <li> Create a sample list of activities </li>
+     * <li> Insert each activity in the database and retrieve all list </li>
+     * <li> Insert in the resulting list only the activity for the specified
+     * week </li>
+     * <li> Select from the db the activities for the specified week </li>
+     * <li> Create a new list of planned activities Check that the both lists
+     * are equals</li>
      *
      * @throws java.sql.SQLException
      */
