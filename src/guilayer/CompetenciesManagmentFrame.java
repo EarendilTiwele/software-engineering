@@ -44,6 +44,10 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
         getContentPane().setBackground(mainPanel.getBackground());
     }
 
+    /**
+     * Defines the change listener that allow to Initialize a specific view on
+     * the selected tab of competencyManagmentTabbedPane.
+     */
     private void initCompetencyManagmentTabbedPane() {
         competenciesManagmentTabbedPane.addChangeListener((e) -> {
             Component currentPanel = competenciesManagmentTabbedPane.getSelectedComponent();

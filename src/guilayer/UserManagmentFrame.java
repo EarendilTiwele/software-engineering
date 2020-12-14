@@ -196,7 +196,6 @@ public class UserManagmentFrame extends javax.swing.JFrame {
      */
     private void setUpdatePanel(User user) {
         usernameTextField.setText(user.getUsername());
-        passwordField.setText(user.getPassword());
         roleComboBox.setSelectedItem(user.getRole().toString());
         idUserTextField.setText(String.valueOf(user.getId()));
     }
