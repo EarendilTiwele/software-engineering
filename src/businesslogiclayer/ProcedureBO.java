@@ -7,11 +7,9 @@ package businesslogiclayer;
 
 import datatransferobjects.Procedure;
 import dataaccesslayer.DAOFactory;
-import dataaccesslayer.postgres.PostgresProcedureSkillsDAO;
 import java.util.ArrayList;
 import java.util.List;
 import dataaccesslayer.ProcedureDAO;
-import dataaccesslayer.ProcedureSkillsDAO;
 import datatransferobjects.Competency;
 import java.util.Set;
 
@@ -42,7 +40,7 @@ public class ProcedureBO {
 
     public List<Procedure> getAll() {
         List<Procedure> listProcedure = new ArrayList<>();
-        ProcedureSkillsDAO procedureSkills = new PostgresProcedureSkillsDAO();
+        ProcedureSkillsBO procedureSkills = new ProcedureSkillsBO();
         Set<Procedure> setProcedure = procedureDAO.getAll();
         if (setProcedure == null) {
             return null;
@@ -62,8 +60,8 @@ public class ProcedureBO {
 
     public Procedure get(int id) {
         Procedure procedure = procedureDAO.get(id);
-        ProcedureSkillsDAO procedureHasCompetencies = new PostgresProcedureSkillsDAO();
-        procedureHasCompetencies.getAllCompetencies(procedure).forEach((competency) -> {
+        ProcedureSkillsBO procedureSkills = new ProcedureSkillsBO();
+        procedureSkills.getAllCompetencies(procedure).forEach((competency) -> {
             procedure.addCompetency(competency);
         });
         return procedure;

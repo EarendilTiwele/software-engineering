@@ -31,7 +31,7 @@ public class PostgresProcedureSkillsDAO extends PostgresAbstractDAO<Competency> 
      * @throws SQLException if a database access error occurs
      */
     @Override
-    public Competency convertToEntity(ResultSet rs) throws SQLException {
+    Competency convertToEntity(ResultSet rs) throws SQLException {
         return new Competency(rs.getInt("CompetencyId"), rs.getString("CompetencyDescription"));
     }
 

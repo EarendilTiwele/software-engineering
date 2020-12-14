@@ -35,7 +35,7 @@ public class PostgresAssignmentDAO extends PostgresAbstractDAO<Assignment> imple
      * @throws SQLException if a database access error occurs
      */
     @Override
-    public Assignment convertToEntity(ResultSet rs) throws SQLException {
+    Assignment convertToEntity(ResultSet rs) throws SQLException {
         ActivityDAO activityDAL = new PostgresActivityDAO();
         PostgresUserDAO userDAL = new PostgresUserDAO();
         int idactivity = rs.getInt("idactivity");

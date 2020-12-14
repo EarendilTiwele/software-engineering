@@ -30,7 +30,7 @@ public class PostgresProcedureDAO extends PostgresAbstractDAO<Procedure> impleme
      * @throws SQLException if a database access error occurs
      */
     @Override
-    public Procedure convertToEntity(ResultSet rs) throws SQLException {
+    Procedure convertToEntity(ResultSet rs) throws SQLException {
         Procedure procedure = new Procedure(rs.getInt("id"), rs.getString("name"), rs.getString("smp"));
         return procedure;
     }
