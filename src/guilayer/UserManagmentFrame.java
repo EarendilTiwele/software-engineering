@@ -9,6 +9,7 @@ import businesslogiclayer.UserBO;
 import datatransferobjects.Maintainer;
 import datatransferobjects.Planner;
 import datatransferobjects.User;
+import datatransferobjects.UserFactory;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
 /**
+ * Form to manage the users.
  *
  * @author Alfonso
  */
@@ -33,8 +35,8 @@ public class UserManagmentFrame extends javax.swing.JFrame {
     private static final String USERNAME_COLUMN_NAME = "Username";
     private static final String ROLE_COLUMN_NAME = "Role";
 
-    private static final String MAINTAINER = User.Role.MAINTAINER.toString();
-    private static final String PLANNER = User.Role.PLANNER.toString();
+    private static final User.Role MAINTAINER = User.Role.MAINTAINER;
+    private static final User.Role PLANNER = User.Role.PLANNER;
 
     private final String[] tableColumnNames = new String[]{
         ID_COLUMN_NAME,
@@ -213,7 +215,6 @@ public class UserManagmentFrame extends javax.swing.JFrame {
             userInsertSuccess();
             cleanPanelComponent();
         }
-
     }
 
     /**
@@ -230,7 +231,19 @@ public class UserManagmentFrame extends javax.swing.JFrame {
             userUpdateSuccess(userID);
             cleanPanelComponent();
         }
+    }
 
+    /**
+     * Returns <code>false</code> if the specified username or password are
+     * empty, otherwise <code>true</code>;
+     *
+     * @param username the user's username
+     * @param password the user's password
+     * @return <code>false</code> if the specified username or password are
+     * empty, otherwise <code>true</code>;
+     */
+    private boolean checkUserFields(String username, String password) {
+        return !(username.isEmpty() || password.isEmpty());
     }
 
     /*-----------------------------Users Messages-----------------------------*/
@@ -267,6 +280,12 @@ public class UserManagmentFrame extends javax.swing.JFrame {
     private void unselectedTableRowError() {
         String msg = "You must select a row of table to update an user";
         String title = "User selection error";
+        JOptionPane.showMessageDialog(this, msg, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void userFieldsError() {
+        String msg = "The username field and the password field must not be empty";
+        String title = "User fields error";
         JOptionPane.showMessageDialog(this, msg, title, JOptionPane.ERROR_MESSAGE);
     }
 
@@ -367,7 +386,7 @@ public class UserManagmentFrame extends javax.swing.JFrame {
         passwordLabel.setText("Password");
 
         roleComboBox.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        roleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{MAINTAINER,PLANNER}));
+        roleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new User.Role[]{MAINTAINER,PLANNER}));
 
         roleLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         roleLabel.setText("Role");
@@ -503,34 +522,31 @@ public class UserManagmentFrame extends javax.swing.JFrame {
 
         String username = usernameTextField.getText();
         String password = String.copyValueOf(passwordField.getPassword());
-        String role = roleComboBox.getSelectedItem().toString();
-        String idText = idUserTextField.getText();
-        //mentre non è pronta la factory fai così
-        int id = idText.isEmpty() ? -1 : Integer.valueOf(idText);
-        //create a factory
-        User user;
+        if (checkUserFields(username, password)) {
+            User.Role role = (User.Role) roleComboBox.getSelectedItem();
+            String idText = idUserTextField.getText();
+            //Distinction beetween insert and update operation
+            int id = idText.isEmpty() ? -1 : Integer.valueOf(idText);
 
-        if (role.equals(MAINTAINER)) {
-            user = new Maintainer(id, username, password);
+            User user = new UserFactory().createUser(id, username, password, role);
+
+            Runnable saver = () -> {
+                if (currentPanel.equals(insertUserPanel)) {
+
+                    int result = userBO.insert(user);
+                    SwingUtilities.invokeLater(() -> checkInsertUser(result));
+
+                } else if (currentPanel.equals(updateUserPanel)) {
+                    boolean success = userBO.update(user);
+                    SwingUtilities.invokeLater(() -> checkUpdateUser(success, user.getId()));
+                }
+
+            };
+
+            new Thread(saver).start();
         } else {
-
-            user = new Planner(id, username, password);
+            userFieldsError();
         }
-
-        Runnable saver = () -> {
-            if (currentPanel.equals(insertUserPanel)) {
-
-                int result = userBO.insert(user);
-                SwingUtilities.invokeLater(() -> checkInsertUser(result));
-
-            } else if (currentPanel.equals(updateUserPanel)) {
-                boolean success = userBO.update(user);
-                SwingUtilities.invokeLater(() -> checkUpdateUser(success, user.getId()));
-            }
-
-        };
-
-        new Thread(saver).start();
     }//GEN-LAST:event_saveButtonActionPerformed
 
     /**
@@ -586,7 +602,7 @@ public class UserManagmentFrame extends javax.swing.JFrame {
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel passwordLabel;
-    private javax.swing.JComboBox<String> roleComboBox;
+    private javax.swing.JComboBox<User.Role> roleComboBox;
     private javax.swing.JLabel roleLabel;
     private javax.swing.JButton saveButton;
     private javax.swing.JTabbedPane systemAdministratorTabbedPane;

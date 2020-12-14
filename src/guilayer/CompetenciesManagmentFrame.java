@@ -17,6 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 
 /**
+ * Form to manage the competencies.
  *
  * @author Alfonso
  */
