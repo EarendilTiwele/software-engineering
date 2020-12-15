@@ -10,7 +10,6 @@ import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +26,7 @@ import static org.junit.Assert.*;
  */
 public class PostgresProcedureSkillsDAOTest {
 
-    private static ProcedureSkillsDAO procedureHasCompetenciesDAL;
+    private static ProcedureSkillsDAO procedureSkillsDAO;
     private static Connection conn;
 
     public PostgresProcedureSkillsDAOTest() {
@@ -35,7 +34,7 @@ public class PostgresProcedureSkillsDAOTest {
 
     @BeforeClass
     public static void setUpClass() throws SQLException {
-        procedureHasCompetenciesDAL = new PostgresProcedureSkillsDAO();
+        procedureSkillsDAO = new PostgresProcedureSkillsDAO();
         conn = PostgresDAOFactory.createConnection();
         conn.setAutoCommit(false);
     }
@@ -65,11 +64,15 @@ public class PostgresProcedureSkillsDAOTest {
 
     /**
      * Test of getAllCompetencies method, of class PostgresProcedureSkillsDAO.
-     * Create new Procedure with 3 competencies required. Insert the Procedure
-     * in the database. Insert the 3 competencies in the database. Insert the
-     * associations in the ProcedureHasCompetencies table. Get the procedure
-     * from the database. Check that the local copy and the database version of
-     * the procedure are equal.
+     * <ul>
+     * <li> Create new Procedure with 3 competencies required.</li>
+     * <li>Insert the Procedure in the database.</li>
+     * <li>Insert the 3 competencies in the database.</li>
+     * <li>Insert the associations in the ProcedureHasCompetencies table. </li>
+     * <li> Get the procedure from the database.</li>
+     * <li>Check that the local copy and the database version of the procedure
+     * are equal.</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
@@ -101,16 +104,20 @@ public class PostgresProcedureSkillsDAOTest {
         prepareStatement.setInt(1, procedure.getId());
         prepareStatement.execute();
 
-        Set<Competency> competencySet2 = procedureHasCompetenciesDAL.getAllCompetencies(procedure);
+        Set<Competency> competencySet2 = procedureSkillsDAO.getAllCompetencies(procedure);
 
         assertEquals(competencySet, competencySet2);
     }
 
     /**
      * Test of testGetNoCompetencies method, of class
-     * PostgresProcedureSkillsDAO. Create new Procedure without competencies.
-     * Insert the Procedure in the database. Get the procedure from the
-     * database. Check that the set of the competencies is empty
+     * PostgresProcedureSkillsDAO.
+     * <ul>
+     * <li> Create new Procedure without competencies. </li>
+     * <li> Insert the Procedure in the database. </li>
+     * <li> Get the procedure from the database. </li>
+     * <li> Check that the set of the competencies is empty </li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
@@ -121,7 +128,7 @@ public class PostgresProcedureSkillsDAOTest {
                 + " VALUES (%d, '%s', '%s')", procedure.getId(), procedure.getName(), procedure.getSmp()));
         prepareStatement.execute();
 
-        Set<Competency> competencySet2 = procedureHasCompetenciesDAL.getAllCompetencies(procedure);
+        Set<Competency> competencySet2 = procedureSkillsDAO.getAllCompetencies(procedure);
 
         assertTrue(competencySet2.isEmpty());
     }
