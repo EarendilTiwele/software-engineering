@@ -97,7 +97,7 @@ public class Competency {
     /**
      * Returns the description associated with this competency.
      *
-     * @return the procedure description
+     * @return the competency description
      */
     public String getDescription() {
         return description;

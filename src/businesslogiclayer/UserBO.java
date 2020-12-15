@@ -36,7 +36,7 @@ public class UserBO {
      * Encrypts the password of the specified user.
      *
      * @param user the user
-     * @return the same user passed in
+     * @return the same user object passed in with the encrypted password
      */
     private User encryptUser(User user) {
         String password = user.getPassword();
@@ -49,7 +49,7 @@ public class UserBO {
      * Decrypts the password of the specified user.
      *
      * @param user the user
-     * @return the same user passed in
+     * @return the same user object passed in with the decrypted password
      */
     private User decryptUser(User user) {
         String encodedPassword = user.getPassword();
@@ -99,7 +99,9 @@ public class UserBO {
      * persistent storage. Returns the <code>User</code> object with given
      * <code>id</code> if it exists in the persistent storage; <code>null</code>
      * if the <code>User</code> object with given <code>id</code> doesn't exist
-     * in the persistent storage or if the operation fails.
+     * in the persistent storage or if the operation fails.<br>
+     * <strong>NOTE</strong>: on success, the password of the returned
+     * <code>User</code> object is encrypted.
      *
      * @param id the id which identifies the user
      * @return the <code>User</code> object with given <code>id</code> if it
@@ -114,7 +116,9 @@ public class UserBO {
     /**
      * Retrieves a <code>List</code> of <code>User</code> objects from a
      * persistent storage. Returns the <code>List</code> of <code>User</code>
-     * objects if the operation is successful; <code>null</code> otherwise.
+     * objects if the operation is successful; <code>null</code> otherwise.<br>
+     * <strong>NOTE</strong>: on success, the passwords of the returned
+     * <code>User</code> objects are encrypted.
      *
      * @return the <code>List</code> of <code>User</code> objects from the
      * persistent storage if the operation is successful; <code>null</code>
@@ -135,7 +139,8 @@ public class UserBO {
      * of <code>Maintainer</code> objects with maintainer role if the operation
      * is successful; <code>null</code> otherwise.
      * <strong>NOTE</strong>: use this method to retrieve the maintainers with
-     * their competencies.
+     * their competencies. On success, the passwords of the returned maintainers
+     * are encrypted.
      *
      * @return the <code>Set</code> of <code>Maintainer</code> objects with
      * maintainer role from the persistent storage if the operation is

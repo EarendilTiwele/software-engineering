@@ -42,7 +42,7 @@ public class Maintainer extends User{
     
     /**
      * Returns the role of this maintainer.
-     * The role is <code>User.Role.Maintainer</code>.
+     * The role is <code>User.Role.MAINTAINER</code>.
      * 
      * @return the role of this maintainer
      */

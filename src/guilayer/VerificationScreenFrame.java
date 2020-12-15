@@ -41,10 +41,15 @@ import javax.swing.JTable;
  */
 public class VerificationScreenFrame extends javax.swing.JFrame {
 
+    //the main activity of this frame
     private Activity activity;
+    //the week agenda of all the maintainers in the system
     private Map<Maintainer, Integer[]> agenda;
+    //the set of assignements of the specific week
     private Set<Assignment> assignments;
+    //the day selected in the verification screen
     private String selectedDay;
+    //the daily agenda of the selected maintainer
     private Integer[] dailyAgenda;
 
     private AssignmentBO assignmentBO = new AssignmentBO();
@@ -54,13 +59,13 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     private static final String MAINTAINER_COLUMN = "Maintainer";
     private static final String SKILLS_COLUMN = "Skills";
 
-    private static final String H8_COLUMN = "Avaliab 8-9";
-    private static final String H9_COLUMN = "Avaliab 9-10";
-    private static final String H10_COLUMN = "Avaliab 10-11";
-    private static final String H11_COLUMN = "Avaliab 11-12";
-    private static final String H14_COLUMN = "Avaliab 14-15";
-    private static final String H15_COLUMN = "Avaliab 15-16";
-    private static final String H16_COLUMN = "Avaliab 16-17";
+    private static final String H8_COLUMN = "Availab 8-9";
+    private static final String H9_COLUMN = "Availab 9-10";
+    private static final String H10_COLUMN = "Availab 10-11";
+    private static final String H11_COLUMN = "Availab 11-12";
+    private static final String H14_COLUMN = "Availab 14-15";
+    private static final String H15_COLUMN = "Availab 15-16";
+    private static final String H16_COLUMN = "Availab 16-17";
 
     private static final String[] DAILY_AGENDA_HEADER = new String[]{
         MAINTAINER_COLUMN, SKILLS_COLUMN, H8_COLUMN, H9_COLUMN, H10_COLUMN,
@@ -104,6 +109,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         activityLabel.setText(activityString);
 
         initDailyAgendaTableMouseListener();
+        initAgendaTableMouseListener();
     }
 
     /**
@@ -114,7 +120,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         interventionDescriptionPane.setText(activity.getDescription());
         smpLabel.setText(activity.getProcedure().getName());
         skillsNeededInformationPane.setText(
-                getSkillsListString(activity.getProcedure().getCompetencies()));
+                getListString(activity.getProcedure().getCompetencies()));
         String url = activity.getProcedure().getSmp();
         openSMPButton.addActionListener(e -> browseToPage(url));
         showInformationPanel();
@@ -134,7 +140,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      */
     private void initVerificationScreen() {
         skillsNeededVerificationPane.setText(
-                getSkillsListString(activity.getProcedure().getCompetencies()));
+                getListString(activity.getProcedure().getCompetencies()));
         initAgendaTable();
         showVerificationPanel();
         pack();
@@ -156,7 +162,8 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * @param week the week of the selected activity
      * @param compliance the compliance of the selected maintainer
      */
-    private void initAssignationScreen(Maintainer maintainer, int percentage, int week, String compliance) {
+    private void initAssignationScreen(Maintainer maintainer, int percentage,
+            int week, String compliance) {
         workspaceNotesAssignationScreenPane.setText(activity.getWorkspaceNotes());
         maintainerNameLabel.setText(maintainer.toString());
         percentageLabel.setOpaque(true);
@@ -224,7 +231,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * @param items the colletion of items
      * @return the dotted list of items as String
      */
-    private <T> String getSkillsListString(Collection<T> items) {
+    private <T> String getListString(Collection<T> items) {
         String result = "";
         String dot = String.valueOf("\u2022");
         for (T item : items) {
@@ -242,7 +249,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         try {
             Desktop.getDesktop().browse(new URI(url));
         } catch (URISyntaxException | IOException ex) {
-            showErrorMessage("Error opening SMP file\n" + url);
+            browserLoadingError(url);
         }
     }
 
@@ -250,7 +257,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * Loads the agenda in a new thread and complete the agenda table.
      */
     private void initAgendaTable() {
-        initAgendaTableMouseListener();
+        //initAgendaTableMouseListener();
         // Cursor indicates to user the wait needed to load agenda from
         // the database and to update the table.
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -354,15 +361,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Pop up error message.
-     *
-     * @param msg the error message
-     */
-    private void showErrorMessage(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
      * Convert a column index of the daily agenda table to an integer hour, 8,
      * 9, 10, 11, 14, 15, 16.
      *
@@ -424,7 +422,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
      * Map. The key is a Maintainer and the value is an array of integer
      * availabilities for each day of the week.
      *
-     * @return the agenda of the maintainers
+     * @return the agenda of the maintainers, or null if an error occurs
      */
     private Map<Maintainer, Integer[]> getAgenda() {
         UserBO userBO = new UserBO();
@@ -484,8 +482,7 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Fill the table spcefied table with given data and sets. The table will be
-     * non-editable.
+     * Fill the specified table with given data. The table will be non-editable.
      *
      * @param table the table
      * @param tableColumnNames the column header
@@ -588,9 +585,9 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
     /**
      * Paints the <code>Component</code> under the event location. If
      * cellPrecicate test on the specified <code>row</code> and <code>col</code>
-     * is <code>true</code> the component is painted according the value at
+     * is <code>true</code> the component is painted according to the value at
      * (row,column), of the specified table, using the specified color
-     * converter, otherwise a default light grey color used.
+     * converter, otherwise a default light grey color is used.
      *
      * @param table the table to be colored
      * @param comp the compomponet under the event location
@@ -644,6 +641,13 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
         String msg = "This assignment is not compatible with " + maintainer + "'s "
                 + "daily agenda";
         String title = "Invalid assigment";
+        JOptionPane.showMessageDialog(this, msg, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void browserLoadingError(String url) {
+        String msg = "Error opening this url: " + url;
+        String title = "Error opening the browser";
         JOptionPane.showMessageDialog(this, msg, title,
                 JOptionPane.ERROR_MESSAGE);
     }
@@ -1125,7 +1129,6 @@ public class VerificationScreenFrame extends javax.swing.JFrame {
                 SwingUtilities.invokeLater(() -> {
                     if (!success) {
                         activityUpdateError();
-                        //showErrorMessage("Error updating the workspace notes");
                         activity.setWorkspaceNotes(oldWorkspaceNotes);
                     } else {
                         forwardActivity();

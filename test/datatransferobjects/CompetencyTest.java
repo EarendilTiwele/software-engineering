@@ -52,13 +52,18 @@ public class CompetencyTest {
     }
 
     /**
-     * Test of inequality for equals method, of class Competency.
+     * Test of inequality for equals method, of class Competency. Test cases:
+     * different competencies, equality with null, equality with an object that
+     * does not represent a competency.
      */
     @Test
     public void testEqualsInequality() {
         Competency competency1 = new Competency("empty");
         Competency competency2 = new Competency(1, "empty description");
         assertNotEquals(competency1, competency2);
+        assertNotEquals(competency1, null);
+        assertNotEquals(competency1, new Object());
+
     }
 
 }

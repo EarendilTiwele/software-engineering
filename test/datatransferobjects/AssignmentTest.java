@@ -47,7 +47,6 @@ public class AssignmentTest {
     public void tearDown() {
     }
 
-    
     // create a copy of an assignment
     private Assignment copyAssignment(Assignment assig) {
         Maintainer maintainer = assig.getMaintainer();
@@ -112,6 +111,11 @@ public class AssignmentTest {
                 differentActivity, assignment.getDay(),
                 assignment.getHour());
         assertNotEquals(assignment, assignment2);
+
+        //equality with null and an object that does not represent an assignment
+        assertNotEquals(assignment, null);
+        assertNotEquals(assignment, new Object());
+
     }
 
 }

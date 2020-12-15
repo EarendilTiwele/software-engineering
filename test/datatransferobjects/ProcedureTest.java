@@ -166,7 +166,8 @@ public class ProcedureTest {
 
     /**
      * Test for inequality for equals method (with and without competencies),
-     * for class Procedure.
+     * for class Procedure. Test cases: different procedures, equality with
+     * null, equality with an object that does not represent a procedure.
      */
     @Test
     public void testEqualsInequality() {
@@ -175,5 +176,8 @@ public class ProcedureTest {
         assertNotEquals(procedure1, procedure2);
         addEqualCompetencies(procedure1, procedure2);
         assertNotEquals(procedure1, procedure2);
+        assertNotEquals(procedure1, null);
+        assertNotEquals(procedure1, new Object());
+
     }
 }

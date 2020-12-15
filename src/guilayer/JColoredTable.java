@@ -10,7 +10,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * Colored implemetation of JTable.
+ * Colored implementation of JTable.
  *
  * @author Alfonso
  */
@@ -19,7 +19,7 @@ public class JColoredTable extends JTable {
     private ColorChanger colorChanger;
 
     /**
-     * Common interface for color changer alghoritm.
+     * Common interface for color changer algorithm.
      */
     public interface ColorChanger {
 

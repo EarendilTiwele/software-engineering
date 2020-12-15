@@ -8,47 +8,49 @@ package datatransferobjects;
 import java.util.Objects;
 
 /**
- * User in the system.
- * 
+ * User class for a user in the system.
+ *
  * @author carbo
  */
 public abstract class User {
-    
+
     private int id;
     private String username;
     private String password;
 
     private static int DEFAULT_ID = -1;
-    
-    public enum Role {PLANNER, MAINTAINER};
-    
+
+    public enum Role {
+        PLANNER, MAINTAINER
+    };
+
     /**
      * Construct an user specifying his id, username and password.
-     * 
-     * @param id            the id of this user
-     * @param username      the username of this user
-     * @param password      the password of this user
+     *
+     * @param id the id of this user
+     * @param username the username of this user
+     * @param password the password of this user
      */
     public User(int id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
     }
-    
+
     /**
-     * Construct an user specifying his username and password.
-     * The id associated with this user will not be significant.
-     * 
-     * @param username  the username of this user
-     * @param password  the password of this user
+     * Construct an user specifying his username and password. The id associated
+     * with this user will not be significant.
+     *
+     * @param username the username of this user
+     * @param password the password of this user
      */
-    public User(String username, String password){
+    public User(String username, String password) {
         this(DEFAULT_ID, username, password);
     }
 
     /**
      * Returns the id associated with this user.
-     * 
+     *
      * @return the user id
      */
     public int getId() {
@@ -57,7 +59,7 @@ public abstract class User {
 
     /**
      * Returns the username associated with this user.
-     * 
+     *
      * @return the username
      */
     public String getUsername() {
@@ -66,7 +68,7 @@ public abstract class User {
 
     /**
      * Returns the password associated with this user.
-     * 
+     *
      * @return the password
      */
     public String getPassword() {
@@ -74,9 +76,9 @@ public abstract class User {
     }
 
     /**
-     * Returns the hash code for this user.
-     * The hash code is computed based on the id, username and password.
-     * 
+     * Returns the hash code for this user. The hash code is computed based on
+     * the id, username and password.
+     *
      * @return a hash code value for this object
      */
     @Override
@@ -89,14 +91,14 @@ public abstract class User {
     }
 
     /**
-     * Compares this user to the specified object.
-     * The result is <code>true</code> if and only if the argument is not <code>null</code>
-     * and is a <code>User</code> object that represents a user with
-     * the same id, username, password and role as this object.
-     * 
+     * Compares this user to the specified object. The result is
+     * <code>true</code> if and only if the argument is not <code>null</code>
+     * and is a <code>User</code> object that represents a user with the same
+     * id, username, password and role as this object.
+     *
      * @param obj the object to compare this <code>User</code> against
-     * @return <code>true</code> if the given object represents a <code>User</code>
-     *         equivalent to this user, <code>false</code> otherwise
+     * @return <code>true</code> if the given object represents a
+     * <code>User</code> equivalent to this user, <code>false</code> otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -124,19 +126,18 @@ public abstract class User {
         }
         return true;
     }
-    
+
     /**
-     * Returns the role of this user.
-     * The role can be <code>User.Role.PLANNER</code> or
-     * <code>User.Role.MAINTAINER</code>.
-     * 
+     * Returns the role of this user. The role can be
+     * <code>User.Role.PLANNER</code> or <code>User.Role.MAINTAINER</code>.
+     *
      * @return the role of this user
      */
     public abstract Role getRole();
 
     /**
      * Set the username for this user.
-     * 
+     *
      * @param username the username
      */
     public void setUsername(String username) {
@@ -145,13 +146,18 @@ public abstract class User {
 
     /**
      * Set the password for this user.
-     * 
+     *
      * @param password the password
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * Returns a string representation of this user.
+     * 
+     * @return a string representation of this user
+     */
     @Override
     public String toString() {
         return username;
@@ -159,7 +165,7 @@ public abstract class User {
 
     /**
      * Sets the id of this user.
-     * 
+     *
      * @param id the id
      */
     public void setId(int id) {

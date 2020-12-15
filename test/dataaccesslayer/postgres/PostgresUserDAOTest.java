@@ -348,7 +348,7 @@ public class PostgresUserDAOTest {
     /**
      * Test of insert method, of class PostgresUserDAO. Test case: insert a
      * maintainer with username='username', password='password'. The id will be
-     * automatically generated. The user retrieved from the database sould be
+     * automatically generated. The user retrieved from the database should be
      * equal to the inserted user.
      */
     @Test
@@ -360,7 +360,7 @@ public class PostgresUserDAOTest {
     /**
      * Test of insert method, of class PostgresUserDAO. Test case: insert a
      * planner with username='username', password='password'. The id will be
-     * automatically generated. The user retrieved from the database sould be
+     * automatically generated. The user retrieved from the database should be
      * equal to the inserted user.
      *
      * @throws SQLException

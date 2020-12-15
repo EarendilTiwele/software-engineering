@@ -183,6 +183,11 @@ public class MaintainerTest {
         maintainer2.setUsername(maintainer.getUsername());
         maintainer2.getCompetencies().clear();
         assertNotEquals(maintainer, maintainer2);
+
+        //equality with null and an object that does not represent a Maintainer
+        assertNotEquals(maintainer, null);
+        assertNotEquals(maintainer, new Object());
+
     }
 
 }

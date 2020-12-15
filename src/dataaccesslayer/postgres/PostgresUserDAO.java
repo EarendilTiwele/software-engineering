@@ -9,6 +9,7 @@ import datatransferobjects.Maintainer;
 import datatransferobjects.User;
 import dataaccesslayer.UserDAO;
 import datatransferobjects.Planner;
+import datatransferobjects.UserFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
@@ -21,6 +22,8 @@ import java.util.logging.Logger;
  */
 public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDAO {
 
+    private final UserFactory userFactory = new UserFactory();
+
     /**
      * Returns the <code>User</code> object builded on the current row of the
      * ResultSet <code>rs</code>.
@@ -32,16 +35,13 @@ public class PostgresUserDAO extends PostgresAbstractDAO<User> implements UserDA
      */
     @Override
     User convertToEntity(ResultSet rs) throws SQLException {
-        String role = rs.getString("role");
-        User dbUser = null;
-        if ("planner".equals(role)) {
-            dbUser = new Planner(rs.getInt("id"), rs.getString("username"),
-                    rs.getString("password"));
-        } else if ("maintainer".equals(role)) {
-            dbUser = new Maintainer(rs.getInt("id"), rs.getString("username"),
-                    rs.getString("password"));
-        }
-        return dbUser;
+        String roleString = rs.getString("role");
+        User.Role role = User.Role.valueOf(roleString.toUpperCase());
+        return userFactory.createUser(
+                rs.getInt("id"),
+                rs.getString("username"),
+                rs.getString("password"),
+                role);
     }
 
     /**

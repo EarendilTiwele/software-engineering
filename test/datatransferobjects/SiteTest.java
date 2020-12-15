@@ -68,12 +68,17 @@ public class SiteTest {
     }
 
     /**
-     * Test of inequality for equals method, of class Site.
+     * Test of inequality for equals method, of class Site. Test cases:
+     * different sites, equality with null, equality with an object that does
+     * not represent a site.
      */
     @Test
     public void testEqualsInequality() {
         Site site1 = new Site("factory1", "area1");
         Site site2 = new Site(1, "factory2", "area2");
         assertNotEquals(site1, site2);
+        assertNotEquals(site1, null);
+        assertNotEquals(site1, new Object());
+
     }
 }

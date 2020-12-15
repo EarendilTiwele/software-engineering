@@ -14,14 +14,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * This class is for test purpose only. 
+ * This class is for test purpose only.
+ *
  * @author carbo
  */
-public class PostgresUserUtils {
+class PostgresUserUtils {
 
     private final Connection connection;
 
-    public PostgresUserUtils(Connection connection) {
+    /**
+     * Constructs a PostgresUserUtils object to perform basic operations on the
+     * database.
+     *
+     * @param connection the connection to the database
+     */
+    PostgresUserUtils(Connection connection) {
         this.connection = connection;
     }
 
@@ -34,7 +41,7 @@ public class PostgresUserUtils {
      * @param role the role of this user: "planner" or "maintainer"
      * @throws SQLException if an error occurs
      */
-    public void insertUser(int id, String username, String password, String role) throws SQLException {
+    void insertUser(int id, String username, String password, String role) throws SQLException {
         PreparedStatement preparedStatement
                 = connection.prepareStatement("insert into users values (?, ?, ?, ?);");
         preparedStatement.setInt(1, id);
@@ -52,7 +59,7 @@ public class PostgresUserUtils {
      * @param password the password of this maintainer
      * @throws SQLException if an error occurs
      */
-    public void insertMaintainer(int id, String username, String password) throws SQLException {
+    void insertMaintainer(int id, String username, String password) throws SQLException {
         insertUser(id, username, password, "maintainer");
     }
 
@@ -64,7 +71,7 @@ public class PostgresUserUtils {
      * @param password the password of this planner
      * @throws SQLException if an error occurs
      */
-    public void insertPlanner(int id, String username, String password) throws SQLException {
+    void insertPlanner(int id, String username, String password) throws SQLException {
         insertUser(id, username, password, "planner");
     }
 
@@ -76,7 +83,7 @@ public class PostgresUserUtils {
      * @return the user, or null if no user has the specified id
      * @throws SQLException
      */
-    public User retrieveUser(int id) throws SQLException {
+    User retrieveUser(int id) throws SQLException {
         PreparedStatement preparedStatement
                 = connection.prepareStatement("select * from users where id = ?;");
         preparedStatement.setInt(1, id);
@@ -90,13 +97,13 @@ public class PostgresUserUtils {
 
     /**
      * Converts a row of the passed result set into a User.
-     * 
+     *
      * @param rs the result set
      * @return the user
-     * 
+     *
      * @throws SQLException if an error occurs
      */
-    public User convertToEntity(ResultSet rs) throws SQLException {
+    User convertToEntity(ResultSet rs) throws SQLException {
         String role = rs.getString("role");
         User dbUser = null;
         if ("planner".equals(role)) {
