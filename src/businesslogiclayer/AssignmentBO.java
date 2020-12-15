@@ -59,7 +59,6 @@ public class AssignmentBO {
      * Retrieves a <code>Set</code> of <code>Assignment</code> objects assigned
      * for the specified week from a persistent storage.
      *
-     *
      * @param week the assignments' week
      * @return Returns the <code>Set</code> of <code>Assignment</code> objects
      * if the operation is successful; <code>null</code> otherwise.
@@ -84,8 +83,8 @@ public class AssignmentBO {
     /**
      * Validates the assignment according to specified daily agenda. Returns
      * <code>false</code> if the hour of the specified assignment conflicts with
-     * other actvities already assigned in the involved hours or the assignment
-     * involves extra work, otherwise returns <code>true</code>.
+     * other actvities already assigned in the involved hours or if the
+     * assignment involves extra work, otherwise returns <code>true</code>.
      *
      * NOTE: There is a conflict when a maintainer should stop the assignment's
      * activity to complete other activities already assigned in involved hours.
@@ -108,6 +107,8 @@ public class AssignmentBO {
             }
 
             interventionTime -= availableTime;
+
+            //number of other consecutive time slots needed to assign the activity
             int numberOfOtherHour = interventionTime / MINUTES_PER_HOUR;
 
             //check the existance of conflicts with other activities in the next
@@ -121,7 +122,9 @@ public class AssignmentBO {
 
             hourIndex += 1;
             interventionTime -= (numberOfOtherHour * MINUTES_PER_HOUR);
-            if (interventionTime <= dailyAgenda[hourIndex]) {
+            //check if additional time is needed to assign the task and
+            //therefore that there are no last conflicts
+            if (interventionTime <= 0 || interventionTime <= dailyAgenda[hourIndex]) {
                 return true;
             }
 
@@ -137,7 +140,8 @@ public class AssignmentBO {
      *
      * @param assignments the set of assignments in a specific week
      * @param maintainers the set of all the maintainers in the system
-     * @return
+     * @return in a map the percentage of daily availability of each maintainer
+     * depending on the assignments.
      *
      */
     public Map<Maintainer, Integer[]> getAgenda(Set<Assignment> assignments,
@@ -219,18 +223,6 @@ public class AssignmentBO {
                 index++;
 
             }
-            /*
-            //set fully busy hours to zero available minutes
-            for (int i = 0; i < interventionTime / MINUTES_PER_HOUR; i++) {
-                dailyAgenda[index + i] = 0;
-            }
-
-            //set remaining available minutes
-            if ((index + interventionTime / MINUTES_PER_HOUR) <= H16) {
-                dailyAgenda[index + interventionTime / MINUTES_PER_HOUR]
-                        -= interventionTime % MINUTES_PER_HOUR;
-            }
-             */
         });
 
         return dailyAgenda;

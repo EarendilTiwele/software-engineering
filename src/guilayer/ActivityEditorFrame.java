@@ -15,10 +15,7 @@ import businesslogiclayer.SiteBO;
 import datatransferobjects.Typology;
 import businesslogiclayer.TypologyBO;
 import java.awt.Cursor;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -91,14 +88,12 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
      */
     private void initCreateGUI() {
         this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        // Removed try-catch
+
         Runnable loader = (() -> {
-            SiteBO siteBO = new SiteBO();
-            List<Site> listSites = siteBO.getAll();
-            TypologyBO typologyBO = new TypologyBO();
-            List<Typology> listTypologies = typologyBO.getAll();
-            ProcedureBO procedureBO = new ProcedureBO();
-            List<Procedure> listProcedure = procedureBO.getAll();
+            List<Site> listSites = loadAllSites();
+            List<Typology> listTypologies = loadAllTypologies();
+            List<Procedure> listProcedure = loadAllProcedures();
+
             SwingUtilities.invokeLater(() -> {
                 if (listSites == null || listProcedure == null
                         || listTypologies == null) {
@@ -115,7 +110,37 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Store a new plannedActivity.
+     * Loads the list of saved typologies.
+     *
+     * @return the list of typologies
+     */
+    private List<Typology> loadAllTypologies() {
+        TypologyBO typologyBO = new TypologyBO();
+        return typologyBO.getAll();
+    }
+
+    /**
+     * Loads the list of saved sites.
+     *
+     * @return the list of sites
+     */
+    private List<Site> loadAllSites() {
+        SiteBO siteBO = new SiteBO();
+        return siteBO.getAll();
+    }
+
+    /**
+     * Loads the list of saved procedures.
+     *
+     * @return the list of procedures
+     */
+    private List<Procedure> loadAllProcedures() {
+        ProcedureBO procedureBO = new ProcedureBO();
+        return procedureBO.getAll();
+    }
+
+    /**
+     * Store a new planned activity.
      */
     private void createActivity() {
         try {
@@ -154,6 +179,14 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Updates the current activity and returns <code>true</code> if the
+     * operations was successful, otherwise <code>false</code>.
+     *
+     * @param activity the current activity
+     * @return <code>true</code> if the operations was successful, otherwise
+     * <code>false</code>.
+     */
     private boolean updateActivity(Activity activity) {
         activity.setWorkspaceNotes(workspaceNotesArea.getText());
         return activityBO.update(activity);
@@ -183,6 +216,9 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Initializes the frame to update activity
+     */
     private void initUpdateGUI() {
 
         siteComboBox.addItem(activity.getSite());
@@ -201,6 +237,11 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Disables all components in specified list of <code>Component</code>.
+     *
+     * @param components list of <code>Component</code>
+     */
     private void disableComponents(JComponent[] components) {
         for (JComponent component : components) {
             component.setEnabled(false);

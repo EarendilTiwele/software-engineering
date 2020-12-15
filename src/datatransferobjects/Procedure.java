@@ -26,9 +26,9 @@ public class Procedure {
      * Constructs a maintenance procedure with the specified id, name and SMP
      * path.
      *
-     * @param id    the id of this procedure
-     * @param name  the name of this procedure
-     * @param smp   the path of the SMP pdf file associated with this procedure
+     * @param id the id of this procedure
+     * @param name the name of this procedure
+     * @param smp the path of the SMP pdf file associated with this procedure
      */
     public Procedure(int id, String name, String smp) {
         if (name == null || smp == null) {
@@ -44,7 +44,7 @@ public class Procedure {
      * The id associated with this procedure will not be significant.
      *
      * @param name the name of this procedure
-     * @param smp  the path of the SMP pdf file associated with this procedure
+     * @param smp the path of the SMP pdf file associated with this procedure
      */
     public Procedure(String name, String smp) {
         this(DEFAULT_ID, name, smp);
@@ -119,7 +119,7 @@ public class Procedure {
      *
      * @param obj the object to compare this <code>Procedure</code> against
      * @return <code>true</code> if the given object represents a
-     *         <code>Procedure</code> equivalent to this procedure, <code>false</code>
+     * <code>Procedure</code> equivalent to this procedure, <code>false</code>
      * otherwise
      */
     @Override
@@ -134,7 +134,7 @@ public class Procedure {
             return false;
         }
         final Procedure other = (Procedure) obj;
-        
+
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
@@ -158,7 +158,7 @@ public class Procedure {
      */
     @Override
     public String toString() {
-        return getName() + "\n" + getSmp() + "\n" + getCompetencies().toString();
+        return getName() + "\n";
     }
 
 }

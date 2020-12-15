@@ -28,7 +28,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     //list of scheduled activities
     private List<Activity> activities = null;
 
-    private ActivityBO activityBO = new ActivityBO();
+    private final ActivityBO activityBO = new ActivityBO();
 
     // columns headers (the last two element in tableColumnNames is used for button column)
     private static final String ID_COLUMN_NAME = "ID";
@@ -103,7 +103,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Load the whole scheduled activities of the week and update the table
+     * Loads the whole scheduled activities of the week and update the table
      * showing the activities. Loading is performed in a new thread without
      * blocking the Event Dispatch Thread.
      *
@@ -120,7 +120,6 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                 if (activities == null) {
                     //Error while loading activities
                     loadingActivityError();
-
                 } else {
                     updateTable();
                 }
@@ -131,7 +130,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Initialize the weekComboBox to the specified week and set a Listener to
+     * Initializes the weekComboBox to the specified week and set a Listener to
      * update the table.
      *
      * @param week the initial week of the combo box
@@ -149,7 +148,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Convert a list of activities to a matrix of Object.
+     * Converts a list of activities to a matrix of Object.
      *
      * @param activities list of activities to be converted
      * @param selectButtonText text displays on the select button
@@ -212,7 +211,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Show the verification screen of the activity selected in the table.
+     * Shows the verification screen of the activity selected in the table.
      */
     private void showVerificationScreen() {
         int row = scheduledActivitiesTable.getSelectedRow();
@@ -228,7 +227,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Delete the activity chosen showing a confirm dialog
+     * Deletes the activity chosen showing a confirm dialog
      */
     private void deleteActivity() {
         int row = scheduledActivitiesTable.getSelectedRow();
@@ -236,11 +235,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         int week = activityToDelete.getWeek();
         int id = activityToDelete.getId();
 
-        String msg = "Are you sure you wanto to delete the activity with id: "
-                + id;
-        String title = "Delete activity: " + id;
-        int selection = JOptionPane.showConfirmDialog(this, msg, title,
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        int selection = deleteActivityRequest(id);
 
         if (selection == JOptionPane.YES_OPTION) {
             //start thread to delete activity
@@ -279,7 +274,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Load the whole list of activities scheduled for specificied week.
+     * Loads the whole list of activities scheduled for specificied week.
      *
      * @param week the week of the scheduled activities needed to load
      * @return the list of scheduled activities
@@ -289,6 +284,15 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }
 
     /*-------------------------------User Messages----------------------------*/
+    private int deleteActivityRequest(int id) {
+        String msg = "Are you sure you wanto to delete the activity with id: "
+                + id;
+        String title = "Delete activity: " + id;
+        return JOptionPane.showConfirmDialog(this, msg, title,
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+    }
+
     private void deleteActivityError(int id) {
         String errorMessage = "Error deleting activity with id: " + id;
         String errorTitle = "Deletion error";
@@ -394,7 +398,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
-        String week = (String) weekComboBox.getSelectedItem();
+        String week = weekComboBox.getSelectedItem().toString();
         int currentWeek = Integer.valueOf(week);
         JFrame activityEditorFrame = new ActivityEditorFrame(null);
         activityEditorFrame.addWindowListener(new WindowAdapter() {

@@ -17,9 +17,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static businesslogiclayer.AssignmentBO.*;
@@ -347,8 +345,6 @@ public class AssignmentBLLTest {
                 new Assignment(alfonso, activity3, MONDAY, hour)
         );
 
-        System.out.println("full busy");
-
         Integer[] dailyAgenda
                 = assignmentBO.getDailyAgenda(alfonso, assignments, week, MONDAY);
 
@@ -483,7 +479,6 @@ public class AssignmentBLLTest {
         //Case 2: the assignment is unvalid since the maintainer is not available
         //at assignment's hour
         assertFalse(assignmentBO.validate(assignment, dailyAgenda));
-        System.out.println("Test unvalid");
     }
 
     /**

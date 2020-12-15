@@ -6,8 +6,6 @@
 package guilayer;
 
 import businesslogiclayer.UserBO;
-import datatransferobjects.Maintainer;
-import datatransferobjects.Planner;
 import datatransferobjects.User;
 import datatransferobjects.UserFactory;
 import java.awt.Component;
