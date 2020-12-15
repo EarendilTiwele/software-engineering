@@ -33,4 +33,30 @@ public class UserFactory {
                 return null;
         }
     }
+
+    /**
+     * Factory method to create a <code>User</code> object given his
+     * <code>id</code>, <code>username</code>, <code>password</code> and
+     * <code>role</code>. Returns the <code>User</code> object created with
+     * given data; <code>null</code> if the given <code>userRole</code> is not
+     * defined.
+     *
+     *
+     * @param id the id of the user to create
+     * @param username the username of the user to create
+     * @param password the password of the user to create
+     * @param userRole the role of the user to create
+     * @return the <code>User</code> object created with given data;
+     * <code>null</code> if the given <code>userRole</code> is not defined
+     */
+    public User createUser(int id, String username, String password, User.Role userRole) {
+        switch (userRole) {
+            case MAINTAINER:
+                return new Maintainer(id, username, password);
+            case PLANNER:
+                return new Planner(id, username, password);
+            default:
+                return null;
+        }
+    }
 }

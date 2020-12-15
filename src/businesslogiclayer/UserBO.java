@@ -108,11 +108,7 @@ public class UserBO {
      * persistent storage or if the operation fails
      */
     public User get(int id) {
-        User user = userDAO.get(id);
-        if (user == null) {
-            return null;
-        }
-        return decryptUser(user);
+        return userDAO.get(id);
     }
 
     /**
@@ -130,9 +126,6 @@ public class UserBO {
             return null;
         }
         List<User> users = new ArrayList<>(usersSet);
-        for (User user : users) {
-            decryptUser(user);
-        }
         return users;
     }
 
@@ -155,7 +148,6 @@ public class UserBO {
             return null;
         }
         for (User user : users) {
-            user = decryptUser(user);
             Maintainer maintainer = new Maintainer(user.getId(),
                     user.getUsername(), user.getPassword());
 
