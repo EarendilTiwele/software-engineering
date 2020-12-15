@@ -87,8 +87,14 @@ public class PostgresProcedureDAOTest {
     }
 
     /**
-     * Test of insert method, of class PostgresProcedureDAO. Create a local
-     * procedure Insert it into db and retrieve the db version with the id
+     * Test of insert method, of class PostgresProcedureDAO.
+     * <ul>
+     * <li>Insert a procedure in the database and save the returned
+     * <code>id</code></li>
+     * <li>Retrieve from the database the procedure with the mentioned
+     * <code>id</code></li>
+     * <li>Compare the two procedures</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
@@ -101,15 +107,21 @@ public class PostgresProcedureDAOTest {
     }
 
     /**
-     * Test of update method, of class PostgresProcedureDAO. Create a local
-     * procedure Insert it into db and retrieve the db version. Update the local
-     * procedure. Update it into db and retrieve the db version Compare the two
-     * procedures
+     * Test of update method, of class PostgresProcedureDAO. Test case: update
+     * of an existing procedure should return <code>true</code> and actually
+     * update the procedure on the database.
+     * <ul>
+     * <li>Insert a procedure in the database and retrieve the id from the
+     * returning of the insert operation </li>
+     * <li>Update the procedure in the database with the retrieved id and check
+     * if <code>true</code> is returned</li>
+     * <li>Check if the procedure in the database has actually been updated</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testUpdate() throws SQLException {
+    public void testUpdateExisting() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
@@ -122,14 +134,40 @@ public class PostgresProcedureDAOTest {
     }
 
     /**
-     * Test of delete method, of class PostgresProcedureDAO. Create a local
-     * procedure Insert it into db and retrieve the db version Delete it form db
-     * Delete a non existing procedure from db and check if return null
+     * Test of update method, of class PostgresProcedureDAO. Test case: update
+     * of a non-existing procedure should return <code>true</code>.
+     * <ul>
+     * <li>Update a non-existing procedure in the database and check if
+     * <code>true</code> is returned</li>
+     * <li>Check if the procedure still doesn't exist</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testDelete() throws SQLException {
+    public void testUpdateNonExisting() throws SQLException {
+        Procedure procedure = new Procedure(1, "car maintenance", "./car.pdf");
+        assertTrue(postgresProcedureDAO.update(procedure));
+        Procedure procedure2 = retrieveProcedure(procedure.getId());
+        assertNull(procedure2);
+    }
+
+    /**
+     * Test of delete method, of class PostgresProcedureDAO. Test case: delete
+     * of an existing procedure should return <code>true</code> and actually
+     * delete the procedure from the database.
+     * <ul>
+     * <li>Insert a procedure in the database and retrieve the id from the
+     * returning of the insert operation </li>
+     * <li>Delete the procedure in the database with the retrieved id and check
+     * if <code>true</code> is returned</li>
+     * <li>Check if the procedure in the database has actually been deleted</li>
+     * </ul>
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testDeleteExisting() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
@@ -139,16 +177,32 @@ public class PostgresProcedureDAOTest {
     }
 
     /**
-     * Test of getAll method, of class PostgresProcedureDAO. Create a list of
-     * local procedures. Insert each procedure in a local list. Update the local
-     * list with the db version of the procedures. Get all the procedures from
-     * db and check that the procedures in the local list are present in the db
-     * version list.
+     * Test of delete method, of class PostgresProcedureDAO. Test case: delete
+     * of a non-existing procedure should return <code>true</code>.
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testGetAll() throws SQLException {
+    public void testDeleteNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(retrieveProcedure(id));
+        assertTrue(postgresProcedureDAO.delete(id));
+    }
+
+    /**
+     * Test of getAll method, of class PostgresProcedureDAO.
+     * <ul>
+     * <li> Create a list of local procedures. </li>
+     * <li> Insert each procedure in a local list. </li>
+     * <li> Update the local list with the db version of the procedures. </li>
+     * <li> Get all the procedures from db and check that the procedures in the
+     * local list are present in the db version list. </li>
+     * </ul>
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllExisting() throws SQLException {
         List<Procedure> procedureList = new ArrayList<>();
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
         Procedure procedure2 = new Procedure(procedure.getId(), "moto maintenance", "./moto.pdf");
@@ -159,7 +213,7 @@ public class PostgresProcedureDAOTest {
         Set<Procedure> procedureResultSet1 = new HashSet<>();
         Set<Procedure> procedureResultSet2;
         for (Procedure p : procedureList) {
-            int idProcedure = postgresProcedureDAO.insert(p);
+            int idProcedure = insertProcedure(p);
             procedureResultSet1.add(retrieveProcedure(idProcedure));
         }
         procedureResultSet2 = postgresProcedureDAO.getAll();
@@ -169,24 +223,22 @@ public class PostgresProcedureDAOTest {
     }
 
     /**
-     * Test of get method, of class PostgresProcedureDAO. Create a local
-     * procedure. Insert it into db and retrieve the db version. Create a new
-     * Competency and assign it to the procedure. Insert the procedure in the
-     * database. Get the procedure from db and compare it with the local
-     * procedure
+     * Test of get method, of class PostgresProcedureDAO. Test case: get of an
+     * existing procedure.
+     * <ul>
+     * <li>Insert a procedure in the database and retrieve the id from the
+     * returning of the insert operation </li>
+     * <li>Create a local procedure with same fields of the one inserted
+     * before</li>
+     * <li>Check if the procedure retrieved from the database with the retrieved
+     * id is equals to the local procedure</li>
+     * </ul>
      *
      * @throws java.sql.SQLException
      */
     @Test
-    public void testGet() throws SQLException {
+    public void testGetExisting() throws SQLException {
         Procedure procedure = new Procedure("car maintenance", "./car.pdf");
-        Competency competency = new Competency(1, "mechanical competence");
-        procedure.addCompetency(competency);
-        PreparedStatement prepareStatement = conn.prepareStatement("insert into competency VALUES (1, 'mechanical competence')");
-        prepareStatement.execute();
-        prepareStatement = conn.prepareStatement("insert into procedurehascompetencies VALUES(?,1)");
-        prepareStatement.setInt(1, procedure.getId());
-        prepareStatement.execute();
         int idProcedure = insertProcedure(procedure);
         procedure = retrieveProcedure(idProcedure);
         assertNotNull(procedure);
@@ -194,4 +246,26 @@ public class PostgresProcedureDAOTest {
         assertEquals(procedure, procedure2);
     }
 
+    /**
+     * Test of get method, of class PostgresProcedureDAO. Test case: get of a
+     * non-existing procedure.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetNonExisting() throws SQLException {
+        int id = 1;
+        assertNull(postgresProcedureDAO.get(id));
+    }
+
+    /**
+     * Test of getAll method, of class PostgresProcedureDAO. Test case: no
+     * procedures in the database.
+     *
+     * @throws java.sql.SQLException
+     */
+    @Test
+    public void testGetAllEmpty() throws SQLException {
+        assertTrue(postgresProcedureDAO.getAll().isEmpty());
+    }
 }
