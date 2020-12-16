@@ -14,6 +14,7 @@ import datatransferobjects.Site;
 import businesslogiclayer.SiteBO;
 import datatransferobjects.Typology;
 import businesslogiclayer.TypologyBO;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -39,6 +40,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     public ActivityEditorFrame(Activity activity) {
         initComponents();
         this.activity = activity;
+        this.getContentPane().setBackground(new Color(0, 51, 102));
         if (activity == null) {
             this.setTitle("Create activity");
             initCreateGUI();
@@ -264,14 +266,14 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
     }
 
     private void insertActivitySuccess(int id) {
-        String msg = "Activity correctily created";
+        String msg = "Activity correctly created";
         String title = "Success";
         JOptionPane.showMessageDialog(this, msg, title,
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void updateActivitySuccess() {
-        String msg = "Activity correctily updated";
+        String msg = "Activity correctly updated";
         String title = "Success";
         JOptionPane.showMessageDialog(this, msg, title,
                 JOptionPane.INFORMATION_MESSAGE);
@@ -317,20 +319,28 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        siteLabel.setForeground(new java.awt.Color(255, 255, 255));
         siteLabel.setText("Site");
 
+        typologyLabel.setForeground(new java.awt.Color(255, 255, 255));
         typologyLabel.setText("Typology");
 
+        descriptionLabel.setForeground(new java.awt.Color(255, 255, 255));
         descriptionLabel.setText("Description");
 
+        interventionTimeLabel.setForeground(new java.awt.Color(255, 255, 255));
         interventionTimeLabel.setText("Intervention time");
 
+        interruptibleLabel.setForeground(new java.awt.Color(255, 255, 255));
         interruptibleLabel.setText("Interruptible");
 
+        materialsLabel.setForeground(new java.awt.Color(255, 255, 255));
         materialsLabel.setText("Materials");
 
+        weekLabel.setForeground(new java.awt.Color(255, 255, 255));
         weekLabel.setText("Week");
 
+        workspaceNotesLabel.setForeground(new java.awt.Color(255, 255, 255));
         workspaceNotesLabel.setText("Workspace notes");
 
         siteComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new Site[] { }));
@@ -378,6 +388,7 @@ public class ActivityEditorFrame extends javax.swing.JFrame {
 
         okButton.setText("OK");
 
+        procedureLabel.setForeground(new java.awt.Color(255, 255, 255));
         procedureLabel.setText("Procedure");
 
         procedureComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new Procedure[] { }));

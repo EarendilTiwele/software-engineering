@@ -136,8 +136,6 @@ public class PostgresTypologyDAOTest {
      * <li>Update the typology in the database with <code>id = 1</code> and
      * check if <code>true</code> is returned</li>
      * <li>Check if the typology in the database has actually been updated</li>
-     * <li>Check if the update on a non-existing typology returns true</li>
-     * <li>Check if the typology still doesn't exist</li>
      * </ul>
      *
      * @throws java.sql.SQLException
@@ -156,12 +154,12 @@ public class PostgresTypologyDAOTest {
      * an existing typology with the new <code>name</code> being
      * <strong>non-unique</strong> should return <code>false</code>.
      * <ul>
-     * <li>Insert a typology in the database with <code>id = 1</code></li>
-     * <li>Update the typology in the database with <code>id = 1</code> and
-     * check if <code>true</code> is returned</li>
-     * <li>Check if the typology in the database has actually been updated</li>
-     * <li>Check if the update on a non-existing typology returns true</li>
-     * <li>Check if the typology still doesn't exist</li>
+     * <li>Insert two typologies in the database with
+     * <code>id = 1, 2</code></li>
+     * <li>Update the typology in the database with <code>id = 1</code> giving
+     * it the same <code>name</code> of the already existing typology with
+     * <code>id = 2</code> and check if the operation returns
+     * <code>false</code></li>
      * </ul>
      *
      * @throws java.sql.SQLException
@@ -169,12 +167,10 @@ public class PostgresTypologyDAOTest {
     @Test
     public void testUpdateExistingFailure() throws SQLException {
         int id = 1;
-        Typology typology = new Typology(id, "test");
         insertTypology(id, "test");
         insertTypology(id + 1, "update");
         Typology updatedTypology = new Typology(id, "update");
-        boolean success = postgresTypologyDAO.update(updatedTypology);
-        assertFalse(success);
+        assertFalse(postgresTypologyDAO.update(updatedTypology));
     }
 
     /**
@@ -226,7 +222,6 @@ public class PostgresTypologyDAOTest {
     @Test
     public void testDeleteNonExisting() throws SQLException {
         int id = 1;
-        assertNull(retrieveTypology(id));
         assertTrue(postgresTypologyDAO.delete(id));
     }
 
@@ -253,7 +248,7 @@ public class PostgresTypologyDAOTest {
 
     /**
      * Test of get method, of class PostgresTypologyDAO. Test case: get of a
-     * non-existing typology.
+     * non-existing typology should return <code>null</code>.
      *
      * @throws java.sql.SQLException
      */
@@ -283,9 +278,9 @@ public class PostgresTypologyDAOTest {
     @Test
     public void testGetAllOneTypology() throws SQLException {
         insertTypology(1, "test");
-        Set<Typology> localCompetencies = new HashSet<>();
-        localCompetencies.add(new Typology(1, "test"));
-        assertEquals(localCompetencies, postgresTypologyDAO.getAll());
+        Set<Typology> localTypologies = new HashSet<>();
+        localTypologies.add(new Typology(1, "test"));
+        assertEquals(localTypologies, postgresTypologyDAO.getAll());
     }
 
     /**
@@ -306,11 +301,11 @@ public class PostgresTypologyDAOTest {
         insertTypology(1, "test");
         insertTypology(2, "test2");
         insertTypology(3, "test3");
-        Set<Typology> localTypologys = new HashSet<>();
-        localTypologys.add(new Typology(1, "test"));
-        localTypologys.add(new Typology(2, "test2"));
-        localTypologys.add(new Typology(3, "test3"));
-        assertEquals(localTypologys, postgresTypologyDAO.getAll());
+        Set<Typology> localTypologies = new HashSet<>();
+        localTypologies.add(new Typology(1, "test"));
+        localTypologies.add(new Typology(2, "test2"));
+        localTypologies.add(new Typology(3, "test3"));
+        assertEquals(localTypologies, postgresTypologyDAO.getAll());
     }
 
 }

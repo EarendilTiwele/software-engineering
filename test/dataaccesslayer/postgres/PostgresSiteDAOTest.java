@@ -167,7 +167,6 @@ public class PostgresSiteDAOTest {
     @Test
     public void testDeleteNonExisting() throws SQLException {
         int id = 1;
-        assertNull(retrieveSite(id));
         assertTrue(postgresSiteDAO.delete(id));
     }
 
@@ -179,8 +178,6 @@ public class PostgresSiteDAOTest {
      * <li>Create a local site with same fields of the one inserted before</li>
      * <li>Check if the site retrieved from the database with
      * <code>id = 1</code> is equals to the local site</li>
-     * <li>Check if the site retrieved from the database with
-     * <code>id = 2</code> is null</li>
      * </ul>
      *
      * @throws java.sql.SQLException
@@ -195,7 +192,7 @@ public class PostgresSiteDAOTest {
 
     /**
      * Test of get method, of class PostgresSiteDAO. Test case: get of a
-     * non-existing site.
+     * non-existing site should return <code>null</code>.
      *
      * @throws java.sql.SQLException
      */
@@ -225,9 +222,9 @@ public class PostgresSiteDAOTest {
     @Test
     public void testGetAllOneSite() throws SQLException {
         insertSite(1, "test", "test");
-        Set<Site> localCompetencies = new HashSet<>();
-        localCompetencies.add(new Site(1, "test", "test"));
-        assertEquals(localCompetencies, postgresSiteDAO.getAll());
+        Set<Site> localSites = new HashSet<>();
+        localSites.add(new Site(1, "test", "test"));
+        assertEquals(localSites, postgresSiteDAO.getAll());
     }
 
     /**

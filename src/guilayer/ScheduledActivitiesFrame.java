@@ -7,6 +7,7 @@ package guilayer;
 
 import datatransferobjects.Activity;
 import businesslogiclayer.ActivityBO;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -62,6 +63,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         initComponents();
         setComponentsNames();
         this.setTitle("Scheduled activities");
+        this.getContentPane().setBackground(new Color(0, 51, 102));
         initializeWeekComboBox(FIRST_WEEK);
         initScheduledActivitiesTableMouseListener();
     }
@@ -333,6 +335,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         weekLabel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        weekLabel.setForeground(new java.awt.Color(255, 255, 255));
         weekLabel.setText("Week n°");
 
         scheduledActivitiesTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -371,7 +374,7 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                         .addComponent(weekLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(weekComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 175, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 413, Short.MAX_VALUE)
                         .addComponent(createButton))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -390,8 +393,8 @@ public class ScheduledActivitiesFrame extends javax.swing.JFrame {
                         .addGap(1, 1, 1)
                         .addComponent(weekComboBox)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
-                .addGap(180, 180, 180))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();

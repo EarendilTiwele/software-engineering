@@ -6,7 +6,6 @@
 package businesslogiclayer;
 
 import dataaccesslayer.DAOFactory;
-import dataaccesslayer.ProcedureDAO;
 import dataaccesslayer.ProcedureSkillsDAO;
 import datatransferobjects.Competency;
 import datatransferobjects.Procedure;
@@ -18,7 +17,7 @@ import java.util.Set;
  */
 public class ProcedureSkillsBO {
 
-    private ProcedureSkillsDAO procedureSkillsDAO;
+    private final ProcedureSkillsDAO procedureSkillsDAO;
 
     public ProcedureSkillsBO() {
         DAOFactory postgresFactory = DAOFactory.getDAOFactory(DAOFactory.POSTGRES);

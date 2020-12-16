@@ -28,7 +28,7 @@ import java.util.Iterator;
  *
  * @author Alfonso
  */
-public class AssignmentBLLTest {
+public class AssignmentBOTest {
 
     private AssignmentBO assignmentBO;
 
@@ -109,8 +109,8 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getAgenda method, of class AssignmentBLL. - 2 busy maintainers -
-     * 4 maintainers: 2 busy and 2 free
+     * Test of getAgenda method, of class AssignmentBO. - 2 busy maintainers - 4
+     * maintainers: 2 busy and 2 free
      */
     @Test
     public void testGetAgendaMoreMaintainers() {
@@ -187,7 +187,7 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getAgenda method, of class AssignmentBLL. Test case: no
+     * Test of getAgenda method, of class AssignmentBO. Test case: no
      * maintainers in the system
      */
     @Test
@@ -200,8 +200,8 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getAgenda method, of class AssignmentBLL. Test case: 4
-     * maintainers and zero assignments
+     * Test of getAgenda method, of class AssignmentBO. Test case: 4 maintainers
+     * and zero assignments
      */
     @Test
     public void testGetAgendaZeroAssignments() {
@@ -247,7 +247,7 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getDailyAgenda method, of class AssignmentBLL. Test case: no
+     * Test of getDailyAgenda method, of class AssignmentBO. Test case: no
      * assignments in the system, week 1, on MONDAY. Full availability of a
      * maintainer.
      */
@@ -266,7 +266,7 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getDailyAgenda method, of class AssignmentBLL. Test case: given a
+     * Test of getDailyAgenda method, of class AssignmentBO. Test case: given a
      * maintainer ("Alfonso"), assignments to maintainers "Francesco" and
      * "Alessandro", week 1, on MONDAY. Full availability of the maintainer.
      */
@@ -302,7 +302,7 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getDailyAgenda method, of class AssignmentBLL. Test case:
+     * Test of getDailyAgenda method, of class AssignmentBO. Test case:
      * maintainer ("Alfonso") is fully busy: activity 1: 8-12 MONDAY; activity
      * 2: 14-15 MONDAY; activity 3: 15-17 MONDAY; Maintainer "Francesco" has
      * activity: activity 4: 9-10 MONDAY
@@ -354,7 +354,7 @@ public class AssignmentBLLTest {
     }
 
     /**
-     * Test of getDailyAgenda method, of class AssignmentBLL. Test case:
+     * Test of getDailyAgenda method, of class AssignmentBO. Test case:
      * maintainer ("Alfonso") is fully busy: activity 1: 8-8:30 MONDAY; activity
      * 2: 14-14:30 MONDAY; Maintainer "Francesco" has activity: activity 4:
      * 9-9:30 MONDAY

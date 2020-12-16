@@ -5,10 +5,8 @@
  */
 package dataaccesslayer.postgres;
 
-import datatransferobjects.Maintainer;
 import datatransferobjects.User;
 import dataaccesslayer.UserDAO;
-import datatransferobjects.Planner;
 import datatransferobjects.UserFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
