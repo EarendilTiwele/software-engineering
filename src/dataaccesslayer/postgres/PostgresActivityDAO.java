@@ -17,7 +17,6 @@ import dataaccesslayer.ProcedureSkillsDAO;
 import dataaccesslayer.SiteDAO;
 import dataaccesslayer.TypologyDAO;
 import java.sql.ResultSet;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.logging.Level;
@@ -28,8 +27,6 @@ import java.util.logging.Logger;
  * @author Francesco Avallone
  */
 public class PostgresActivityDAO extends PostgresAbstractDAO<Activity> implements ActivityDAO {
-
-    private Connection conn;
 
     /**
      * Returns the <code>Activity</code> object builded on the current row of
