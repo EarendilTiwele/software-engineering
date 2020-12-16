@@ -46,7 +46,7 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Defines the change listener that allow to Initialize a specific view on
+     * Defines the change listener that allow to initialize a specific view on
      * the selected tab of competencyManagmentTabbedPane.
      */
     private void initCompetencyManagmentTabbedPane() {
@@ -145,7 +145,7 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
     /**
      * Converts a list of competencies to a matrix of Object.
      *
-     * @param competencies the list of comptencies
+     * @param competencies the list of competencies
      * @return the matrix of Object
      */
     private Object[][] convertToObjectMatrix(List<Competency> competencies) {
@@ -165,9 +165,9 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
     }
 
     /**
-     * Loads the whole list of system's competency.
+     * Loads the whole list of system's competencies.
      *
-     * @return the list of system's competency
+     * @return the list of system's competencies
      */
     private List<Competency> loadAllCompetencies() {
         return competencyBO.getAll();
@@ -194,7 +194,7 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
 
     /**
      * Checks that the insert operation ,according with specified result, was
-     * succesful and notified that.
+     * successful and notified that.
      *
      * @param result the result of insert operation
      */
@@ -210,7 +210,7 @@ public class CompetenciesManagmentFrame extends javax.swing.JFrame {
 
     /**
      * Checks that the update operation ,according with specified result, was
-     * succesful and notified that specifying the competency's id.
+     * successful and notified that specifying the competency's id.
      *
      * @param result the result of update operation
      * @param competencyID the competency's id
